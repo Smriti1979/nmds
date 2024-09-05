@@ -1,18 +1,24 @@
+/** @format */
 
 module.exports = (sequelize, DataTypes) => {
-const Theme = sequelize.define('Theme', {
-  category: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    primaryKey: true,
-  },
-  name: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-}, {
-  tableName: 'Theme',
-  timestamps: false,
-});
-return Theme
-}
+  const theme = sequelize.define(
+    "theme",
+    {
+      category: {
+        type: DataTypes.STRING(20), 
+        allowNull: false,
+        primaryKey: true,
+      },
+      name: {
+        type: DataTypes.STRING(40), 
+        allowNull: false,
+      },
+    },
+    {
+      tableName: "theme",
+      timestamps: false,
+      freezeTableName: true,
+    }
+  );
+  return theme;
+};

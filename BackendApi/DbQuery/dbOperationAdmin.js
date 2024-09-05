@@ -1,3 +1,4 @@
+/** @format */
 
 const db = require("../models/index.js");
 const { Pool } = require("pg");
@@ -6,17 +7,16 @@ require("dotenv").config();
 const pooladmin = new Pool({
   user: process.env.DB_USERNAME,
   host: process.env.DB_HOST,
-  database: process.env.DB_DATABASEASI,
+  database: process.env.DB_DATABASE,
   password: process.env.DB_PASSWORD,
   port: process.env.DB_PORT, // Default PostgreSQL port
 });
 
 async function EmailValidation(email) {
-  const query = "SELECT * FROM AdminUsers WHERE email = $1";
+  const query = "SELECT * FROM adminusers WHERE email = $1";
   const result = await pooladmin.query(query, [email]);
   return result.rows[0];
 }
-
 
 async function createProductdb(
   id,
@@ -66,8 +66,7 @@ async function createProductdb(
         };
       }
 
-    
-      const productThemeQuery = `INSERT INTO ProductTheme(productId, category) VALUES($1, $2)`;
+      const productThemeQuery = `INSERT INTO producttheme("productId", category) VALUES($1, $2)`;
       await pooladmin.query(productThemeQuery, [id, cat]);
     }
 
@@ -84,7 +83,7 @@ async function createProductdb(
   }
 }
 /**
- * create Theme
+ * create theme
  */
 async function createThemedb(category, name) {
   try {
@@ -98,7 +97,7 @@ async function createThemedb(category, name) {
       return {
         error: true,
         errorCode: 405,
-        errorMessage: `Product not found after insertion`,
+        errorMessage: `product not found after insertion`,
       };
     }
     return result.rows[0];
@@ -106,7 +105,7 @@ async function createThemedb(category, name) {
     return {
       error: true,
       errorCode: 405,
-      errorMessage: `Problem in db unable to create Theme`,
+      errorMessage: `Problem in db unable to create theme`,
     };
   }
 }
@@ -114,7 +113,7 @@ async function createThemedb(category, name) {
  * Metadata
  */
 async function createMetadatadb(
-  Product,
+  product,
   title,
   category,
   geography,
@@ -131,9 +130,11 @@ async function createMetadatadb(
   remarks
 ) {
   try {
-    const metaQuery = `INSERT INTO MetaData(product,title,category,geography,frequency,timePeriod,dataSource,description,lastUpdateDate,futureRelease,basePeriod,keystatistics,NMDS,nmdslink,remarks) values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)`;
+    // const metaQuery = `INSERT INTO metadata(product,title,category,geography,frequency,timePeriod,dataSource,description,lastUpdateDate,futureRelease,basePeriod,keystatistics,NMDS,nmdslink,remarks) values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)`;
+    const metaQuery = `INSERT INTO metadata(product,title,category,geography,frequency,"timePeriod","dataSource",description,"lastUpdateDate","futureRelease","basePeriod",keystatistics,"NMDS",nmdslink,remarks) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)`;
+
     await pooladmin.query(metaQuery, [
-      Product,
+      product,
       title,
       category,
       geography,
@@ -150,14 +151,14 @@ async function createMetadatadb(
       remarks,
     ]);
     const result = await pooladmin.query(
-      `SELECT * FROM MetaData where product=$1`,
-      [Product]
+      `SELECT * FROM metadata where product=$1`,
+      [product]
     );
     if (result.rows.length == 0) {
       return {
         error: true,
         errorCode: 400,
-        errorMessage: `Error in creating metaData`,
+        errorMessage: `Error in creating metadata`,
       };
     }
     return result.rows[0];
@@ -170,10 +171,11 @@ async function createMetadatadb(
   }
 }
 
-
 async function getProuductdb(productId) {
   const getQuery = `SELECT * FROM product WHERE id = $1`;
   const productResult = await pooladmin.query(getQuery, [productId]);
+  console.log(productId)
+  console.log(productResult)
   if (productResult.rows.length === 0) {
     return {
       error: true,
@@ -181,16 +183,16 @@ async function getProuductdb(productId) {
       errorMessage: `Unable to fetch data from ProductTable`,
     };
   }
-  const getQueryCategory = `SELECT category FROM ProductTheme WHERE productId = $1`;
+  const getQueryCategory = `SELECT category FROM producttheme WHERE "productId" = $1`;
   const categoriesResult = await pooladmin.query(getQueryCategory, [productId]);
   const product = productResult.rows[0];
   const categories = categoriesResult.rows.map((row) => row.category);
   product["category"] = categories;
   return product;
 }
-async function getMetaDatadb(Product) {
-  const getQuery = `SELECT * FROM  MetaData where product=$1`;
-  const data = await pooladmin.query(getQuery, [Product]);
+async function getMetaDatadb(product) {
+  const getQuery = `SELECT * FROM  metadata where product=$1`;
+  const data = await pooladmin.query(getQuery, [product]);
   if (data.rows.length == 0) {
     return {
       error: true,
@@ -201,13 +203,13 @@ async function getMetaDatadb(Product) {
   return data.rows[0];
 }
 async function getThemedb(category) {
-  const getQuery = `SELECT * FROM Theme where category=$1`;
+  const getQuery = `SELECT * FROM theme where category=$1`;
   const data = await pooladmin.query(getQuery, [category]);
   if (data.rows.length == 0) {
     return {
       error: true,
       errorCode: 402,
-      errorMessage: `Unable to fetch data from Theme Table`,
+      errorMessage: `Unable to fetch data from theme Table`,
     };
   }
   return data.rows[0];
@@ -247,7 +249,7 @@ async function updateProductDomdb(
     // Handle categories
     const categories = category.split(",").map((cat) => cat.trim());
     const existingCategories = await pooladmin.query(
-      `SELECT category FROM ProductTheme WHERE productId = $1`,
+      `SELECT category FROM producttheme WHERE "productId" = $1`,
       [id]
     );
     const existingCategoryList = existingCategories.rows.map(
@@ -257,7 +259,7 @@ async function updateProductDomdb(
     // Add new categories
     for (const cat of categories) {
       if (!existingCategoryList.includes(cat)) {
-        const categoryExistsQuery = `SELECT 1 FROM Theme WHERE category = $1`;
+        const categoryExistsQuery = `SELECT 1 FROM theme WHERE category = $1`;
         const categoryExistsResult = await pooladmin.query(
           categoryExistsQuery,
           [cat]
@@ -267,10 +269,10 @@ async function updateProductDomdb(
           return {
             error: true,
             errorCode: 402,
-            errorMessage: `Category '${cat}' not found in Theme table`,
+            errorMessage: `Category '${cat}' not found in theme table`,
           };
         }
-        const productThemeQuery = `INSERT INTO ProductTheme(productId, category) VALUES($1, $2)`;
+        const productThemeQuery = `INSERT INTO producttheme("productId", category) VALUES($1, $2)`;
         await pooladmin.query(productThemeQuery, [id, cat]);
       }
     }
@@ -285,7 +287,7 @@ async function updateProductDomdb(
       };
     }
 
-    const getQueryCategory = `SELECT category FROM ProductTheme WHERE productId = $1`;
+    const getQueryCategory = `SELECT category FROM producttheme WHERE "productId" = $1`;
     const categoriesResult = await pooladmin.query(getQueryCategory, [id]);
     const product = productResult.rows[0];
     const Allcategory = categoriesResult.rows.map((row) => row.category);
@@ -345,7 +347,7 @@ async function updateProductDevdb(
     // Handle categories
     const categories = category.split(",").map((cat) => cat.trim());
     const existingCategories = await pooladmin.query(
-      `SELECT category FROM ProductTheme WHERE productId = $1`,
+      `SELECT category FROM producttheme WHERE "productId" = $1`,
       [id]
     );
     const existingCategoryList = existingCategories.rows.map(
@@ -355,7 +357,7 @@ async function updateProductDevdb(
     // Add new categories
     for (const cat of categories) {
       if (!existingCategoryList.includes(cat)) {
-        const categoryExistsQuery = `SELECT 1 FROM Theme WHERE category = $1`;
+        const categoryExistsQuery = `SELECT 1 FROM theme WHERE category = $1`;
         const categoryExistsResult = await pooladmin.query(
           categoryExistsQuery,
           [cat]
@@ -365,10 +367,10 @@ async function updateProductDevdb(
           return {
             error: true,
             errorCode: 402,
-            errorMessage: `Category '${cat}' not found in Theme table`,
+            errorMessage: `Category '${cat}' not found in theme table`,
           };
         }
-        const productThemeQuery = `INSERT INTO ProductTheme(productId, category) VALUES($1, $2)`;
+        const productThemeQuery = `INSERT INTO producttheme("productId", category) VALUES($1, $2)`;
         await pooladmin.query(productThemeQuery, [id, cat]);
       }
     }
@@ -382,7 +384,7 @@ async function updateProductDevdb(
       };
     }
 
-    const getQueryCategory = `SELECT category FROM ProductTheme WHERE productId = $1`;
+    const getQueryCategory = `SELECT category FROM producttheme WHERE "productId" = $1`;
     const categoriesResult = await pooladmin.query(getQueryCategory, [id]);
     const product = productResult.rows[0];
     const Allcategory = categoriesResult.rows.map((row) => row.category);
@@ -395,15 +397,15 @@ async function updateProductDevdb(
   }
 }
 async function updateThemedb(name, category) {
-  const updateQuery = `UPDATE Theme SET name=$1 where category=$2 `;
+  const updateQuery = `UPDATE theme SET name=$1 where category=$2 `;
   await pooladmin.query(updateQuery, [name, category]);
-  const getQuery = `SELECT * FROM Theme where category=$1`;
+  const getQuery = `SELECT * FROM theme where category=$1`;
   const data = await pooladmin.query(getQuery, [category]);
   if (data.rows.length == 0) {
     return {
       error: true,
       errorCode: 402,
-      errorMessage: `Unable to fetch data from Theme Table`,
+      errorMessage: `Unable to fetch data from theme Table`,
     };
   }
   return data.rows[0];
@@ -423,22 +425,22 @@ async function updateMetadataDomdb(
   NMDS,
 
   remarks,
-  Product
+  product
 ) {
   const metaQuery = `
-    UPDATE MetaData
+    UPDATE metadata
     SET title = $1,
         category = $2,            
         geography = $3,
         frequency = $4,
-        timePeriod = $5,
-        dataSource = $6,
+        "timePeriod" = $5,
+        "dataSource" = $6,
         description = $7,
-        lastUpdateDate = $8,
-        futureRelease = $9,
-        basePeriod = $10,
+        "lastUpdateDate" = $8,
+        "futureRelease" = $9,
+        "basePeriod" = $10,
         keystatistics = $11,
-        NMDS = $12,
+        "NMDS" = $12,
         remarks = $13
     WHERE product = $14
   `;
@@ -457,20 +459,20 @@ async function updateMetadataDomdb(
     NMDS,
 
     remarks,
-    Product,
+    product,
   ]);
 
   if (result.rowCount === 0) {
     return {
       error: true,
       errorCode: 402,
-      errorMessage: `MetaData not found for the given product`,
+      errorMessage: `metadata not found for the given product`,
     };
   }
 
   const updatedResult = await pooladmin.query(
-    `SELECT * FROM MetaData WHERE product = $1`,
-    [Product]
+    `SELECT * FROM metadata WHERE product = $1`,
+    [product]
   );
   return updatedResult.rows[0];
 }
@@ -489,23 +491,23 @@ async function updateMetadataDevdb(
   NMDS,
   nmdslink,
   remarks,
-  Product
+  product
 ) {
-  // Update MetaData record
+  // Update metadata record
   const metaQuery = `
-       UPDATE MetaData
+       UPDATE metadata
        SET title = $1,
            category = $2,            
            geography = $3,
            frequency = $4,
-           timePeriod = $5,
-           dataSource = $6,
+           "timePeriod" = $5,
+           "dataSource" = $6,
            description = $7,
-           lastUpdateDate = $8,
-           futureRelease = $9,
-           basePeriod = $10,
+           "lastUpdateDate" = $8,
+           "futureRelease" = $9,
+           "basePeriod" = $10,
            keystatistics = $11,
-           NMDS = $12,
+           "NMDS" = $12,
            nmdslink = $13,
            remarks = $14
        WHERE product = $15
@@ -525,7 +527,7 @@ async function updateMetadataDevdb(
     NMDS,
     nmdslink,
     remarks,
-    Product,
+    product,
   ]);
 
   if (result.rowCount === 0) {
@@ -537,43 +539,43 @@ async function updateMetadataDevdb(
   }
 
   const updatedResult = await pooladmin.query(
-    `SELECT * FROM MetaData WHERE product = $1`,
-    [Product]
+    `SELECT * FROM metadata WHERE product = $1`,
+    [product]
   );
   return updatedResult.rows[0];
 }
 async function deleteProductdb(id) {
   const productQuery = `DELETE FROM product  WHERE id=$1;`;
-  const metaDataQuery = `DELETE FROM MetaData  WHERE product=$1;`;
-  const CategoryQuery = `DELETE FROM ProductTheme  WHERE productId=$1;`;
+  const metaDataQuery = `DELETE FROM metadata  WHERE product=$1;`;
+  const CategoryQuery = `DELETE FROM producttheme  WHERE "productId"=$1;`;
   await pooladmin.query(metaDataQuery, [id]);
   await pooladmin.query(CategoryQuery, [id]);
   await pooladmin.query(productQuery, [id]);
 }
-async function deleteMetadatadb(Product) {
-  const metaDataQuery = `DELETE FROM MetaData  WHERE product=$1;`;
-  await pooladmin.query(metaDataQuery, [Product]);
+async function deleteMetadatadb(product) {
+  const metaDataQuery = `DELETE FROM metadata  WHERE product=$1;`;
+  await pooladmin.query(metaDataQuery, [product]);
 }
 async function deleteThemedb(category) {
   try {
     await pooladmin.query("BEGIN");
     // Get associated products
-    const getProductsQuery = `SELECT productId FROM ProductTheme WHERE category = $1`;
+    const getProductsQuery = `SELECT "productId" FROM producttheme WHERE category = $1`;
     const productsResult = await pooladmin.query(getProductsQuery, [category]);
     const productIds = productsResult.rows.map((row) => row.productId);
-    // Remove associated entries from ProductTheme
-    const deleteProductThemeQuery = `DELETE FROM ProductTheme WHERE category = $1`;
+    // Remove associated entries from producttheme
+    const deleteProductThemeQuery = `DELETE FROM producttheme WHERE category = $1`;
     await pooladmin.query(deleteProductThemeQuery, [category]);
-    // Remove associated entries from MetaData
-    const deleteMetaDataQuery = `DELETE FROM MetaData WHERE category = $1`;
+    // Remove associated entries from metadata
+    const deleteMetaDataQuery = `DELETE FROM metadata WHERE category = $1`;
     await pooladmin.query(deleteMetaDataQuery, [category]);
 
     // Remove products if they are not associated with any other category
     if (productIds.length > 0) {
       const checkProductCategoryQuery = `
               SELECT p.id FROM product p
-              LEFT JOIN ProductTheme pt ON p.id = pt.productId
-              WHERE p.id = ANY($1::varchar[]) AND pt.productId IS NULL
+              LEFT JOIN producttheme pt ON p.id = pt."productId"
+              WHERE p.id = ANY($1::varchar[]) AND pt."productId" IS NULL
             `;
 
       const remainingProductsResult = await pooladmin.query(
@@ -590,7 +592,7 @@ async function deleteThemedb(category) {
     }
 
     // Remove the theme itself
-    const deleteThemeQuery = `DELETE FROM Theme WHERE category = $1`;
+    const deleteThemeQuery = `DELETE FROM theme WHERE category = $1`;
     await pooladmin.query(deleteThemeQuery, [category]);
 
     await pooladmin.query("COMMIT");

@@ -1,38 +1,41 @@
-require('dotenv').config();
+/** @format */
 
-const { DB_HOST, DB_USERNAME, DB_PASSWORD, DB_DATABASE, DB_DAILECT, DB_PORT } = process.env;
-const { Sequelize, DataTypes } = require('sequelize')
+require("dotenv").config();
+
+const { DB_HOST, DB_USERNAME, DB_PASSWORD, DB_DATABASE, DB_DAILECT, DB_PORT } =
+  process.env;
+const { Sequelize, DataTypes } = require("sequelize");
 
 //Database connection with dialect of postgres specifying the database we are using
 //port for my database is 5433
 const sequelize = new Sequelize({
-    host: DB_HOST,
-    username: DB_USERNAME,
-    password: DB_PASSWORD,
-    database: DB_DATABASE,
-    dialect: DB_DAILECT,
-    port: DB_PORT
-})
+  host: DB_HOST,
+  username: DB_USERNAME,
+  password: DB_PASSWORD,
+  database: DB_DATABASE,
+  dialect: DB_DAILECT,
+  port: DB_PORT,
+});
 
 //checking if connection is done
-sequelize.authenticate().then(() => {
-}).catch((err) => {
-})
+sequelize
+  .authenticate()
+  .then(() => {})
+  .catch((err) => {});
 
-const db = {}
-db.Sequelize = Sequelize
-db.sequelize = sequelize
-db.sequelize = sequelize
+const db = {};
+db.Sequelize = Sequelize;
+db.sequelize = sequelize;
+db.sequelize = sequelize;
 //connecting to model
-db.users = require('./userModel') (sequelize, DataTypes)
-db.log = require('./logModel') (sequelize, DataTypes)
+db.users = require("./userModel")(sequelize, DataTypes);
+db.log = require("./logModel")(sequelize, DataTypes);
 
 // db.AdminUser = require('./admim/AdminUser')(sequelize, DataTypes);
-// db.MetaData = require('./admin/meta')(sequelize, DataTypes);
-// db.Product = require('./admin/product')(sequelize, DataTypes);
-// db.ProductTheme = require('./admin/producttheme')(sequelize, DataTypes);
-// db.Theme = require('./admin/theme')(sequelize, DataTypes);
-
+// db.metadata = require('./admin/meta')(sequelize, DataTypes);
+// db.product = require('./admin/product')(sequelize, DataTypes);
+// db.producttheme = require('./admin/producttheme')(sequelize, DataTypes);
+// db.theme = require('./admin/theme')(sequelize, DataTypes);
 
 //exporting the module
-module.exports = db
+module.exports = db;
