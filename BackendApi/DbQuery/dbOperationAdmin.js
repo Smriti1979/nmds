@@ -12,11 +12,22 @@ const pooladmin = new Pool({
   port: process.env.DB_PORT, // Default PostgreSQL port
 });
 
+/**
+ * --------Admin validation-----------
+ *
+ */
+
 async function EmailValidation(email) {
   const query = "SELECT * FROM adminusers WHERE email = $1";
   const result = await pooladmin.query(query, [email]);
   return result.rows[0];
 }
+
+/***
+ * 
+ * --------Create Product--------------
+ * 
+ */
 
 async function createProductdb(
   id,
@@ -171,11 +182,17 @@ async function createMetadatadb(
   }
 }
 
+/**
+ *
+ * -----------Get product ------------
+ *
+ */
+
 async function getProuductdb(productId) {
   const getQuery = `SELECT * FROM product WHERE id = $1`;
   const productResult = await pooladmin.query(getQuery, [productId]);
-  console.log(productId)
-  console.log(productResult)
+  console.log(productId);
+  console.log(productResult);
   if (productResult.rows.length === 0) {
     return {
       error: true,
@@ -190,6 +207,11 @@ async function getProuductdb(productId) {
   product["category"] = categories;
   return product;
 }
+
+/*
+ * -----------Get MetaData------------
+ */
+
 async function getMetaDatadb(product) {
   const getQuery = `SELECT * FROM  metadata where product=$1`;
   const data = await pooladmin.query(getQuery, [product]);
@@ -202,6 +224,13 @@ async function getMetaDatadb(product) {
   }
   return data.rows[0];
 }
+
+/**
+ *
+ * ---------------Get Theme--------------
+ *
+ */
+
 async function getThemedb(category) {
   const getQuery = `SELECT * FROM theme where category=$1`;
   const data = await pooladmin.query(getQuery, [category]);
@@ -214,6 +243,11 @@ async function getThemedb(category) {
   }
   return data.rows[0];
 }
+/**
+ *
+ * ---------------Update product Domain--------------
+ *
+ */
 async function updateProductDomdb(
   id,
   title,
@@ -297,8 +331,18 @@ async function updateProductDomdb(
     return product;
   } catch (error) {
     await pooladmin.query("ROLLBACK");
+    return {
+      error: true,
+      errorCode: 402,
+      errorMessage: error,
+    };
   }
 }
+
+/**
+ * --------------------Update Product Developer ------------------
+ */
+
 async function updateProductDevdb(
   id,
   title,
@@ -396,6 +440,13 @@ async function updateProductDevdb(
     await pooladmin.query("ROLLBACK");
   }
 }
+
+/**
+ * 
+ * ---------Update Theme 
+ * 
+ */
+
 async function updateThemedb(name, category) {
   const updateQuery = `UPDATE theme SET name=$1 where category=$2 `;
   await pooladmin.query(updateQuery, [name, category]);
@@ -410,6 +461,13 @@ async function updateThemedb(name, category) {
   }
   return data.rows[0];
 }
+
+/*
+*
+*---------Update Metadata Domain------------
+*
+*/
+
 async function updateMetadataDomdb(
   title,
   category,
@@ -476,6 +534,13 @@ async function updateMetadataDomdb(
   );
   return updatedResult.rows[0];
 }
+
+/**
+ * 
+ * -----------Update Metadata Developer-------------
+ * 
+ */
+
 async function updateMetadataDevdb(
   title,
   category,
@@ -544,6 +609,11 @@ async function updateMetadataDevdb(
   );
   return updatedResult.rows[0];
 }
+/***
+ * 
+ * -----------delete Product-----------
+ * 
+ */
 async function deleteProductdb(id) {
   const productQuery = `DELETE FROM product  WHERE id=$1;`;
   const metaDataQuery = `DELETE FROM metadata  WHERE product=$1;`;
@@ -552,10 +622,23 @@ async function deleteProductdb(id) {
   await pooladmin.query(CategoryQuery, [id]);
   await pooladmin.query(productQuery, [id]);
 }
+
+/***
+ * 
+ * ------Delete MetaData -------------
+ * 
+ */
+
 async function deleteMetadatadb(product) {
   const metaDataQuery = `DELETE FROM metadata  WHERE product=$1;`;
   await pooladmin.query(metaDataQuery, [product]);
 }
+
+/***
+ * 
+ * ------Delete Theme -------------
+ * 
+ */
 async function deleteThemedb(category) {
   try {
     await pooladmin.query("BEGIN");
@@ -600,6 +683,8 @@ async function deleteThemedb(category) {
     await pooladmin.query("ROLLBACK");
   }
 }
+
+
 module.exports = {
   EmailValidation,
   deleteThemedb,

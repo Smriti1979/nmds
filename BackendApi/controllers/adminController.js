@@ -18,7 +18,7 @@ const {
   updateMetadataDevdb,
   deleteProductdb,
   deleteMetadatadb,
-  createMetadatadb
+  createMetadatadb,
 } = admindb;
 
 /**
@@ -29,14 +29,14 @@ const signInAdmin = async (req, res) => {
   try {
     const UserssDetail = await EmailValidation(email);
     if (UserssDetail?.error == true) {
-      res.status(403).json({ error: `User does not exist` });
+      return res.status(403).json({ error: `User does not exist` });
     }
     const correctpassword = await bcrypt.compare(
       password,
       UserssDetail.password
     );
     if (!correctpassword) {
-      res.status(403).json({ error: `Required correct password` });
+      return res.status(403).json({ error: `Required correct password` });
     }
 
     const adminAccessToken = generateAccessToken({
@@ -50,7 +50,7 @@ const signInAdmin = async (req, res) => {
     };
 
     res.cookie("adminAccessToken", adminAccessToken, cookieOptions);
-    res.status(200).send({
+    return res.status(200).send({
       data: {
         eamil: email,
       },
@@ -58,7 +58,7 @@ const signInAdmin = async (req, res) => {
       statusCode: true,
     });
   } catch (error) {
-    res.status(500).json({ error: `Error in signIn User ${error}` });
+    return res.status(500).json({ error: `Error in signIn User ${error}` });
   }
 };
 
@@ -83,7 +83,9 @@ const createProduct = async (req, res) => {
   try {
     const user = req.user;
     if (!user.developer) {
-      res.status(405).json({ error: `Only developer can create the product` });
+      return res
+        .status(405)
+        .json({ error: `Only developer can create the product` });
     }
     const categories = await createProductdb(
       id,
@@ -104,7 +106,7 @@ const createProduct = async (req, res) => {
       throw categories?.errorMessage;
     }
 
-    res.status(200).send({
+    return res.status(200).send({
       data: {
         id,
         title,
@@ -124,7 +126,7 @@ const createProduct = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res
+    return res
       .status(500)
       .json({ error: `Error in Creating product: ${error}` });
   }
@@ -139,21 +141,23 @@ const createTheme = async (req, res) => {
   try {
     const user = req.user;
     if (!user.developer) {
-      res.status(405).json({ error: `Only developer can create the theme}` });
+      return res
+        .status(405)
+        .json({ error: `Only developer can create the theme}` });
     }
 
     const result = await createThemedb(category, name);
     if (result?.error == true) {
       throw result?.errorMessage;
     }
-    res.status(200).send({
+    return res.status(200).send({
       data: result,
       msg: "theme created successfully",
       statusCode: true,
     });
   } catch (error) {
     console.error(error);
-    res
+    return res
       .status(500)
       .json({ error: `Error in Creating theme: ${error.message}` });
   }
@@ -183,10 +187,12 @@ const createMetadata = async (req, res) => {
   try {
     const user = req.user;
     if (!user.developer) {
-      res.status(405).json({ error: `Only developer can create the metadata` });
+      return res
+        .status(405)
+        .json({ error: `Only developer can create the metadata` });
     }
 
-    const result = await createMetadatadb (
+    const result = await createMetadatadb(
       product,
       title,
       category,
@@ -208,16 +214,14 @@ const createMetadata = async (req, res) => {
       throw result?.errorMessage;
     }
 
-    res.status(200).send({
+    return res.status(200).send({
       data: result,
       msg: "Meata data create successfully",
       statusCode: true,
     });
   } catch (error) {
     console.log(error);
-    res
-      .status(500)
-      .json({ error: `Error in Creating Metadata: ${error}` });
+    res.status(500).json({ error: `Error in Creating Metadata: ${error}` });
   }
 };
 /*
@@ -226,7 +230,7 @@ Get product
 const getProuduct = async (req, res) => {
   const { productId } = req.params;
   if (!productId) {
-    res.status(400).json({ error: `productID is required` });
+    return res.status(400).json({ error: `productID is required` });
   }
   try {
     const product = await getProuductdb(productId);
@@ -234,14 +238,14 @@ const getProuduct = async (req, res) => {
     if (product?.error == true) {
       throw product?.errorMessage;
     }
-    res.status(200).send({
+    return res.status(200).send({
       data: product,
       msg: "product data",
       statusCode: true,
     });
   } catch (error) {
     console.error(error);
-    res
+    return res
       .status(500)
       .json({ error: `Unable to fetch data Error=${error}` });
   }
@@ -254,14 +258,14 @@ const getProuduct = async (req, res) => {
 const getMetaData = async (req, res) => {
   const { product } = req.params;
   if (product == undefined) {
-    res.status(400).json({ error: `productID is required` });
+    return res.status(400).json({ error: `productID is required` });
   }
   try {
     const metadata = await getMetaDatadb(product);
     if (metadata?.error == true) {
       throw metadata?.errorMessage;
     }
-    res.status(200).send({
+    return res.status(200).send({
       data: metadata,
       msg: "product data",
       statusCode: true,
@@ -269,14 +273,20 @@ const getMetaData = async (req, res) => {
   } catch (error) {
     console.log(error);
 
-    res.status(500).json({ error: `Unable to fetch data Error=${error}` });
+    return res
+      .status(500)
+      .json({ error: `Unable to fetch data Error=${error}` });
   }
 };
-
+/**
+ *
+ * ---------Get Theme---------
+ *
+ */
 const getTheme = async (req, res) => {
   const { category } = req.params;
   if (category == undefined) {
-    res.status(400).json({ error: `category is required` });
+    return res.status(400).json({ error: `category is required` });
   }
   try {
     const theme = await getThemedb(category);
@@ -285,16 +295,22 @@ const getTheme = async (req, res) => {
       throw theme?.errorMessage;
     }
 
-    res.status(200).send({
+    return res.status(200).send({
       data: theme,
       msg: "theme data",
       statusCode: true,
     });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ error: `Unable to get theme ${error}` });
+    return res.status(500).json({ error: `Unable to get theme ${error}` });
   }
 };
+
+/**
+ *
+ * --------Update Product-------------------------
+ *
+ */
 
 const updateProduct = async (req, res) => {
   const { id } = req.params;
@@ -318,13 +334,9 @@ const updateProduct = async (req, res) => {
         id,
         title,
         count,
-        icon,
         period,
         tooltip,
         type,
-        url,
-        tables,
-        swagger,
         viz,
         category
       );
@@ -333,7 +345,7 @@ const updateProduct = async (req, res) => {
         throw product?.errorMessage;
       }
 
-      res.status(200).send({
+      return res.status(200).send({
         data: product,
         msg: "product updated successfully",
         statusCode: true,
@@ -359,7 +371,7 @@ const updateProduct = async (req, res) => {
       throw product?.errorMessage;
     }
 
-    res.status(200).send({
+    return res.status(200).send({
       data: product,
       msg: "product updated successfully",
       statusCode: true,
@@ -369,26 +381,34 @@ const updateProduct = async (req, res) => {
     res.status(500).json({ error: `Error in Updating product ${error}` });
   }
 };
+
+/**
+ *
+ * --------Update Theme----------------
+ *
+ */
 const updateTheme = async (req, res) => {
   const { category } = req.params;
   const { name } = req.body;
   if (name == "" || name == null || name == undefined) {
-    res.status(405).json({ error: `category,name are required` });
+    return res.status(405).json({ error: `category,name are required` });
   }
   if (category == null || category == undefined || category == "") {
-    res.status(405).json({ error: `Category is undefined` });
+    return res.status(405).json({ error: `Category is undefined` });
   }
   try {
     const user = req.user;
     if (!user.developer) {
-      res.status(405).json({ error: `Only developer can edit the theme` });
+      return res
+        .status(405)
+        .json({ error: `Only developer can edit the theme` });
     }
     const theme = await updateThemedb(name, category);
     if (theme?.error == true) {
       throw theme?.errorMessage;
     }
 
-    res.status(200).send({
+    return res.status(200).send({
       data: theme,
       msg: "theme updated successfully",
       statusCode: true,
@@ -396,9 +416,17 @@ const updateTheme = async (req, res) => {
   } catch (error) {
     console.error(error);
 
-    res.status(500).json({ error: `Error in Updating theme data: ${error}` });
+    return res
+      .status(500)
+      .json({ error: `Error in Updating theme data: ${error}` });
   }
 };
+
+/**
+ *
+ * ----------Update MetaData----------
+ *
+ */
 
 const updatedMetadata = async (req, res) => {
   const { product } = req.params;
@@ -436,7 +464,7 @@ const updatedMetadata = async (req, res) => {
       remarks,
     ].some((item) => item == null || item == undefined || item.trim() === "")
   ) {
-    res.status(400).json({ error: `All filed are required` });
+    return res.status(400).json({ error: `All filed are required` });
   }
   try {
     const user = req.user;
@@ -461,7 +489,7 @@ const updatedMetadata = async (req, res) => {
       if (result?.error == true) {
         throw result?.errorMessage;
       }
-      res.status(200).send({
+      return res.status(200).send({
         data: result,
         msg: "metadata updated successfully",
         statusCode: true,
@@ -488,7 +516,7 @@ const updatedMetadata = async (req, res) => {
       throw result?.errorMessage;
     }
 
-    res.status(200).send({
+    return res.status(200).send({
       data: result,
       msg: "metadata updated successfully",
       statusCode: true,
@@ -496,53 +524,67 @@ const updatedMetadata = async (req, res) => {
   } catch (error) {
     console.log(error);
 
-    res
+    return res
       .status(500)
       .json({ error: `Error in Updating metadata: ${error.message}` });
   }
 };
 
+/**
+ *
+ * -------Delete Product----------
+ *
+ */
+
 const deleteProduct = async (req, res) => {
   const { id } = req.params;
   if (id == null || id == undefined || id == "") {
-    res.status(405).json({ error: `id in invalid` });
+    return res.status(405).json({ error: `id in invalid` });
   }
 
   try {
     const user = req.user;
     if (!user.developer) {
-      res.status(405).json({ error: `Only developer can delete` });
+      return res.status(405).json({ error: `Only developer can delete` });
     }
     const result = await deleteProductdb(id);
     if (result?.error == true) {
       throw result?.errorMessage;
     }
-    res.status(200).send({
+    return res.status(200).send({
       data: [],
       msg: "product deleted successfully",
       statusCode: true,
     });
   } catch (error) {
     console.log(error);
-    res.status(503).json({ error: `unable to delete the product ${error}` });
+    return res
+      .status(503)
+      .json({ error: `unable to delete the product ${error}` });
   }
 };
+
+/***
+ *
+ * --------------Delete MetaData-----------
+ *
+ */
 
 const deleteMetadata = async (req, res) => {
   const { product } = req.params;
   if (product == null || product == undefined || product == "") {
-    res.status(400).json({ error: `product not define ` });
+    return res.status(400).json({ error: `product not define ` });
   }
   const user = req.user;
   if (!user.developer) {
-    res.status(400).json({ error: `Only developer can delete` });
+    return res.status(400).json({ error: `Only developer can delete` });
   }
   try {
     const result = await deleteMetadatadb(product);
     if (result?.error == true) {
       throw result?.errorMessage;
     }
-    res.status(200).send({
+    return res.status(200).send({
       data: [],
       msg: "metadata deleted successfully",
       statusCode: true,
@@ -550,18 +592,26 @@ const deleteMetadata = async (req, res) => {
   } catch (error) {
     console.log(error);
 
-    res.status(500).json({ error: `unable to delete the metadata ${error}` });
+    return res
+      .status(500)
+      .json({ error: `unable to delete the metadata ${error}` });
   }
 };
+
+/**
+ *
+ * --------Delete Theme----------
+ *
+ */
 
 const deleteTheme = async (req, res) => {
   const { category } = req.params;
   if (!category) {
-    res.status(405).json({ error: `Category is invalid` });
+    return res.status(405).json({ error: `Category is invalid` });
   }
   const user = req.user;
   if (!user.developer) {
-    res.status(405).json({ error: `Only developer can delete` });
+    return res.status(405).json({ error: `Only developer can delete` });
   }
 
   try {
@@ -569,12 +619,12 @@ const deleteTheme = async (req, res) => {
     if (result?.error == true) {
       throw result?.errorMessage;
     }
-    res
+    return res
       .status(200)
       .json({ message: "theme and associated data successfully deleted" });
   } catch (error) {
     console.error(error);
-    res
+    return res
       .status(500)
       .json({ error: `Unable to delete the theme: ${error.message}` });
   }

@@ -58,5 +58,5 @@ CREATE TABLE Users IF NOT EXISTS(
     developer BOOLEAN
 );
 -- password 123456
-INSERT INTO Users(email, password,developer) VALUES ('shubham@gmail.com', '$2a$10$IDhLRlEAHiff18CIk5eKkeTfSIVG/YEFDB859xJklP8xIbTwbZ1kC',true);
-INSERT INTO Users(email, password,developer) VALUES ('rahul@gmail.com', '$2a$10$IDhLRlEAHiff18CIk5eKkeTfSIVG/YEFDB859xJklP8xIbTwbZ1kC',false);
+INSERT INTO adminusers(email, password,developer) VALUES ('shubham@gmail.com', '$2a$10$IDhLRlEAHiff18CIk5eKkeTfSIVG/YEFDB859xJklP8xIbTwbZ1kC',true);
+INSERT INTO adminusers(email, password,developer) VALUES ('rahul@gmail.com', '$2a$10$IDhLRlEAHiff18CIk5eKkeTfSIVG/YEFDB859xJklP8xIbTwbZ1kC',false);

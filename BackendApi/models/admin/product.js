@@ -10,11 +10,11 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
       },
       title: {
-        type: DataTypes.STRING(80),
+        type: DataTypes.STRING(180),
         allowNull: false,
       },
       count: {
-        type: DataTypes.STRING(80),
+        type: DataTypes.STRING(180),
         allowNull: false,
       },
       icon: {
@@ -22,23 +22,23 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       period: {
-        type: DataTypes.STRING(80),
+        type: DataTypes.STRING(180),
         allowNull: false,
       },
       tooltip: {
-        type: DataTypes.STRING(80),
+        type: DataTypes.STRING(180),
         allowNull: false,
       },
       type: {
-        type: DataTypes.STRING(80),
+        type: DataTypes.STRING(180),
         allowNull: false,
       },
       url: {
-        type: DataTypes.STRING(80),
+        type: DataTypes.STRING(180),
         allowNull: false,
       },
       tables: {
-        type: DataTypes.STRING(80),
+        type: DataTypes.STRING(180),
         allowNull: false,
       },
       swagger: {
@@ -46,7 +46,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       viz: {
-        type: DataTypes.STRING(80),
+        type: DataTypes.STRING(180),
         allowNull: false,
       },
     },
