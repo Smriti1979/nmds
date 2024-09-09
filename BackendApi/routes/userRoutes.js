@@ -118,8 +118,8 @@ router.route("/admin/theme/:category").patch(verifyJWT, updateTheme);
 router.route("/admin/theme/:category").delete(verifyJWT, deleteTheme);
 
 router.route("/admin/metadata").post(verifyJWT, createMetadata);
-router.route("/admin/metadata/:product").get(verifyJWT, getMetaData);
-router.route("/admin/metadata/:product").patch(verifyJWT, updatedMetadata);
-router.route("/admin/metadata/:product").delete(verifyJWT, deleteMetadata);
+router.route("/admin/metadata/:Product").get(verifyJWT, getMetaData);
+router.route("/admin/metadata/:Product").patch(verifyJWT, updatedMetadata);
+router.route("/admin/metadata/:Product").delete(verifyJWT, deleteMetadata);
 
 module.exports = router;

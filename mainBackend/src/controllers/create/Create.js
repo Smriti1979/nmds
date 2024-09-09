@@ -15,19 +15,20 @@ export const createProduct = async (req, res) => {
     tooltip,
     type,
     url,
-    tables,
+    table,
     swagger,
     viz,
     category,
   } = req.body;
   try {
-    const user=req.user;
-    if(!user.developer){
-    return res.status(405).json({ error: `Only developer can create the product`});
-
+    const user = req.user;
+    if (!user.developer) {
+      return res
+        .status(405)
+        .json({ error: `Only developer can create the product` });
     }
     await pool.query("BEGIN");
-    const productQuery = `INSERT INTO product(id, title, count, icon, period, tooltip, type, url, tables, swagger, viz) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`;
+    const productQuery = `INSERT INTO product(id, title, count, icon, period, tooltip, type, url, table, swagger, viz) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`;
     await pool.query(productQuery, [
       id,
       title,
@@ -37,7 +38,7 @@ export const createProduct = async (req, res) => {
       tooltip,
       type,
       url,
-      tables,
+      table,
       swagger,
       viz,
     ]);
@@ -48,9 +49,9 @@ export const createProduct = async (req, res) => {
       const categoryExistsResult = await pool.query(categoryExistsQuery, [cat]);
 
       if (categoryExistsResult.rows.length === 0) {
-    return res.status(404).json({ error: `Category '${cat}' not found in theme table`});
-
-
+        return res
+          .status(404)
+          .json({ error: `Category '${cat}' not found in theme table` });
       }
       const productThemeQuery = `INSERT INTO ProductTheme(productId, category) VALUES($1, $2)`;
       await pool.query(productThemeQuery, [id, cat]);
@@ -58,7 +59,7 @@ export const createProduct = async (req, res) => {
 
     await pool.query("COMMIT");
     return res.status(200).send({
-      data:  {
+      data: {
         id,
         title,
         count,
@@ -67,18 +68,20 @@ export const createProduct = async (req, res) => {
         tooltip,
         type,
         url,
-        tables,
+        table,
         swagger,
         viz,
         category: categories,
       },
-      msg:  "Product created successfully",
+      msg: "Product created successfully",
       statusCode: true,
     });
   } catch (error) {
     await pool.query("ROLLBACK");
     console.error(error);
-    return res.status(500).json({ error: `Error in Creating Product:   ${error.message}`});
+    return res
+      .status(500)
+      .json({ error: `Error in Creating Product:   ${error.message}` });
   }
 };
 
@@ -88,19 +91,20 @@ export const createProduct = async (req, res) => {
  */
 
 export const createTheme = async (req, res) => {
-  const { category, name  } = req.body;
+  const { category, name } = req.body;
   try {
-    const user=req.user;
-    if(!user.developer){
-    return res.status(405).json({ error: `Only developer can create the Theme`});
+    const user = req.user;
+    if (!user.developer) {
+      return res
+        .status(405)
+        .json({ error: `Only developer can create the Theme` });
     }
     if (
       [category, name].some(
-        (item) => item == null || item == undefined|| item.trim() === ""
+        (item) => item == null || item == undefined || item.trim() === ""
       )
     ) {
-    return res.status(403).json({ error: `category,name are required`});
-
+      return res.status(403).json({ error: `category,name are required` });
     }
     const sqlQuery = `INSERT INTO theme(category,name) VALUES($1,$2)`;
     await pool.query(sqlQuery, [category, name]);
@@ -108,9 +112,9 @@ export const createTheme = async (req, res) => {
       category,
     ]);
     if (result.rows.length === 0) {
-
-    return res.status(404).json({ error: `Product not found after insertion`});
-
+      return res
+        .status(404)
+        .json({ error: `Product not found after insertion` });
     }
     return res.status(200).send({
       data: result.rows[0],
@@ -119,7 +123,9 @@ export const createTheme = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: `Error in Creating Product:  ${error.message}`});
+    return res
+      .status(500)
+      .json({ error: `Error in Creating Product:  ${error.message}` });
   }
 };
 
@@ -146,9 +152,11 @@ export const createMetadata = async (req, res) => {
     remarks,
   } = req.body;
   try {
-    const user=req.user;
-    if(!user.developer){
-      return res.status(405).json({ error: `Only developer can create the MetaData`});
+    const user = req.user;
+    if (!user.developer) {
+      return res
+        .status(405)
+        .json({ error: `Only developer can create the MetaData` });
     }
     const metaQuery = `INSERT INTO MetaData(product,title,category,geography,frequency,timePeriod,dataSource,description,lastUpdateDate,futureRelease,basePeriod,keystatistics,NMDS,nmdslink,remarks) values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)`;
     await pool.query(metaQuery, [
@@ -172,17 +180,18 @@ export const createMetadata = async (req, res) => {
       Product,
     ]);
     if (result.rows.length == 0) {
-      return res.status(402).json({ error: `Error in creating metaData`});
+      return res.status(402).json({ error: `Error in creating metaData` });
     }
 
-      return res.status(200).send({
-        data: result.rows[0],
-        msg: "Meata data create successfully",
-        statusCode: true,
-      });
+    return res.status(200).send({
+      data: result.rows[0],
+      msg: "Meata data create successfully",
+      statusCode: true,
+    });
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ error: `Error in Creating Metadata: ${error.message}`});
-
+    return res
+      .status(500)
+      .json({ error: `Error in Creating Metadata: ${error.message}` });
   }
 };

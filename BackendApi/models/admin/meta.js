@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         allowNull: false,
       },
-      product: {
+      Product: {
         type: DataTypes.STRING(60),
         allowNull: false,
         references: {
@@ -22,27 +22,27 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING(60),
         allowNull: false,
       },
-      category: {
+      Category: {
         type: DataTypes.STRING(40),
         allowNull: false,
       },
-      geography: {
+      Geography: {
         type: DataTypes.STRING(80),
         allowNull: false,
       },
-      frequency: {
+      Frequency: {
         type: DataTypes.STRING(40),
         allowNull: false,
       },
-      timePeriod: {
+      TimePeriod: {
         type: DataTypes.STRING(40),
         allowNull: false,
       },
-      dataSource: {
+      DataSource: {
         type: DataTypes.STRING(300),
         allowNull: false,
       },
-      description: {
+      Description: {
         type: DataTypes.STRING(800),
         allowNull: false,
       },
@@ -50,15 +50,15 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.DATE,
         allowNull: false,
       },
-      futureRelease: {
+      FutureRelease: {
         type: DataTypes.STRING(40),
         allowNull: false,
       },
-      basePeriod: {
+      BasePeriod: {
         type: DataTypes.STRING(60),
         allowNull: false,
       },
-      keystatistics: {
+      Keystatistics: {
         type: DataTypes.STRING(300),
         allowNull: false,
       },

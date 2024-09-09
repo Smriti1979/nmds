@@ -9,7 +9,7 @@ CREATE TABLE product IF NOT EXISTS(
     tooltip varchar(80) NOT NULL,
     type varchar(80) NOT NULL,
     url varchar(80) NOT NULL,
-    tables varchar(80) NOT NULL,
+    table varchar(80) NOT NULL,
     swagger BOOLEAN NOT NULL,
     viz varchar(80) NOT NULL,
     PRIMARY KEY (id),

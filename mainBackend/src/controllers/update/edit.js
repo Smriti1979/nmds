@@ -12,7 +12,7 @@ export const updateProduct = async (req, res) => {
     tooltip,
     type,
     url,
-    tables,
+    table,
     swagger,
     viz,
     category,
@@ -61,8 +61,8 @@ export const updateProduct = async (req, res) => {
 
           if (categoryExistsResult.rows.length === 0) {
             return res
-            .status(404)
-            .json({ error: `Category '${cat}' not found in Theme table` });
+              .status(404)
+              .json({ error: `Category '${cat}' not found in Theme table` });
           }
           const productThemeQuery = `INSERT INTO ProductTheme(productId, category) VALUES($1, $2)`;
           await pool.query(productThemeQuery, [id, cat]);
@@ -73,9 +73,8 @@ export const updateProduct = async (req, res) => {
       const productResult = await pool.query(getQuery, [id]);
       if (productResult.rows.length === 0) {
         return res
-        .status(404)
-        .json({ error: `Unable to fetch data from ProductTable` });
-
+          .status(404)
+          .json({ error: `Unable to fetch data from ProductTable` });
       }
 
       const getQueryCategory = `SELECT category FROM ProductTheme WHERE productId = $1`;
@@ -90,7 +89,6 @@ export const updateProduct = async (req, res) => {
         msg: "Product updated successfully",
         statusCode: true,
       });
-
     }
     await pool.query("BEGIN");
 
@@ -103,7 +101,7 @@ export const updateProduct = async (req, res) => {
         tooltip = $5, 
         type = $6, 
         url = $7, 
-        tables = $8, 
+        table = $8, 
         swagger = $9, 
         viz = $10 
         WHERE id = $11`;
@@ -116,7 +114,7 @@ export const updateProduct = async (req, res) => {
       tooltip,
       type,
       url,
-      tables,
+      table,
       swagger,
       viz,
       id,
@@ -141,7 +139,9 @@ export const updateProduct = async (req, res) => {
         ]);
 
         if (categoryExistsResult.rows.length === 0) {
-          return res.status(404).json({ error: `Category '${cat}' not found in Theme table` });
+          return res
+            .status(404)
+            .json({ error: `Category '${cat}' not found in Theme table` });
         }
         const productThemeQuery = `INSERT INTO ProductTheme(productId, category) VALUES($1, $2)`;
         await pool.query(productThemeQuery, [id, cat]);
@@ -149,7 +149,7 @@ export const updateProduct = async (req, res) => {
     }
     await pool.query("COMMIT");
     return res.status(200).send({
-      data:   {
+      data: {
         id: id,
         title,
         count,
@@ -158,7 +158,7 @@ export const updateProduct = async (req, res) => {
         tooltip,
         type,
         url,
-        tables,
+        table,
         swagger,
         viz,
         category: categories,
@@ -170,14 +170,10 @@ export const updateProduct = async (req, res) => {
     await pool.query("ROLLBACK");
     console.error(error);
     return res
-    .status(500)
-    .json({ error: `Error in Updating Product ${error.message}` });
+      .status(500)
+      .json({ error: `Error in Updating Product ${error.message}` });
   }
 };
-
-
-
-
 
 export const updateTheme = async (req, res) => {
   const { category } = req.params;
@@ -187,19 +183,22 @@ export const updateTheme = async (req, res) => {
   }
   if (category == null || category == undefined || category == "") {
     return res.status(402).json({ error: `Category is undefined` });
-
   }
   try {
     const user = req.user;
     if (!user.developer) {
-      return res.status(402).json({ error: `Only developer can edit the theme` });
+      return res
+        .status(402)
+        .json({ error: `Only developer can edit the theme` });
     }
     const updateQuery = `UPDATE Theme SET name=$1 `;
     await pool.query(updateQuery, [name]);
     const getQuery = `SELECT * FROM Theme where category=$1`;
     const data = await pool.query(getQuery, [category]);
     if (data.rows.length == 0) {
-      return res.status(402).json({ error: `Unable to fetch data from Theme Table` });
+      return res
+        .status(402)
+        .json({ error: `Unable to fetch data from Theme Table` });
     }
     return res.status(200).send({
       data: data.rows[0],
@@ -210,13 +209,10 @@ export const updateTheme = async (req, res) => {
     await pool.query("ROLLBACK");
     console.error(error);
     return res
-    .status(500)
-    .json({ error: `Error in Updating Theme data: ${error.message}` });
+      .status(500)
+      .json({ error: `Error in Updating Theme data: ${error.message}` });
   }
 };
-
-
-
 
 export const updatedMetadata = async (req, res) => {
   const { Product } = req.params;
@@ -255,8 +251,7 @@ export const updatedMetadata = async (req, res) => {
     ].some((item) => item == null || item == undefined || item.trim() === "")
   ) {
     return res.status(403).json({
-      error: ` title,category,geography,frequency,timePeriod,dataSource,description,lastUpdateDate,futureRelease,basePeriod,keystatistics,NMDS,nmdslink,remarks ALL ARE REQUIRED`
-      ,
+      error: ` title,category,geography,frequency,timePeriod,dataSource,description,lastUpdateDate,futureRelease,basePeriod,keystatistics,NMDS,nmdslink,remarks ALL ARE REQUIRED`,
     });
   }
   try {
@@ -301,7 +296,6 @@ export const updatedMetadata = async (req, res) => {
         return res.status(404).json({
           error: `MetaData not found for the given product`,
         });
-
       }
 
       const updatedResult = await pool.query(
@@ -313,7 +307,6 @@ export const updatedMetadata = async (req, res) => {
         msg: "MetaData updated successfully",
         statusCode: true,
       });
-
     }
     // Update MetaData record
     const metaQuery = `
@@ -356,7 +349,6 @@ export const updatedMetadata = async (req, res) => {
       return res.status(403).json({
         error: `MetaData not found for the given product`,
       });
-     
     }
 
     const updatedResult = await pool.query(
@@ -364,15 +356,15 @@ export const updatedMetadata = async (req, res) => {
       [Product]
     );
 
-      return res.status(200).send({
-        data: updatedResult.rows[0],
-        msg: "Meta data",
-        statusCode: true,
-      });
+    return res.status(200).send({
+      data: updatedResult.rows[0],
+      msg: "Meta data",
+      statusCode: true,
+    });
   } catch (error) {
     console.log(error);
     return res
-    .status(500)
-    .json({ error: `Error in Updating MetaData: ${error.message}` });
+      .status(500)
+      .json({ error: `Error in Updating MetaData: ${error.message}` });
   }
 };

@@ -20,7 +20,6 @@ const {
   deleteMetadatadb,
   createMetadatadb,
 } = admindb;
-
 /**
  * Sign In
  */
@@ -75,7 +74,7 @@ const createProduct = async (req, res) => {
     tooltip,
     type,
     url,
-    tables,
+    table,
     swagger,
     viz,
     category,
@@ -96,7 +95,7 @@ const createProduct = async (req, res) => {
       tooltip,
       type,
       url,
-      tables,
+      table,
       swagger,
       viz,
       category,
@@ -116,7 +115,7 @@ const createProduct = async (req, res) => {
         tooltip,
         type,
         url,
-        tables,
+        table,
         swagger,
         viz,
         category: categories,
@@ -168,21 +167,21 @@ const createTheme = async (req, res) => {
  */
 const createMetadata = async (req, res) => {
   const {
-    product,
+    Product,
     title,
-    category,
-    geography,
-    frequency,
-    timePeriod,
-    dataSource,
-    description,
+    Category,
+    Geography,
+    Frequency,
+    TimePeriod,
+    DataSource,
+    Description,
     lastUpdateDate,
-    futureRelease,
-    basePeriod,
-    keystatistics,
+    FutureRelease,
+    BasePeriod,
+    Keystatistics,
     NMDS,
     nmdslink,
-    remarks,
+    remarks
   } = req.body;
   try {
     const user = req.user;
@@ -193,18 +192,18 @@ const createMetadata = async (req, res) => {
     }
 
     const result = await createMetadatadb(
-      product,
+      Product,
       title,
-      category,
-      geography,
-      frequency,
-      timePeriod,
-      dataSource,
-      description,
+      Category,
+      Geography,
+      Frequency,
+      TimePeriod,
+      DataSource,
+      Description,
       lastUpdateDate,
-      futureRelease,
-      basePeriod,
-      keystatistics,
+      FutureRelease,
+      BasePeriod,
+      Keystatistics,
       NMDS,
       nmdslink,
       remarks
@@ -256,12 +255,12 @@ const getProuduct = async (req, res) => {
  */
 
 const getMetaData = async (req, res) => {
-  const { product } = req.params;
-  if (product == undefined) {
+  const { Product } = req.params;
+  if (Product == undefined) {
     return res.status(400).json({ error: `productID is required` });
   }
   try {
-    const metadata = await getMetaDatadb(product);
+    const metadata = await getMetaDatadb(Product);
     if (metadata?.error == true) {
       throw metadata?.errorMessage;
     }
@@ -322,7 +321,7 @@ const updateProduct = async (req, res) => {
     tooltip,
     type,
     url,
-    tables,
+    table,
     swagger,
     viz,
     category,
@@ -361,7 +360,7 @@ const updateProduct = async (req, res) => {
       tooltip,
       type,
       url,
-      tables,
+      table,
       swagger,
       viz,
       category
@@ -428,107 +427,89 @@ const updateTheme = async (req, res) => {
  *
  */
 
+
 const updatedMetadata = async (req, res) => {
-  const { product } = req.params;
+  const { Product } = req.params;
   const {
     title,
-    category,
-    geography,
-    frequency,
-    timePeriod,
-    dataSource,
-    description,
+    Category,
+    Geography,
+    Frequency,
+    TimePeriod,
+    DataSource,
+    Description,
     lastUpdateDate,
-    futureRelease,
-    basePeriod,
-    keystatistics,
+    FutureRelease,
+    BasePeriod,
+    Keystatistics,
     NMDS,
     nmdslink,
     remarks,
   } = req.body;
-  if (
-    [
-      title,
-      category,
-      geography,
-      frequency,
-      timePeriod,
-      dataSource,
-      description,
-      lastUpdateDate,
-      futureRelease,
-      basePeriod,
-      keystatistics,
-      NMDS,
-      nmdslink,
-      remarks,
-    ].some((item) => item == null || item == undefined || item.trim() === "")
-  ) {
-    return res.status(400).json({ error: `All filed are required` });
-  }
+
   try {
     const user = req.user;
     if (!user.developer) {
       const result = await updateMetadataDomdb(
         title,
-        category,
-        geography,
-        frequency,
-        timePeriod,
-        dataSource,
-        description,
+        Category,
+        Geography,
+        Frequency,
+        TimePeriod,
+        DataSource,
+        Description,
         lastUpdateDate,
-        futureRelease,
-        basePeriod,
-        keystatistics,
+        FutureRelease,
+        BasePeriod,
+        Keystatistics,
         NMDS,
-
         remarks,
-        product
+        Product
       );
-      if (result?.error == true) {
+      if (result?.error === true) {
         throw result?.errorMessage;
       }
       return res.status(200).send({
         data: result,
-        msg: "metadata updated successfully",
+        msg: "Metadata updated successfully",
         statusCode: true,
       });
     }
     const result = await updateMetadataDevdb(
       title,
-      category,
-      geography,
-      frequency,
-      timePeriod,
-      dataSource,
-      description,
+      Category,
+      Geography,
+      Frequency,
+      TimePeriod,
+      DataSource,
+      Description,
       lastUpdateDate,
-      futureRelease,
-      basePeriod,
-      keystatistics,
+      FutureRelease,
+      BasePeriod,
+      Keystatistics,
       NMDS,
       nmdslink,
       remarks,
-      product
+      Product
     );
-    if (result?.error == true) {
+    if (result?.error === true) {
       throw result?.errorMessage;
     }
 
     return res.status(200).send({
       data: result,
-      msg: "metadata updated successfully",
+      msg: "Metadata updated successfully",
       statusCode: true,
     });
   } catch (error) {
     console.log(error);
-
     return res
       .status(500)
-      .json({ error: `Error in Updating metadata: ${error.message}` });
+      .json({ error: `Error in updating metadata: ${error.message}` });
   }
 };
+
+
 
 /**
  *
@@ -571,8 +552,8 @@ const deleteProduct = async (req, res) => {
  */
 
 const deleteMetadata = async (req, res) => {
-  const { product } = req.params;
-  if (product == null || product == undefined || product == "") {
+  const { Product } = req.params;
+  if (Product == null || Product == undefined || Product == "") {
     return res.status(400).json({ error: `product not define ` });
   }
   const user = req.user;
@@ -580,7 +561,7 @@ const deleteMetadata = async (req, res) => {
     return res.status(400).json({ error: `Only developer can delete` });
   }
   try {
-    const result = await deleteMetadatadb(product);
+    const result = await deleteMetadatadb(Product);
     if (result?.error == true) {
       throw result?.errorMessage;
     }

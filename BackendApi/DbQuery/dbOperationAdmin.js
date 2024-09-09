@@ -24,9 +24,9 @@ async function EmailValidation(email) {
 }
 
 /***
- * 
+ *
  * --------Create Product--------------
- * 
+ *
  */
 
 async function createProductdb(
@@ -38,7 +38,7 @@ async function createProductdb(
   tooltip,
   type,
   url,
-  tables,
+  table,
   swagger,
   viz,
   category
@@ -46,7 +46,7 @@ async function createProductdb(
   try {
     await pooladmin.query("BEGIN");
 
-    const productQuery = `INSERT INTO product(id, title, count, icon, period, tooltip, type, url, tables, swagger, viz) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`;
+    const productQuery = `INSERT INTO product(id, title, count, icon, period, tooltip, type, url, "table", swagger, viz) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`;
     await pooladmin.query(productQuery, [
       id,
       title,
@@ -56,7 +56,7 @@ async function createProductdb(
       tooltip,
       type,
       url,
-      tables,
+      table,
       swagger,
       viz,
     ]);
@@ -124,46 +124,46 @@ async function createThemedb(category, name) {
  * Metadata
  */
 async function createMetadatadb(
-  product,
+  Product,
   title,
-  category,
-  geography,
-  frequency,
-  timePeriod,
-  dataSource,
-  description,
+  Category,
+  Geography,
+  Frequency,
+  TimePeriod,
+  DataSource,
+  Description,
   lastUpdateDate,
-  futureRelease,
-  basePeriod,
-  keystatistics,
+  FutureRelease,
+  BasePeriod,
+  Keystatistics,
   NMDS,
   nmdslink,
   remarks
 ) {
   try {
     // const metaQuery = `INSERT INTO metadata(product,title,category,geography,frequency,timePeriod,dataSource,description,lastUpdateDate,futureRelease,basePeriod,keystatistics,NMDS,nmdslink,remarks) values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)`;
-    const metaQuery = `INSERT INTO metadata(product,title,category,geography,frequency,"timePeriod","dataSource",description,"lastUpdateDate","futureRelease","basePeriod",keystatistics,"NMDS",nmdslink,remarks) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)`;
+    const metaQuery = `INSERT INTO metadata("Product",title,"Category","Geography","Frequency","TimePeriod","DataSource","Description","lastUpdateDate","FutureRelease","BasePeriod","Keystatistics","NMDS",nmdslink,remarks) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)`;
 
     await pooladmin.query(metaQuery, [
-      product,
+      Product,
       title,
-      category,
-      geography,
-      frequency,
-      timePeriod,
-      dataSource,
-      description,
+      Category,
+      Geography,
+      Frequency,
+      TimePeriod,
+      DataSource,
+      Description,
       lastUpdateDate,
-      futureRelease,
-      basePeriod,
-      keystatistics,
+      FutureRelease,
+      BasePeriod,
+      Keystatistics,
       NMDS,
       nmdslink,
       remarks,
     ]);
     const result = await pooladmin.query(
-      `SELECT * FROM metadata where product=$1`,
-      [product]
+      `SELECT * FROM metadata where "Product"=$1`,
+      [Product]
     );
     if (result.rows.length == 0) {
       return {
@@ -212,9 +212,9 @@ async function getProuductdb(productId) {
  * -----------Get MetaData------------
  */
 
-async function getMetaDatadb(product) {
-  const getQuery = `SELECT * FROM  metadata where product=$1`;
-  const data = await pooladmin.query(getQuery, [product]);
+async function getMetaDatadb(Product) {
+  const getQuery = `SELECT * FROM  metadata where "Product"=$1`;
+  const data = await pooladmin.query(getQuery, [Product]);
   if (data.rows.length == 0) {
     return {
       error: true,
@@ -352,7 +352,7 @@ async function updateProductDevdb(
   tooltip,
   type,
   url,
-  tables,
+  table,
   swagger,
   viz,
   category
@@ -369,7 +369,7 @@ async function updateProductDevdb(
             tooltip = $5, 
             type = $6, 
             url = $7, 
-            tables = $8, 
+            "table" = $8, 
             swagger = $9, 
             viz = $10 
             WHERE id = $11`;
@@ -382,7 +382,7 @@ async function updateProductDevdb(
       tooltip,
       type,
       url,
-      tables,
+      table,
       swagger,
       viz,
       id,
@@ -442,9 +442,9 @@ async function updateProductDevdb(
 }
 
 /**
- * 
- * ---------Update Theme 
- * 
+ *
+ * ---------Update Theme
+ *
  */
 
 async function updateThemedb(name, category) {
@@ -463,160 +463,157 @@ async function updateThemedb(name, category) {
 }
 
 /*
-*
-*---------Update Metadata Domain------------
-*
-*/
-
-async function updateMetadataDomdb(
+ *
+ *---------Update Metadata Domain------------
+ *
+ */
+ async function updateMetadataDomdb(
   title,
-  category,
-  geography,
-  frequency,
-  timePeriod,
-  dataSource,
-  description,
+  Category,
+  Geography,
+  Frequency,
+  TimePeriod,
+  DataSource,
+  Description,
   lastUpdateDate,
-  futureRelease,
-  basePeriod,
-  keystatistics,
+  FutureRelease,
+  BasePeriod,
+  Keystatistics,
   NMDS,
-
   remarks,
-  product
+  Product
 ) {
   const metaQuery = `
     UPDATE metadata
     SET title = $1,
-        category = $2,            
-        geography = $3,
-        frequency = $4,
-        "timePeriod" = $5,
-        "dataSource" = $6,
-        description = $7,
+        "Category" = $2,            
+        "Geography" = $3,
+        "Frequency" = $4,
+        "TimePeriod" = $5,
+        "DataSource" = $6,
+        "Description" = $7,
         "lastUpdateDate" = $8,
-        "futureRelease" = $9,
-        "basePeriod" = $10,
-        keystatistics = $11,
+        "FutureRelease" = $9,
+        "BasePeriod" = $10,
+        "Keystatistics" = $11,
         "NMDS" = $12,
         remarks = $13
-    WHERE product = $14
+    WHERE "Product" = $14
   `;
   const result = await pooladmin.query(metaQuery, [
     title,
-    category,
-    geography,
-    frequency,
-    timePeriod,
-    dataSource,
-    description,
+    Category,
+    Geography,
+    Frequency,
+    TimePeriod,
+    DataSource,
+    Description,
     lastUpdateDate,
-    futureRelease,
-    basePeriod,
-    keystatistics,
+    FutureRelease,
+    BasePeriod,
+    Keystatistics,
     NMDS,
-
     remarks,
-    product,
+    Product,
   ]);
 
   if (result.rowCount === 0) {
     return {
       error: true,
       errorCode: 402,
-      errorMessage: `metadata not found for the given product`,
+      errorMessage: `Metadata not found for the given product`,
     };
   }
 
   const updatedResult = await pooladmin.query(
-    `SELECT * FROM metadata WHERE product = $1`,
-    [product]
+    `SELECT * FROM metadata WHERE "Product" = $1`,
+    [Product]
   );
   return updatedResult.rows[0];
 }
 
 /**
- * 
+ *
  * -----------Update Metadata Developer-------------
- * 
+ *
  */
 
 async function updateMetadataDevdb(
   title,
-  category,
-  geography,
-  frequency,
-  timePeriod,
-  dataSource,
-  description,
+  Category,
+  Geography,
+  Frequency,
+  TimePeriod,
+  DataSource,
+  Description,
   lastUpdateDate,
-  futureRelease,
-  basePeriod,
-  keystatistics,
+  FutureRelease,
+  BasePeriod,
+  Keystatistics,
   NMDS,
   nmdslink,
   remarks,
-  product
+  Product
 ) {
-  // Update metadata record
   const metaQuery = `
        UPDATE metadata
        SET title = $1,
-           category = $2,            
-           geography = $3,
-           frequency = $4,
-           "timePeriod" = $5,
-           "dataSource" = $6,
-           description = $7,
+           "Category" = $2,            
+           "Geography" = $3,
+           "Frequency" = $4,
+           "TimePeriod" = $5,
+           "DataSource" = $6,
+           "Description" = $7,
            "lastUpdateDate" = $8,
-           "futureRelease" = $9,
-           "basePeriod" = $10,
-           keystatistics = $11,
+           "FutureRelease" = $9,
+           "BasePeriod" = $10,
+           "Keystatistics" = $11,
            "NMDS" = $12,
            nmdslink = $13,
            remarks = $14
-       WHERE product = $15
+       WHERE "Product" = $15
      `;
   const result = await pooladmin.query(metaQuery, [
     title,
-    category,
-    geography,
-    frequency,
-    timePeriod,
-    dataSource,
-    description,
+    Category,
+    Geography,
+    Frequency,
+    TimePeriod,
+    DataSource,
+    Description,
     lastUpdateDate,
-    futureRelease,
-    basePeriod,
-    keystatistics,
+    FutureRelease,
+    BasePeriod,
+    Keystatistics,
     NMDS,
     nmdslink,
     remarks,
-    product,
+    Product,
   ]);
 
   if (result.rowCount === 0) {
     return {
       error: true,
       errorCode: 402,
-      errorMessage: `no metadata to found`,
+      errorMessage: `No metadata found`,
     };
   }
 
   const updatedResult = await pooladmin.query(
-    `SELECT * FROM metadata WHERE product = $1`,
-    [product]
+    `SELECT * FROM metadata WHERE "Product" = $1`,
+    [Product]
   );
   return updatedResult.rows[0];
 }
+
 /***
- * 
+ *
  * -----------delete Product-----------
- * 
+ *
  */
 async function deleteProductdb(id) {
   const productQuery = `DELETE FROM product  WHERE id=$1;`;
-  const metaDataQuery = `DELETE FROM metadata  WHERE product=$1;`;
+  const metaDataQuery = `DELETE FROM metadata  WHERE "Product"=$1;`;
   const CategoryQuery = `DELETE FROM producttheme  WHERE "productId"=$1;`;
   await pooladmin.query(metaDataQuery, [id]);
   await pooladmin.query(CategoryQuery, [id]);
@@ -624,20 +621,20 @@ async function deleteProductdb(id) {
 }
 
 /***
- * 
+ *
  * ------Delete MetaData -------------
- * 
+ *
  */
 
-async function deleteMetadatadb(product) {
-  const metaDataQuery = `DELETE FROM metadata  WHERE product=$1;`;
-  await pooladmin.query(metaDataQuery, [product]);
+async function deleteMetadatadb(Product) {
+  const metaDataQuery = `DELETE FROM metadata  WHERE "Product"=$1;`;
+  await pooladmin.query(metaDataQuery, [Product]);
 }
 
 /***
- * 
+ *
  * ------Delete Theme -------------
- * 
+ *
  */
 async function deleteThemedb(category) {
   try {
@@ -683,7 +680,6 @@ async function deleteThemedb(category) {
     await pooladmin.query("ROLLBACK");
   }
 }
-
 
 module.exports = {
   EmailValidation,

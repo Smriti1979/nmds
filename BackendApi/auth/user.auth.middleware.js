@@ -1,7 +1,6 @@
 /** @format */
 const jwt = require("jsonwebtoken");
-const { Pool } = require('pg');
-
+const { Pool } = require("pg");
 
 // DB connection for ASI
 const poolauth = new Pool({
@@ -11,14 +10,14 @@ const poolauth = new Pool({
   password: process.env.DB_PASSWORD,
   port: process.env.DB_PORT, // Default PostgreSQL port
 });
- const verifyJWT =async (req, res, next) => {
+const verifyJWT = async (req, res, next) => {
   try {
     const token =
       req.cookies?.adminAccessToken ||
       (req.headers.authorization || "").replace("Bearer ", "");
 
     if (!token) {
-    return  res.status(400).json({ error: 'Unauthorized request' });
+      return res.status(400).json({ error: "Unauthorized request" });
     }
     const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
     const usersql = "SELECT * FROM AdminUsers WHERE ID=$1";
@@ -26,19 +25,19 @@ const poolauth = new Pool({
     const user = userDetail.rows[0];
 
     if (!user) {
-      return res.status(400).json({ error: 'Invalid admin Access Token' });
+      return res.status(400).json({ error: "Invalid admin Access Token" });
     }
-    
+
     const User = {
       email: user.email,
       id: user.id,
-      developer:user.developer
+      developer: user.developer,
     };
 
     req.user = User;
     next();
   } catch (error) {
-    res.status(500).json({ error: 'Invalid user' });
+    res.status(500).json({ error: "Invalid user" });
   }
 };
-module.exports ={verifyJWT}
+module.exports = { verifyJWT };

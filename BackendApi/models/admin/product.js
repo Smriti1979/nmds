@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
     "product",
     {
       id: {
-        type: DataTypes.STRING(20), 
+        type: DataTypes.STRING(20),
         allowNull: false,
         primaryKey: true,
       },
@@ -18,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       icon: {
-        type: DataTypes.STRING(100000), 
+        type: DataTypes.STRING(100000),
         allowNull: false,
       },
       period: {
@@ -37,7 +37,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING(180),
         allowNull: false,
       },
-      tables: {
+      table: {
         type: DataTypes.STRING(180),
         allowNull: false,
       },
