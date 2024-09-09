@@ -26,7 +26,7 @@ const poolauth = new Pool({
     const user = userDetail.rows[0];
 
     if (!user) {
-      res.status(400).json({ error: 'Invalid admin Access Token' });
+      return res.status(400).json({ error: 'Invalid admin Access Token' });
     }
     
     const User = {
