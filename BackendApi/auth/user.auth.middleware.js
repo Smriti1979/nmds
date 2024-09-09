@@ -18,7 +18,7 @@ const poolauth = new Pool({
       (req.headers.authorization || "").replace("Bearer ", "");
 
     if (!token) {
-      res.status(500).json({ error: 'Unauthorized request' });
+    return  res.status(400).json({ error: 'Unauthorized request' });
     }
     const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
     const usersql = "SELECT * FROM AdminUsers WHERE ID=$1";
