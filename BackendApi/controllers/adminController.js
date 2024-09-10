@@ -7,9 +7,10 @@ const {
   EmailValidation,
   createProductdb,
   createThemedb,
-  getProuductdb,
-  getMetaDatadb,
-  getThemedb,
+  getProductByIddb,
+  getProuduct,
+  getMetaDataByIddb,
+  getThemeByIddb,
   updateProductDevdb,
   updateProductDomdb,
   updateThemedb,
@@ -18,7 +19,9 @@ const {
   updateMetadataDevdb,
   deleteProductdb,
   deleteMetadatadb,
+  getThemedb,
   createMetadatadb,
+  getMetaDatadb,
 } = admindb;
 /**
  * Sign In
@@ -181,7 +184,7 @@ const createMetadata = async (req, res) => {
     Keystatistics,
     NMDS,
     nmdslink,
-    remarks
+    remarks,
   } = req.body;
   try {
     const user = req.user;
@@ -226,14 +229,32 @@ const createMetadata = async (req, res) => {
 /*
 Get product 
 */
-const getProuduct = async (req, res) => {
+const getProductById = async (req, res) => {
   const { productId } = req.params;
   if (!productId) {
     return res.status(400).json({ error: `productID is required` });
   }
   try {
-    const product = await getProuductdb(productId);
+    const product = await getProductByIddb(productId);
 
+    if (product?.error == true) {
+      throw product?.errorMessage;
+    }
+    return res.status(200).send({
+      data: product,
+      msg: "product data",
+      statusCode: true,
+    });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ error: `Unable to fetch data Error=${error}` });
+  }
+};
+const getProduct = async (req, res) => {
+  try {
+    const product = await getProuduct();
     if (product?.error == true) {
       throw product?.errorMessage;
     }
@@ -253,14 +274,32 @@ const getProuduct = async (req, res) => {
 /**
  * metadata
  */
-
 const getMetaData = async (req, res) => {
+  try {
+    const metadata = await getMetaDatadb();
+    if (metadata?.error == true) {
+      throw metadata?.errorMessage;
+    }
+    return res.status(200).send({
+      data: metadata,
+      msg: "product data",
+      statusCode: true,
+    });
+  } catch (error) {
+    console.log(error);
+
+    return res
+      .status(500)
+      .json({ error: `Unable to fetch data Error=${error}` });
+  }
+};
+const getMetaDataById = async (req, res) => {
   const { Product } = req.params;
   if (Product == undefined) {
     return res.status(400).json({ error: `productID is required` });
   }
   try {
-    const metadata = await getMetaDatadb(Product);
+    const metadata = await getMetaDataByIddb(Product);
     if (metadata?.error == true) {
       throw metadata?.errorMessage;
     }
@@ -283,12 +322,30 @@ const getMetaData = async (req, res) => {
  *
  */
 const getTheme = async (req, res) => {
+  try {
+    const theme = await getThemedb();
+
+    if (theme?.error == true) {
+      throw theme?.errorMessage;
+    }
+
+    return res.status(200).send({
+      data: theme,
+      msg: "theme data",
+      statusCode: true,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: `Unable to get theme ${error}` });
+  }
+};
+const getThemeById = async (req, res) => {
   const { category } = req.params;
   if (category == undefined) {
     return res.status(400).json({ error: `category is required` });
   }
   try {
-    const theme = await getThemedb(category);
+    const theme = await getThemeByIddb(category);
 
     if (theme?.error == true) {
       throw theme?.errorMessage;
@@ -427,7 +484,6 @@ const updateTheme = async (req, res) => {
  *
  */
 
-
 const updatedMetadata = async (req, res) => {
   const { Product } = req.params;
   const {
@@ -508,8 +564,6 @@ const updatedMetadata = async (req, res) => {
       .json({ error: `Error in updating metadata: ${error.message}` });
   }
 };
-
-
 
 /**
  *
@@ -612,17 +666,20 @@ const deleteTheme = async (req, res) => {
 };
 
 module.exports = {
-  getMetaData,
-  getTheme,
+  getMetaDataById,
+  getThemeById,
   updateProduct,
   updateTheme,
   updatedMetadata,
   deleteProduct,
   deleteMetadata,
   deleteTheme,
-  getProuduct,
+  getProductById,
   createMetadata,
   createTheme,
   createProduct,
   signInAdmin,
+  getTheme,
+  getProduct,
+  getMetaData,
 };

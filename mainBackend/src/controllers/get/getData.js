@@ -2,11 +2,9 @@
 
 import { pool } from "../../db/index.js";
 
-
-
-export const getProuduct = async (req, res) => {
+export const getProuductById = async (req, res) => {
   const { productId } = req.params;
-  if (!productId) { 
+  if (!productId) {
     return res.status(400).json({
       error: "productID is required",
     });
@@ -23,8 +21,8 @@ export const getProuduct = async (req, res) => {
     const getQueryCategory = `SELECT category FROM ProductTheme WHERE productId = $1`;
     const categoriesResult = await pool.query(getQueryCategory, [productId]);
     const product = productResult.rows[0];
-    const categories = categoriesResult.rows.map(row => row.category);
-    product['category'] = categories;
+    const categories = categoriesResult.rows.map((row) => row.category);
+    product["category"] = categories;
     return res.status(200).send({
       data: product,
       msg: "Product data",
@@ -33,22 +31,17 @@ export const getProuduct = async (req, res) => {
   } catch (error) {
     console.error(error);
     return res
-    .status(500)
-    .json({ error: `Unable to fetch data Error=${error.message}` });
-
+      .status(500)
+      .json({ error: `Unable to fetch data Error=${error.message}` });
   }
 };
 
-
-
-
-export const getMetaData = async (req, res) => {
-  const {Product} = req.params;
+export const getMetaDataById = async (req, res) => {
+  const { Product } = req.params;
   if (Product == undefined) {
     return res.status(400).json({
       error: "productID is required",
     });
-
   }
   try {
     const getQuery = `SELECT * FROM  MetaData where product=$1`;
@@ -67,16 +60,13 @@ export const getMetaData = async (req, res) => {
   } catch (error) {
     console.log(error);
     return res
-    .status(500)
-    .json({ error: `Unable to fetch data Error ${error}` });
-
+      .status(500)
+      .json({ error: `Unable to fetch data Error ${error}` });
   }
 };
 
-
-
-export const getTheme = async (req, res) => {
-  const {category} = req.params;
+export const getThemeById = async (req, res) => {
+  const { category } = req.params;
   if (category == undefined) {
     return res.status(400).json({
       error: "category is required",
@@ -97,8 +87,6 @@ export const getTheme = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    return res
-    .status(500)
-    .json({ error: `Unable to get theme ${error}` });
+    return res.status(500).json({ error: `Unable to get theme ${error}` });
   }
 };

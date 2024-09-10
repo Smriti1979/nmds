@@ -13,37 +13,38 @@ module.exports = (sequelize, DataTypes) => {
       Product: {
         type: DataTypes.STRING(60),
         allowNull: false,
+        unique: true,
         references: {
           model: "product",
           key: "id",
         },
       },
       title: {
-        type: DataTypes.STRING(60),
+        type: DataTypes.STRING(160),
         allowNull: false,
       },
       Category: {
-        type: DataTypes.STRING(40),
+        type: DataTypes.STRING(140),
         allowNull: false,
       },
       Geography: {
-        type: DataTypes.STRING(80),
+        type: DataTypes.STRING(180),
         allowNull: false,
       },
       Frequency: {
-        type: DataTypes.STRING(40),
+        type: DataTypes.STRING(140),
         allowNull: false,
       },
       TimePeriod: {
-        type: DataTypes.STRING(40),
+        type: DataTypes.STRING(100),
         allowNull: false,
       },
       DataSource: {
-        type: DataTypes.STRING(300),
+        type: DataTypes.STRING(600),
         allowNull: false,
       },
       Description: {
-        type: DataTypes.STRING(800),
+        type: DataTypes.STRING(3800),
         allowNull: false,
       },
       lastUpdateDate: {
@@ -51,19 +52,19 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       FutureRelease: {
-        type: DataTypes.STRING(40),
+        type: DataTypes.STRING(140),
         allowNull: false,
       },
       BasePeriod: {
-        type: DataTypes.STRING(60),
+        type: DataTypes.STRING(160),
         allowNull: false,
       },
       Keystatistics: {
-        type: DataTypes.STRING(300),
+        type: DataTypes.STRING(800),
         allowNull: false,
       },
       NMDS: {
-        type: DataTypes.STRING(300),
+        type: DataTypes.STRING(800),
         allowNull: false,
       },
       nmdslink: {
@@ -72,7 +73,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       remarks: {
         type: DataTypes.STRING(200),
-        allowNull: false,
+        allowNull:true
       },
     },
     {

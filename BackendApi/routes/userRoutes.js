@@ -52,15 +52,18 @@ const {
   createProduct,
   createTheme,
   createMetadata,
-  getProuduct,
-  getMetaData,
-  getTheme,
+  getProductById,
+  getMetaDataById,
+  getThemeById,
   updateProduct,
   updateTheme,
   updatedMetadata,
   deleteProduct,
   deleteMetadata,
   deleteTheme,
+  getTheme,
+  getMetaData,
+  getProduct
 } = adminController;
 const router = express.Router();
 
@@ -108,17 +111,20 @@ router.get("/nas/getNASData", getNASData);
 
 router.route("/signin").post(signInAdmin);
 router.route("/admin/product").post(verifyJWT, createProduct);
-router.route("/admin/product/:productId").get(verifyJWT, getProuduct);
+router.route("/admin/product/:productId").get(verifyJWT, getProductById);
+router.route("/admin/product").get(verifyJWT, getProduct);
 router.route("/admin/product/:id").patch(verifyJWT, updateProduct);
 router.route("/admin/product/:id").delete(verifyJWT, deleteProduct);
 
 router.route("/admin/theme").post(verifyJWT, createTheme);
-router.route("/admin/theme/:category").get(verifyJWT, getTheme);
+router.route("/admin/theme/:category").get(verifyJWT, getThemeById);
+router.route("/admin/theme").get(verifyJWT, getTheme);
 router.route("/admin/theme/:category").patch(verifyJWT, updateTheme);
 router.route("/admin/theme/:category").delete(verifyJWT, deleteTheme);
 
 router.route("/admin/metadata").post(verifyJWT, createMetadata);
-router.route("/admin/metadata/:Product").get(verifyJWT, getMetaData);
+router.route("/admin/metadata/:Product").get(verifyJWT, getMetaDataById);
+router.route("/admin/metadata").get(verifyJWT, getMetaData);
 router.route("/admin/metadata/:Product").patch(verifyJWT, updatedMetadata);
 router.route("/admin/metadata/:Product").delete(verifyJWT, deleteMetadata);
 

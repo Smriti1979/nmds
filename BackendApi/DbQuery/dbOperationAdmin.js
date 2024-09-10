@@ -187,32 +187,79 @@ async function createMetadatadb(
  * -----------Get product ------------
  *
  */
-
-async function getProuductdb(productId) {
-  const getQuery = `SELECT * FROM product WHERE id = $1`;
-  const productResult = await pooladmin.query(getQuery, [productId]);
-  console.log(productId);
-  console.log(productResult);
-  if (productResult.rows.length === 0) {
+async function getProuduct() {
+  try {
+    const getQuery = `SELECT * FROM product`;
+    const productResult = await pooladmin.query(getQuery);
+    if (productResult.rows.length === 0) {
+      return {
+        error: true,
+        errorCode: 400,
+        errorMessage: `Unable to fetch data from ProductTable`,
+      };
+    }
+    return productResult.rows;
+  } catch (error) {
     return {
       error: true,
       errorCode: 400,
-      errorMessage: `Unable to fetch data from ProductTable`,
+      errorMessage: `Unable to fetch data from ProductTable=${error}`,
     };
   }
-  const getQueryCategory = `SELECT category FROM producttheme WHERE "productId" = $1`;
-  const categoriesResult = await pooladmin.query(getQueryCategory, [productId]);
-  const product = productResult.rows[0];
-  const categories = categoriesResult.rows.map((row) => row.category);
-  product["category"] = categories;
-  return product;
+}
+
+async function getProductByIddb(productId) {
+  try {
+    const getQuery = `SELECT * FROM product WHERE id = $1`;
+    const productResult = await pooladmin.query(getQuery, [productId]);
+    if (productResult.rows.length === 0) {
+      return {
+        error: true,
+        errorCode: 400,
+        errorMessage: `Unable to fetch data from ProductTable`,
+      };
+    }
+    const getQueryCategory = `SELECT category FROM producttheme WHERE "productId" = $1`;
+    const categoriesResult = await pooladmin.query(getQueryCategory, [
+      productId,
+    ]);
+    const product = productResult.rows[0];
+    const categories = categoriesResult.rows.map((row) => row.category);
+    product["category"] = categories;
+    return product;
+  } catch (error) {
+    return {
+      error: true,
+      errorCode: 400,
+      errorMessage: `Unable to fetch data from ProductTable=${error}`,
+    };
+  }
 }
 
 /*
  * -----------Get MetaData------------
  */
-
-async function getMetaDatadb(Product) {
+async function getMetaDatadb() {
+  try {
+    const getQuery = `SELECT * FROM  metadata `;
+    const data = await pooladmin.query(getQuery);
+    if (data.rows.length == 0) {
+      return {
+        error: true,
+        errorCode: 402,
+        errorMessage: `Unable to fetch data from metaTable`,
+      };
+    }
+    return data.rows;
+  } catch (error) {
+    return {
+      error: true,
+      errorCode: 402,
+      errorMessage: `Unable to fetch data from metaTable=${error}`,
+    };
+  }
+}
+async function getMetaDataByIddb(Product) {
   const getQuery = `SELECT * FROM  metadata where "Product"=$1`;
   const data = await pooladmin.query(getQuery, [Product]);
   if (data.rows.length == 0) {
@@ -230,8 +277,28 @@ async function getMetaDatadb(Product) {
  * ---------------Get Theme--------------
  *
  */
+async function getThemedb() {
+  try {
+    const getQuery = `SELECT * FROM theme `;
+    const data = await pooladmin.query(getQuery);
+    if (data.rows.length == 0) {
+      return {
+        error: true,
+        errorCode: 402,
+        errorMessage: `Unable to fetch data from theme Table`,
+      };
+    }
+    return data.rows;
+  } catch (error) {
+    return {
+      error: true,
+      errorCode: 402,
+      errorMessage: `Unable to fetch data from theme=${error}`,
+    };
+  }
+}
 
-async function getThemedb(category) {
+async function getThemeByIddb(category) {
   const getQuery = `SELECT * FROM theme where category=$1`;
   const data = await pooladmin.query(getQuery, [category]);
   if (data.rows.length == 0) {
@@ -467,7 +534,7 @@ async function updateThemedb(name, category) {
  *---------Update Metadata Domain------------
  *
  */
- async function updateMetadataDomdb(
+async function updateMetadataDomdb(
   title,
   Category,
   Geography,
@@ -691,10 +758,13 @@ module.exports = {
   updateThemedb,
   updateProductDevdb,
   updateProductDomdb,
-  getThemedb,
-  getMetaDatadb,
-  getProuductdb,
+  getThemeByIddb,
+  getMetaDataByIddb,
+  getProductByIddb,
   createMetadatadb,
   createThemedb,
   createProductdb,
+  getMetaDatadb,
+  getThemedb,
+  getProuduct,
 };
