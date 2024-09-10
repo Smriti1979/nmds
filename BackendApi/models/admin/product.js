@@ -5,40 +5,40 @@ module.exports = (sequelize, DataTypes) => {
     "product",
     {
       id: {
-        type: DataTypes.STRING(20),
+        type: DataTypes.TEXT,
         allowNull: false,
         primaryKey: true,
       },
       title: {
-        type: DataTypes.STRING(180),
+        type: DataTypes.TEXT,
         allowNull: false,
       },
       count: {
-        type: DataTypes.STRING(180),
+        type: DataTypes.TEXT,
         allowNull: false,
       },
       icon: {
-        type: DataTypes.STRING(100000),
+        type: DataTypes.TEXT,
         allowNull: false,
       },
       period: {
-        type: DataTypes.STRING(180),
+        type: DataTypes.TEXT,
         allowNull: false,
       },
       tooltip: {
-        type: DataTypes.STRING(180),
+        type: DataTypes.TEXT,
         allowNull: false,
       },
       type: {
-        type: DataTypes.STRING(180),
+        type: DataTypes.TEXT,
         allowNull: false,
       },
       url: {
-        type: DataTypes.STRING(180),
+        type: DataTypes.TEXT,
         allowNull: false,
       },
       table: {
-        type: DataTypes.STRING(180),
+        type: DataTypes.TEXT,
         allowNull: false,
       },
       swagger: {
@@ -46,7 +46,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       viz: {
-        type: DataTypes.STRING(180),
+        type: DataTypes.TEXT,
         allowNull: false,
       },
     },

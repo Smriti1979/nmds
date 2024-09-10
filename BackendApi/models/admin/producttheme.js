@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
     "productTheme",
     {
       productId: {
-        type: DataTypes.STRING(20), 
+        type: DataTypes.TEXT, 
         allowNull: false,
         references: {
           model: "product",
@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
       category: {
-        type: DataTypes.STRING(20), 
+        type: DataTypes.TEXT, 
         allowNull: false,
         references: {
           model: "theme",

@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       Product: {
-        type: DataTypes.STRING(60),
+        type: DataTypes.TEXT,
         allowNull: false,
         unique: true,
         references: {
@@ -20,31 +20,31 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
       title: {
-        type: DataTypes.STRING(160),
+        type: DataTypes.TEXT,
         allowNull: false,
       },
       Category: {
-        type: DataTypes.STRING(140),
+        type: DataTypes.TEXT,
         allowNull: false,
       },
       Geography: {
-        type: DataTypes.STRING(180),
+        type: DataTypes.TEXT,
         allowNull: false,
       },
       Frequency: {
-        type: DataTypes.STRING(140),
+        type: DataTypes.TEXT,
         allowNull: false,
       },
       TimePeriod: {
-        type: DataTypes.STRING(100),
+        type: DataTypes.TEXT,
         allowNull: false,
       },
       DataSource: {
-        type: DataTypes.STRING(600),
+        type: DataTypes.TEXT,
         allowNull: false,
       },
       Description: {
-        type: DataTypes.STRING(3800),
+        type: DataTypes.TEXT,
         allowNull: false,
       },
       lastUpdateDate: {
@@ -52,27 +52,27 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       FutureRelease: {
-        type: DataTypes.STRING(140),
+        type: DataTypes.TEXT,
         allowNull: false,
       },
       BasePeriod: {
-        type: DataTypes.STRING(160),
+        type: DataTypes.TEXT,
         allowNull: false,
       },
       Keystatistics: {
-        type: DataTypes.STRING(800),
+        type: DataTypes.TEXT,
         allowNull: false,
       },
       NMDS: {
-        type: DataTypes.STRING(800),
+        type: DataTypes.TEXT,
         allowNull: false,
       },
       nmdslink: {
-        type: DataTypes.STRING(300),
+        type: DataTypes.TEXT,
         allowNull: false,
       },
       remarks: {
-        type: DataTypes.STRING(200),
+        type: DataTypes.TEXT,
         allowNull:true
       },
     },
