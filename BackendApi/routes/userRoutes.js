@@ -73,7 +73,7 @@ app.use(express.json());
 
 router.get("/users", getUser);
 router.get("/users/getAllLog", getAllLog);
-router.get("/users/:email", updateUser);
+router.get("/users/:username", updateUser);
 router.post("/users/usersignup", signup);
 router.post("/users/login", login);
 
@@ -113,19 +113,19 @@ router.route("/signin").post(signInAdmin);
 router.route("/admin/product").post(verifyJWT, createProduct);
 router.route("/admin/product/:productId").get(verifyJWT, getProductById);
 router.route("/admin/product").get(verifyJWT, getProduct);
-router.route("/admin/product/:id").patch(verifyJWT, updateProduct);
+router.route("/admin/product/:id").put(verifyJWT, updateProduct);
 router.route("/admin/product/:id").delete(verifyJWT, deleteProduct);
 
 router.route("/admin/theme").post(verifyJWT, createTheme);
 router.route("/admin/theme/:category").get(verifyJWT, getThemeById);
 router.route("/admin/theme").get(verifyJWT, getTheme);
-router.route("/admin/theme/:category").patch(verifyJWT, updateTheme);
+router.route("/admin/theme/:category").put(verifyJWT, updateTheme);
 router.route("/admin/theme/:category").delete(verifyJWT, deleteTheme);
 
 router.route("/admin/metadata").post(verifyJWT, createMetadata);
 router.route("/admin/metadata/:Product").get(verifyJWT, getMetaDataById);
 router.route("/admin/metadata").get(verifyJWT, getMetaData);
-router.route("/admin/metadata/:Product").patch(verifyJWT, updatedMetadata);
+router.route("/admin/metadata/:Product").put(verifyJWT, updatedMetadata);
 router.route("/admin/metadata/:Product").delete(verifyJWT, deleteMetadata);
 
 module.exports = router;

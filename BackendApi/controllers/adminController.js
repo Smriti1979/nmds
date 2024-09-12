@@ -28,9 +28,9 @@ const {
  * Sign In
  */
 const signInAdmin = async (req, res) => {
-  const { email, password } = req.body;
+  const { username, password } = req.body;
   try {
-    const UserssDetail = await EmailValidation(email);
+    const UserssDetail = await EmailValidation(username);
     if (UserssDetail?.error == true) {
       return res.status(403).json({ error: `User does not exist` });
     }
@@ -43,7 +43,7 @@ const signInAdmin = async (req, res) => {
     }
 
     const adminAccessToken = generateAccessToken({
-      email: email,
+      username: username,
       id: UserssDetail.id,
     });
     const cookieOptions = {
@@ -55,7 +55,7 @@ const signInAdmin = async (req, res) => {
     res.cookie("adminAccessToken", adminAccessToken, cookieOptions);
     return res.status(200).send({
       data: {
-        eamil: email,
+        eamil: username,
       },
       msg: "UserVerfied",
       statusCode: true,

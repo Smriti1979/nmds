@@ -70,7 +70,7 @@ app.use(express.json());
 
 router.get("/users", getUser);
 router.get("/users/getAllLog", getAllLog);
-router.get("/users/:email", updateUser);
+router.get("/users/:username", updateUser);
 router.post("/users/usersignup", signup);
 router.post("/users/login", login);
 

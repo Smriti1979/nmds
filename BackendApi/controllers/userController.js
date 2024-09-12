@@ -116,7 +116,7 @@ const signup = async (req, res) => {
         var isSpecialChar = helperUtils.checkValidEmail(data.username);
         if (isSpecialChar) {
         } else{
-            return res.status(403).send({ message: "In username please enter a valid email id.", statusCode: false });
+            return res.status(403).send({ message: "In username please enter a valid username id.", statusCode: false });
         }
 
         
@@ -284,7 +284,7 @@ const getUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
 
-    var updateItem = req.params.email;
+    var updateItem = req.params.username;
     // console.log("authorization", req.headers['authorization'])
    
 

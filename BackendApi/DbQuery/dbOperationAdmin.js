@@ -17,9 +17,9 @@ const pooladmin = new Pool({
  *
  */
 
-async function EmailValidation(email) {
-  const query = "SELECT * FROM adminusers WHERE email = $1";
-  const result = await pooladmin.query(query, [email]);
+async function EmailValidation(username) {
+  const query = "SELECT * FROM adminusers WHERE username = $1";
+  const result = await pooladmin.query(query, [username]);
   return result.rows[0];
 }
 
@@ -243,7 +243,7 @@ async function getProductByIddb(productId) {
  */
 async function getMetaDatadb() {
   try {
-    const getQuery = `SELECT * FROM  metadata `;
+    const getQuery = `SELECT * FROM  metadata  where latest=true`;
     const data = await pooladmin.query(getQuery);
     if (data.rows.length == 0) {
       return {

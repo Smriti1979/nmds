@@ -28,7 +28,7 @@ const verifyJWT = async (req, res, next) => {
       return res.status(400).json({ error: "Invalid admin Access Token" });
     }
     const User = {
-      email: user.email,
+      username: user.username,
       id: user.id,
       title: user.title,
     };

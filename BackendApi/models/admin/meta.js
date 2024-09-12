@@ -7,7 +7,6 @@ module.exports = (sequelize, DataTypes) => {
       version: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        unique: true,
         primaryKey: true,
       },
       Product: {
