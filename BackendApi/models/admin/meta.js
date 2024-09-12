@@ -4,16 +4,17 @@ module.exports = (sequelize, DataTypes) => {
   const metadata = sequelize.define(
     "metadata",
     {
-      id: {
+      version: {
         type: DataTypes.INTEGER,
-        autoIncrement: true,
-        primaryKey: true,
         allowNull: false,
+        unique: true,
+        primaryKey: true,
       },
       Product: {
         type: DataTypes.TEXT,
         allowNull: false,
-        unique: true,
+        primaryKey: true,
+     
         references: {
           model: "product",
           key: "id",
@@ -75,6 +76,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.TEXT,
         allowNull:true
       },
+      latest:{
+        type:DataTypes.BOOLEAN,
+        allowNull:false
+      }
     },
     {
       tableName: "metadata",

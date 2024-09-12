@@ -15,10 +15,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    developer: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
+    title: {
+      type: DataTypes.STRING,
+      allowNull: false,
     },
+
   }, {
     tableName: `adminusers`,
     timestamps: false,

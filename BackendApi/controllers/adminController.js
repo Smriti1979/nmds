@@ -14,9 +14,10 @@ const {
   updateProductDevdb,
   updateProductDomdb,
   updateThemedb,
-  updateMetadataDomdb,
+  // updateMetadataDomdb,
   deleteThemedb,
-  updateMetadataDevdb,
+  // updateMetadataDevdb,
+  updateMetadatadb,
   deleteProductdb,
   deleteMetadatadb,
   getThemedb,
@@ -84,7 +85,7 @@ const createProduct = async (req, res) => {
   } = req.body;
   try {
     const user = req.user;
-    if (!user.developer) {
+    if (user.title !== "developer") {
       return res
         .status(405)
         .json({ error: `Only developer can create the product` });
@@ -142,7 +143,7 @@ const createTheme = async (req, res) => {
   const { category, name } = req.body;
   try {
     const user = req.user;
-    if (!user.developer) {
+    if (user.title !== "developer") {
       return res
         .status(405)
         .json({ error: `Only developer can create the theme}` });
@@ -188,7 +189,7 @@ const createMetadata = async (req, res) => {
   } = req.body;
   try {
     const user = req.user;
-    if (!user.developer) {
+    if (user.title !== "developer") {
       return res
         .status(405)
         .json({ error: `Only developer can create the metadata` });
@@ -231,6 +232,12 @@ Get product
 */
 const getProductById = async (req, res) => {
   const { productId } = req.params;
+  const user = req.user;
+  if (user.title !== "developer" && user.title !== "domain") {
+    return res
+      .status(405)
+      .json({ error: `Only developer can see the product` });
+  }
   if (!productId) {
     return res.status(400).json({ error: `productID is required` });
   }
@@ -254,6 +261,12 @@ const getProductById = async (req, res) => {
 };
 const getProduct = async (req, res) => {
   try {
+    const user = req.user;
+    if (user.title !== "developer" && user.title !== "domain") {
+      return res
+        .status(405)
+        .json({ error: `Only developer can see the product` });
+    }
     const product = await getProuduct();
     if (product?.error == true) {
       throw product?.errorMessage;
@@ -323,6 +336,12 @@ const getMetaDataById = async (req, res) => {
  */
 const getTheme = async (req, res) => {
   try {
+    const user = req.user;
+    if (user.title !== "developer" && user.title !== "domain") {
+      return res
+        .status(403) 
+        .json({ error: "Only developers or domain users can access the theme." });
+    }
     const theme = await getThemedb();
 
     if (theme?.error == true) {
@@ -340,6 +359,12 @@ const getTheme = async (req, res) => {
   }
 };
 const getThemeById = async (req, res) => {
+  const user = req.user;
+  if (user.title !== "developer" && user.title !== "domain") {
+    return res
+      .status(403) 
+      .json({ error: "Only developers or domain users can access the theme." });
+  }
   const { category } = req.params;
   if (category == undefined) {
     return res.status(400).json({ error: `category is required` });
@@ -370,6 +395,12 @@ const getThemeById = async (req, res) => {
 
 const updateProduct = async (req, res) => {
   const { id } = req.params;
+  const user = req.user;
+  if (user.title !== "developer" && user.title !== "domain") {
+    return res
+      .status(405)
+      .json({ error: `Only developer and domain can edit ` });
+  }
   const {
     title,
     count,
@@ -384,8 +415,7 @@ const updateProduct = async (req, res) => {
     category,
   } = req.body;
   try {
-    const user = req.user;
-    if (!user.developer) {
+    if (user.title == "domain") {
       const product = await updateProductDomdb(
         id,
         title,
@@ -406,32 +436,34 @@ const updateProduct = async (req, res) => {
         msg: "product updated successfully",
         statusCode: true,
       });
+    } else if (user.title == "developer") {
+      const product = await updateProductDevdb(
+        id,
+        title,
+        count,
+        icon,
+        period,
+        tooltip,
+        type,
+        url,
+        table,
+        swagger,
+        viz,
+        category
+      );
+
+      if (product?.error == true) {
+        throw product?.errorMessage;
+      }
+
+      return res.status(200).send({
+        data: product,
+        msg: "product updated successfully",
+        statusCode: true,
+      });
+    } else {
+      res.status(400).json({ error: `Unkown user ` });
     }
-
-    const product = await updateProductDevdb(
-      id,
-      title,
-      count,
-      icon,
-      period,
-      tooltip,
-      type,
-      url,
-      table,
-      swagger,
-      viz,
-      category
-    );
-
-    if (product?.error == true) {
-      throw product?.errorMessage;
-    }
-
-    return res.status(200).send({
-      data: product,
-      msg: "product updated successfully",
-      statusCode: true,
-    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: `Error in Updating product ${error}` });
@@ -446,6 +478,12 @@ const updateProduct = async (req, res) => {
 const updateTheme = async (req, res) => {
   const { category } = req.params;
   const { name } = req.body;
+  const user = req.user;
+  if (user.title !== "developer" && user.title !== "domain") {
+    return res
+      .status(405)
+      .json({ error: `Only developer and domain can edit ` });
+  }
   if (name == "" || name == null || name == undefined) {
     return res.status(405).json({ error: `category,name are required` });
   }
@@ -453,12 +491,6 @@ const updateTheme = async (req, res) => {
     return res.status(405).json({ error: `Category is undefined` });
   }
   try {
-    const user = req.user;
-    if (!user.developer) {
-      return res
-        .status(405)
-        .json({ error: `Only developer can edit the theme` });
-    }
     const theme = await updateThemedb(name, category);
     if (theme?.error == true) {
       throw theme?.errorMessage;
@@ -505,8 +537,9 @@ const updatedMetadata = async (req, res) => {
 
   try {
     const user = req.user;
-    if (!user.developer) {
-      const result = await updateMetadataDomdb(
+    if(user.title=="developer" || user.title==Product ||user.title=="domain"){
+      const result = await updateMetadatadb(
+        Product,
         title,
         Category,
         Geography,
@@ -519,10 +552,10 @@ const updatedMetadata = async (req, res) => {
         BasePeriod,
         Keystatistics,
         NMDS,
-        remarks,
-        Product
+        nmdslink,
+        remarks
       );
-      if (result?.error === true) {
+    if (result?.error === true) {
         throw result?.errorMessage;
       }
       return res.status(200).send({
@@ -531,32 +564,12 @@ const updatedMetadata = async (req, res) => {
         statusCode: true,
       });
     }
-    const result = await updateMetadataDevdb(
-      title,
-      Category,
-      Geography,
-      Frequency,
-      TimePeriod,
-      DataSource,
-      Description,
-      lastUpdateDate,
-      FutureRelease,
-      BasePeriod,
-      Keystatistics,
-      NMDS,
-      nmdslink,
-      remarks,
-      Product
-    );
-    if (result?.error === true) {
-      throw result?.errorMessage;
+    else{
+      return res.status(403).send({
+        msg: "Invalid user",
+        statusCode: true,
+      });
     }
-
-    return res.status(200).send({
-      data: result,
-      msg: "Metadata updated successfully",
-      statusCode: true,
-    });
   } catch (error) {
     console.log(error);
     return res
@@ -572,6 +585,12 @@ const updatedMetadata = async (req, res) => {
  */
 
 const deleteProduct = async (req, res) => {
+  const user = req.user;
+  if (user.title !== "developer") {
+    return res
+      .status(405)
+      .json({ error: `Only developer can delete the product` });
+  }
   const { id } = req.params;
   if (id == null || id == undefined || id == "") {
     return res.status(405).json({ error: `id in invalid` });
@@ -607,13 +626,16 @@ const deleteProduct = async (req, res) => {
 
 const deleteMetadata = async (req, res) => {
   const { Product } = req.params;
+  const user = req.user;
+  if (user.title !== "developer" && user.title !== Product) {
+    return res
+      .status(405)
+      .json({ error: `Only developer can delete the METADATA` });
+  }
   if (Product == null || Product == undefined || Product == "") {
     return res.status(400).json({ error: `product not define ` });
   }
-  const user = req.user;
-  if (!user.developer) {
-    return res.status(400).json({ error: `Only developer can delete` });
-  }
+
   try {
     const result = await deleteMetadatadb(Product);
     if (result?.error == true) {
@@ -641,12 +663,14 @@ const deleteMetadata = async (req, res) => {
 
 const deleteTheme = async (req, res) => {
   const { category } = req.params;
+  const user = req.user;
+  if (user.title !== "developer" ) {
+    return res
+      .status(405)
+      .json({ error: `Only developer can delete the Theme` });
+  }
   if (!category) {
     return res.status(405).json({ error: `Category is invalid` });
-  }
-  const user = req.user;
-  if (!user.developer) {
-    return res.status(405).json({ error: `Only developer can delete` });
   }
 
   try {

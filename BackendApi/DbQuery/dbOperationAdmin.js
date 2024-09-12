@@ -142,7 +142,7 @@ async function createMetadatadb(
 ) {
   try {
     // const metaQuery = `INSERT INTO metadata(product,title,category,geography,frequency,timePeriod,dataSource,description,lastUpdateDate,futureRelease,basePeriod,keystatistics,NMDS,nmdslink,remarks) values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)`;
-    const metaQuery = `INSERT INTO metadata("Product",title,"Category","Geography","Frequency","TimePeriod","DataSource","Description","lastUpdateDate","FutureRelease","BasePeriod","Keystatistics","NMDS",nmdslink,remarks) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)`;
+    const metaQuery = `INSERT INTO metadata("Product",title,"Category","Geography","Frequency","TimePeriod","DataSource","Description","lastUpdateDate","FutureRelease","BasePeriod","Keystatistics","NMDS",nmdslink,remarks,version,latest) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)`;
 
     await pooladmin.query(metaQuery, [
       Product,
@@ -160,6 +160,8 @@ async function createMetadatadb(
       NMDS,
       nmdslink,
       remarks,
+      1,
+      true
     ]);
     const result = await pooladmin.query(
       `SELECT * FROM metadata where "Product"=$1`,
@@ -260,7 +262,7 @@ async function getMetaDatadb() {
   }
 }
 async function getMetaDataByIddb(Product) {
-  const getQuery = `SELECT * FROM  metadata where "Product"=$1`;
+  const getQuery = `SELECT * FROM  metadata where "Product"=$1  AND  latest=true`;
   const data = await pooladmin.query(getQuery, [Product]);
   if (data.rows.length == 0) {
     return {
@@ -534,78 +536,149 @@ async function updateThemedb(name, category) {
  *---------Update Metadata Domain------------
  *
  */
-async function updateMetadataDomdb(
-  title,
-  Category,
-  Geography,
-  Frequency,
-  TimePeriod,
-  DataSource,
-  Description,
-  lastUpdateDate,
-  FutureRelease,
-  BasePeriod,
-  Keystatistics,
-  NMDS,
-  remarks,
-  Product
-) {
-  const metaQuery = `
-    UPDATE metadata
-    SET title = $1,
-        "Category" = $2,            
-        "Geography" = $3,
-        "Frequency" = $4,
-        "TimePeriod" = $5,
-        "DataSource" = $6,
-        "Description" = $7,
-        "lastUpdateDate" = $8,
-        "FutureRelease" = $9,
-        "BasePeriod" = $10,
-        "Keystatistics" = $11,
-        "NMDS" = $12,
-        remarks = $13
-    WHERE "Product" = $14
-  `;
-  const result = await pooladmin.query(metaQuery, [
-    title,
-    Category,
-    Geography,
-    Frequency,
-    TimePeriod,
-    DataSource,
-    Description,
-    lastUpdateDate,
-    FutureRelease,
-    BasePeriod,
-    Keystatistics,
-    NMDS,
-    remarks,
-    Product,
-  ]);
+// async function updateMetadataDomdb(
+//   title,
+//   Category,
+//   Geography,
+//   Frequency,
+//   TimePeriod,
+//   DataSource,
+//   Description,
+//   lastUpdateDate,
+//   FutureRelease,
+//   BasePeriod,
+//   Keystatistics,
+//   NMDS,
+//   remarks,
+//   Product
+// ) {
+//   const metaQuery = `
+//     UPDATE metadata
+//     SET title = $1,
+//         "Category" = $2,            
+//         "Geography" = $3,
+//         "Frequency" = $4,
+//         "TimePeriod" = $5,
+//         "DataSource" = $6,
+//         "Description" = $7,
+//         "lastUpdateDate" = $8,
+//         "FutureRelease" = $9,
+//         "BasePeriod" = $10,
+//         "Keystatistics" = $11,
+//         "NMDS" = $12,
+//         remarks = $13
+//     WHERE "Product" = $14
+//   `;
+//   const result = await pooladmin.query(metaQuery, [
+//     title,
+//     Category,
+//     Geography,
+//     Frequency,
+//     TimePeriod,
+//     DataSource,
+//     Description,
+//     lastUpdateDate,
+//     FutureRelease,
+//     BasePeriod,
+//     Keystatistics,
+//     NMDS,
+//     remarks,
+//     Product,
+//   ]);
 
-  if (result.rowCount === 0) {
-    return {
-      error: true,
-      errorCode: 402,
-      errorMessage: `Metadata not found for the given product`,
-    };
-  }
+//   if (result.rowCount === 0) {
+//     return {
+//       error: true,
+//       errorCode: 402,
+//       errorMessage: `Metadata not found for the given product`,
+//     };
+//   }
 
-  const updatedResult = await pooladmin.query(
-    `SELECT * FROM metadata WHERE "Product" = $1`,
-    [Product]
-  );
-  return updatedResult.rows[0];
-}
+//   const updatedResult = await pooladmin.query(
+//     `SELECT * FROM metadata WHERE "Product" = $1`,
+//     [Product]
+//   );
+//   return updatedResult.rows[0];
+// }
 
-/**
- *
- * -----------Update Metadata Developer-------------
- *
- */
+// /**
+//  *
+//  * -----------Update Metadata Developer-------------
+//  *
+//  */
 
-async function updateMetadataDevdb(
+// async function updateMetadataDevdb(
+//   title,
+//   Category,
+//   Geography,
+//   Frequency,
+//   TimePeriod,
+//   DataSource,
+//   Description,
+//   lastUpdateDate,
+//   FutureRelease,
+//   BasePeriod,
+//   Keystatistics,
+//   NMDS,
+//   nmdslink,
+//   remarks,
+//   Product
+// ) {
+//   const metaQuery = `
+//        UPDATE metadata
+//        SET title = $1,
+//            "Category" = $2,            
+//            "Geography" = $3,
+//            "Frequency" = $4,
+//            "TimePeriod" = $5,
+//            "DataSource" = $6,
+//            "Description" = $7,
+//            "lastUpdateDate" = $8,
+//            "FutureRelease" = $9,
+//            "BasePeriod" = $10,
+//            "Keystatistics" = $11,
+//            "NMDS" = $12,
+//            nmdslink = $13,
+//            remarks = $14
+//        WHERE "Product" = $15
+//      `;
+//   const result = await pooladmin.query(metaQuery, [
+//     title,
+//     Category,
+//     Geography,
+//     Frequency,
+//     TimePeriod,
+//     DataSource,
+//     Description,
+//     lastUpdateDate,
+//     FutureRelease,
+//     BasePeriod,
+//     Keystatistics,
+//     NMDS,
+//     nmdslink,
+//     remarks,
+//     Product,
+//   ]);
+
+//   if (result.rowCount === 0) {
+//     return {
+//       error: true,
+//       errorCode: 402,
+//       errorMessage: `No metadata found`,
+//     };
+//   }
+
+//   const updatedResult = await pooladmin.query(
+//     `SELECT * FROM metadata WHERE "Product" = $1`,
+//     [Product]
+//   );
+//   return updatedResult.rows[0];
+// }
+
+
+
+async function updateMetadatadb(
+  Product,
   title,
   Category,
   Geography,
@@ -619,59 +692,68 @@ async function updateMetadataDevdb(
   Keystatistics,
   NMDS,
   nmdslink,
-  remarks,
-  Product
+  remarks
 ) {
-  const metaQuery = `
-       UPDATE metadata
-       SET title = $1,
-           "Category" = $2,            
-           "Geography" = $3,
-           "Frequency" = $4,
-           "TimePeriod" = $5,
-           "DataSource" = $6,
-           "Description" = $7,
-           "lastUpdateDate" = $8,
-           "FutureRelease" = $9,
-           "BasePeriod" = $10,
-           "Keystatistics" = $11,
-           "NMDS" = $12,
-           nmdslink = $13,
-           remarks = $14
-       WHERE "Product" = $15
-     `;
-  const result = await pooladmin.query(metaQuery, [
-    title,
-    Category,
-    Geography,
-    Frequency,
-    TimePeriod,
-    DataSource,
-    Description,
-    lastUpdateDate,
-    FutureRelease,
-    BasePeriod,
-    Keystatistics,
-    NMDS,
-    nmdslink,
-    remarks,
-    Product,
-  ]);
+  try {
+    await pooladmin.query("BEGIN");
+    const getQuery=`SELECT * FROM metadata where latest=true`
+    const data=await pooladmin.query(getQuery)
+    console.log(data.rows)
+    if(data.rowCount==0){
+      return {
+        error: true,
+        errorCode: 400,
+        errorMessage: `Error in getting metadata`,
+      };
+    }
+    const {version}=data.rows[0];
+    console.log(version)
+    const newVersion=version+1;
+    await pooladmin.query(`Update metadata SET latest=false where "Product"=$1 ANd version=$2`,[Product,version])
+    const metaQuery = `INSERT INTO metadata("Product",title,"Category","Geography","Frequency","TimePeriod","DataSource","Description","lastUpdateDate","FutureRelease","BasePeriod","Keystatistics","NMDS",nmdslink,remarks,version,latest) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)`;
 
-  if (result.rowCount === 0) {
+    await pooladmin.query(metaQuery, [
+      Product,
+      title,
+      Category,
+      Geography,
+      Frequency,
+      TimePeriod,
+      DataSource,
+      Description,
+      lastUpdateDate,
+      FutureRelease,
+      BasePeriod,
+      Keystatistics,
+      NMDS,
+      nmdslink,
+      remarks,
+      newVersion,
+      true
+    ]);
+    const result = await pooladmin.query(
+      `SELECT * FROM metadata where "version"=$1`,
+      [newVersion]
+    );
+    if (result.rows.length == 0) {
+      return {
+        error: true,
+        errorCode: 400,
+        errorMessage: `Error in update metadata`,
+      };
+    }
+    await pooladmin.query("COMMIT");
+    return result.rows[0];
+  } catch (error) {
+    await pooladmin.query("ROLLBACK");
     return {
       error: true,
-      errorCode: 402,
-      errorMessage: `No metadata found`,
+      errorCode: 500,
+      errorMessage: `Error in createMetadatadb ${error}`,
     };
   }
-
-  const updatedResult = await pooladmin.query(
-    `SELECT * FROM metadata WHERE "Product" = $1`,
-    [Product]
-  );
-  return updatedResult.rows[0];
 }
+
 
 /***
  *
@@ -753,8 +835,9 @@ module.exports = {
   deleteThemedb,
   deleteMetadatadb,
   deleteProductdb,
-  updateMetadataDevdb,
-  updateMetadataDomdb,
+  // updateMetadataDevdb,
+  // updateMetadataDomdb,
+  updateMetadatadb,
   updateThemedb,
   updateProductDevdb,
   updateProductDomdb,

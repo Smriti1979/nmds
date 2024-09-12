@@ -2,7 +2,7 @@
 
 require("dotenv").config();
 
-const { DB_HOST, DB_USERNAME, DB_PASSWORD, DB_DATABASE, DB_DAILECT, DB_PORT } =
+const { DB_HOST, DB_USERNAME, DB_PASSWORD, DB_DATABASE, DB_DIALECT, DB_PORT } =
   process.env;
 const { Sequelize, DataTypes } = require("sequelize");
 
@@ -11,9 +11,9 @@ const { Sequelize, DataTypes } = require("sequelize");
 const sequelize = new Sequelize({
   host: DB_HOST,
   username: DB_USERNAME,
-  password: decodeURIComponent(DB_PASSWORD),
+  password: (DB_PASSWORD),
   database: DB_DATABASE,
-  dialect: DB_DAILECT,
+  dialect: DB_DIALECT,
   port: DB_PORT,
 });
 
