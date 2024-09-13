@@ -13,7 +13,6 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.TEXT,
         allowNull: false,
         primaryKey: true,
-     
         references: {
           model: "product",
           key: "id",

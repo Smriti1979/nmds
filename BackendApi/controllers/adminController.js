@@ -14,9 +14,7 @@ const {
   updateProductDevdb,
   updateProductDomdb,
   updateThemedb,
-  // updateMetadataDomdb,
   deleteThemedb,
-  // updateMetadataDevdb,
   updateMetadatadb,
   deleteProductdb,
   deleteMetadatadb,
@@ -84,6 +82,7 @@ const createProduct = async (req, res) => {
     category,
   } = req.body;
   try {
+    const productID=id.toLowerCase()
     const user = req.user;
     if (user.title !== "developer") {
       return res
@@ -91,7 +90,7 @@ const createProduct = async (req, res) => {
         .json({ error: `Only developer can create the product` });
     }
     const categories = await createProductdb(
-      id,
+      productID,
       title,
       count,
       icon,
@@ -194,9 +193,9 @@ const createMetadata = async (req, res) => {
         .status(405)
         .json({ error: `Only developer can create the metadata` });
     }
-
+    const productID=Product.toLowerCase()
     const result = await createMetadatadb(
-      Product,
+      productID,
       title,
       Category,
       Geography,
@@ -231,7 +230,8 @@ const createMetadata = async (req, res) => {
 Get product 
 */
 const getProductById = async (req, res) => {
-  const { productId } = req.params;
+  let { productId } = req.params;
+  productId=productId.toLowerCase()
   const user = req.user;
   if (user.title !== "developer" && user.title !== "domain") {
     return res
@@ -394,7 +394,8 @@ const getThemeById = async (req, res) => {
  */
 
 const updateProduct = async (req, res) => {
-  const { id } = req.params;
+  let  { id } = req.params;
+  id=id.toLowerCase()
   const user = req.user;
   if (user.title !== "developer" && user.title !== "domain") {
     return res
@@ -517,7 +518,8 @@ const updateTheme = async (req, res) => {
  */
 
 const updatedMetadata = async (req, res) => {
-  const { Product } = req.params;
+  let { Product } = req.params;
+  Product=Product.toLowerCase()
   const {
     title,
     Category,
@@ -591,7 +593,8 @@ const deleteProduct = async (req, res) => {
       .status(405)
       .json({ error: `Only developer can delete the product` });
   }
-  const { id } = req.params;
+  let { id } = req.params;
+  id=id.toLowerCase()
   if (id == null || id == undefined || id == "") {
     return res.status(405).json({ error: `id in invalid` });
   }
@@ -621,7 +624,8 @@ const deleteProduct = async (req, res) => {
  */
 
 const deleteMetadata = async (req, res) => {
-  const { Product } = req.params;
+  let { Product } = req.params;
+  Product=Product.toLowerCase()
   const user = req.user;
   if (user.title !== "developer" && user.title !== Product) {
     return res
@@ -681,7 +685,7 @@ const deleteTheme = async (req, res) => {
     console.error(error);
     return res
       .status(500)
-      .json({ error: `Unable to delete the theme: ${error.message}` });
+      .json({ error: `Unable to delete the theme: ${error}` });
   }
 };
 

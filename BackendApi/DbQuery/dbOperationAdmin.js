@@ -536,144 +536,6 @@ async function updateThemedb(name, category) {
  *---------Update Metadata Domain------------
  *
  */
-// async function updateMetadataDomdb(
-//   title,
-//   Category,
-//   Geography,
-//   Frequency,
-//   TimePeriod,
-//   DataSource,
-//   Description,
-//   lastUpdateDate,
-//   FutureRelease,
-//   BasePeriod,
-//   Keystatistics,
-//   NMDS,
-//   remarks,
-//   Product
-// ) {
-//   const metaQuery = `
-//     UPDATE metadata
-//     SET title = $1,
-//         "Category" = $2,            
-//         "Geography" = $3,
-//         "Frequency" = $4,
-//         "TimePeriod" = $5,
-//         "DataSource" = $6,
-//         "Description" = $7,
-//         "lastUpdateDate" = $8,
-//         "FutureRelease" = $9,
-//         "BasePeriod" = $10,
-//         "Keystatistics" = $11,
-//         "NMDS" = $12,
-//         remarks = $13
-//     WHERE "Product" = $14
-//   `;
-//   const result = await pooladmin.query(metaQuery, [
-//     title,
-//     Category,
-//     Geography,
-//     Frequency,
-//     TimePeriod,
-//     DataSource,
-//     Description,
-//     lastUpdateDate,
-//     FutureRelease,
-//     BasePeriod,
-//     Keystatistics,
-//     NMDS,
-//     remarks,
-//     Product,
-//   ]);
-
-//   if (result.rowCount === 0) {
-//     return {
-//       error: true,
-//       errorCode: 402,
-//       errorMessage: `Metadata not found for the given product`,
-//     };
-//   }
-
-//   const updatedResult = await pooladmin.query(
-//     `SELECT * FROM metadata WHERE "Product" = $1`,
-//     [Product]
-//   );
-//   return updatedResult.rows[0];
-// }
-
-// /**
-//  *
-//  * -----------Update Metadata Developer-------------
-//  *
-//  */
-
-// async function updateMetadataDevdb(
-//   title,
-//   Category,
-//   Geography,
-//   Frequency,
-//   TimePeriod,
-//   DataSource,
-//   Description,
-//   lastUpdateDate,
-//   FutureRelease,
-//   BasePeriod,
-//   Keystatistics,
-//   NMDS,
-//   nmdslink,
-//   remarks,
-//   Product
-// ) {
-//   const metaQuery = `
-//        UPDATE metadata
-//        SET title = $1,
-//            "Category" = $2,            
-//            "Geography" = $3,
-//            "Frequency" = $4,
-//            "TimePeriod" = $5,
-//            "DataSource" = $6,
-//            "Description" = $7,
-//            "lastUpdateDate" = $8,
-//            "FutureRelease" = $9,
-//            "BasePeriod" = $10,
-//            "Keystatistics" = $11,
-//            "NMDS" = $12,
-//            nmdslink = $13,
-//            remarks = $14
-//        WHERE "Product" = $15
-//      `;
-//   const result = await pooladmin.query(metaQuery, [
-//     title,
-//     Category,
-//     Geography,
-//     Frequency,
-//     TimePeriod,
-//     DataSource,
-//     Description,
-//     lastUpdateDate,
-//     FutureRelease,
-//     BasePeriod,
-//     Keystatistics,
-//     NMDS,
-//     nmdslink,
-//     remarks,
-//     Product,
-//   ]);
-
-//   if (result.rowCount === 0) {
-//     return {
-//       error: true,
-//       errorCode: 402,
-//       errorMessage: `No metadata found`,
-//     };
-//   }
-
-//   const updatedResult = await pooladmin.query(
-//     `SELECT * FROM metadata WHERE "Product" = $1`,
-//     [Product]
-//   );
-//   return updatedResult.rows[0];
-// }
 
 
 
@@ -759,12 +621,20 @@ async function updateMetadatadb(
  *
  */
 async function deleteProductdb(id) {
-  const productQuery = `DELETE FROM product  WHERE id=$1;`;
-  const metaDataQuery = `DELETE FROM metadata  WHERE "Product"=$1;`;
-  const CategoryQuery = `DELETE FROM producttheme  WHERE "productId"=$1;`;
-  await pooladmin.query(metaDataQuery, [id]);
-  await pooladmin.query(CategoryQuery, [id]);
-  await pooladmin.query(productQuery, [id]);
+  try {
+    const productQuery = `DELETE FROM product  WHERE id=$1;`;
+    const metaDataQuery = `DELETE FROM metadata  WHERE "Product"=$1;`;
+    const CategoryQuery = `DELETE FROM producttheme  WHERE "productId"=$1;`;
+    await pooladmin.query(metaDataQuery, [id]);
+    await pooladmin.query(CategoryQuery, [id]);
+    await pooladmin.query(productQuery, [id]);
+  } catch (error) {
+    return {
+      error: true,
+      errorCode: 500,
+      errorMessage: `Error deleting product: ${error}`,
+    };
+  }
 }
 
 /***
@@ -774,8 +644,16 @@ async function deleteProductdb(id) {
  */
 
 async function deleteMetadatadb(Product) {
-  const metaDataQuery = `DELETE FROM metadata  WHERE "Product"=$1;`;
-  await pooladmin.query(metaDataQuery, [Product]);
+ try {
+   const metaDataQuery = `DELETE FROM metadata  WHERE "Product"=$1;`;
+   await pooladmin.query(metaDataQuery, [Product]);
+ } catch (error) {
+  return {
+    error: true,
+    errorCode: 500,
+    errorMessage: `Error deleting MetaData: ${error}`,
+  };
+ }
 }
 
 /***
@@ -797,32 +675,13 @@ async function deleteThemedb(category) {
     const deleteProductThemeQuery = `DELETE FROM producttheme WHERE category = $1`;
     await pooladmin.query(deleteProductThemeQuery, [category]);
 
-    // If products were found, check if they are associated with other themes
     if (productIds.length > 0) {
-      // Delete associated entries from the metadata table based on productId
-      const deleteMetaDataQuery = `DELETE FROM metadata WHERE "Product" = ANY($1::text[])`;
-      await pooladmin.query(deleteMetaDataQuery, [productIds]);
-
-      const checkProductCategoryQuery = `
-        SELECT p.id FROM product p
-        LEFT JOIN producttheme pt ON p.id = pt.productId
-        WHERE p.id = ANY($1::text[]) AND pt.productId IS NULL
-      `;
-
-      const remainingProductsResult = await pooladmin.query(
-        checkProductCategoryQuery,
-        [productIds]
-      );
-      
-      const remainingProductIds = remainingProductsResult.rows.map(
-        (row) => row.id
-      );
-
-      // If products are not associated with any other themes, delete them
-      if (remainingProductIds.length > 0) {
-        const deleteProductQuery = `DELETE FROM product WHERE id = ANY($1::text[])`;
-        await pooladmin.query(deleteProductQuery, [remainingProductIds]);
-      }
+      await pooladmin.query("ROLLBACK");
+      return {
+        error: true,
+        errorCode: 500,
+        errorMessage: `Error deleting theme Product already exist`,
+      };
     }
 
     // Finally, remove the theme itself
