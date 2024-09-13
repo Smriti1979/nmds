@@ -698,7 +698,6 @@ async function updateMetadatadb(
     await pooladmin.query("BEGIN");
     const getQuery=`SELECT * FROM metadata where latest=true`
     const data=await pooladmin.query(getQuery)
-    console.log(data.rows)
     if(data.rowCount==0){
       return {
         error: true,
@@ -707,7 +706,6 @@ async function updateMetadatadb(
       };
     }
     const {version}=data.rows[0];
-    console.log(version)
     const newVersion=version+1;
     await pooladmin.query(`Update metadata SET latest=false where "Product"=$1 ANd version=$2`,[Product,version])
     const metaQuery = `INSERT INTO metadata("Product",title,"Category","Geography","Frequency","TimePeriod","DataSource","Description","lastUpdateDate","FutureRelease","BasePeriod","Keystatistics","NMDS",nmdslink,remarks,version,latest) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)`;
@@ -787,48 +785,72 @@ async function deleteMetadatadb(Product) {
  */
 async function deleteThemedb(category) {
   try {
+    // Start a transaction
     await pooladmin.query("BEGIN");
-    // Get associated products
+
+    // Get associated products from the producttheme table
     const getProductsQuery = `SELECT "productId" FROM producttheme WHERE category = $1`;
     const productsResult = await pooladmin.query(getProductsQuery, [category]);
     const productIds = productsResult.rows.map((row) => row.productId);
-    // Remove associated entries from producttheme
+
+    // Remove associated entries from the producttheme table
     const deleteProductThemeQuery = `DELETE FROM producttheme WHERE category = $1`;
     await pooladmin.query(deleteProductThemeQuery, [category]);
-    // Remove associated entries from metadata
-    const deleteMetaDataQuery = `DELETE FROM metadata WHERE category = $1`;
-    await pooladmin.query(deleteMetaDataQuery, [category]);
 
-    // Remove products if they are not associated with any other category
+    // If products were found, check if they are associated with other themes
     if (productIds.length > 0) {
+      // Delete associated entries from the metadata table based on productId
+      const deleteMetaDataQuery = `DELETE FROM metadata WHERE "Product" = ANY($1::text[])`;
+      await pooladmin.query(deleteMetaDataQuery, [productIds]);
+
       const checkProductCategoryQuery = `
-              SELECT p.id FROM product p
-              LEFT JOIN producttheme pt ON p.id = pt."productId"
-              WHERE p.id = ANY($1::varchar[]) AND pt."productId" IS NULL
-            `;
+        SELECT p.id FROM product p
+        LEFT JOIN producttheme pt ON p.id = pt.productId
+        WHERE p.id = ANY($1::text[]) AND pt.productId IS NULL
+      `;
 
       const remainingProductsResult = await pooladmin.query(
         checkProductCategoryQuery,
         [productIds]
       );
+      
       const remainingProductIds = remainingProductsResult.rows.map(
         (row) => row.id
       );
+
+      // If products are not associated with any other themes, delete them
       if (remainingProductIds.length > 0) {
-        const deleteProductQuery = `DELETE FROM product WHERE id = ANY($1::varchar[])`;
+        const deleteProductQuery = `DELETE FROM product WHERE id = ANY($1::text[])`;
         await pooladmin.query(deleteProductQuery, [remainingProductIds]);
       }
     }
 
-    // Remove the theme itself
+    // Finally, remove the theme itself
     const deleteThemeQuery = `DELETE FROM theme WHERE category = $1`;
     await pooladmin.query(deleteThemeQuery, [category]);
 
+    // Commit the transaction
     await pooladmin.query("COMMIT");
+
+    return {
+      success: true,
+      message: `Theme and associated products deleted successfully.`,
+    };
   } catch (error) {
+    // Rollback transaction in case of an error
     await pooladmin.query("ROLLBACK");
+    return {
+      error: true,
+      errorCode: 500,
+      errorMessage: `Error deleting theme: ${error}`,
+    };
   }
 }
+
+
+
+
+
 
 module.exports = {
   EmailValidation,

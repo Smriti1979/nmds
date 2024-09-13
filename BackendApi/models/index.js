@@ -16,7 +16,6 @@ const sequelize = new Sequelize({
   dialect: DB_DIALECT,
   port: DB_PORT,
 });
-
 //checking if connection is done
 sequelize
   .authenticate()

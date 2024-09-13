@@ -109,7 +109,7 @@ const createProduct = async (req, res) => {
       throw categories?.errorMessage;
     }
 
-    return res.status(200).send({
+    return res.status(201).send({
       data: {
         id,
         title,
@@ -153,7 +153,7 @@ const createTheme = async (req, res) => {
     if (result?.error == true) {
       throw result?.errorMessage;
     }
-    return res.status(200).send({
+    return res.status(201).send({
       data: result,
       msg: "theme created successfully",
       statusCode: true,
@@ -217,7 +217,7 @@ const createMetadata = async (req, res) => {
       throw result?.errorMessage;
     }
 
-    return res.status(200).send({
+    return res.status(201).send({
       data: result,
       msg: "Meata data create successfully",
       statusCode: true,
@@ -537,7 +537,7 @@ const updatedMetadata = async (req, res) => {
 
   try {
     const user = req.user;
-    if(user.title=="developer" || user.title==Product ||user.title=="domain"){
+    if(user.title=="developer" || user.title==Product || user.title=="domain"){
       const result = await updateMetadatadb(
         Product,
         title,
@@ -597,10 +597,6 @@ const deleteProduct = async (req, res) => {
   }
 
   try {
-    const user = req.user;
-    if (!user.developer) {
-      return res.status(405).json({ error: `Only developer can delete` });
-    }
     const result = await deleteProductdb(id);
     if (result?.error == true) {
       throw result?.errorMessage;
