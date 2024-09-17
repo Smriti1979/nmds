@@ -1,0 +1,285 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Esankhyiki Api",
+    "version": "1.0.0",
+    "description": "API for admin user authentication, product management including product creation."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000",
+      "description": "Local development server"
+    }
+  ],
+  "paths": {
+    "/api/signin": {
+      "post": {
+        "summary": "Sign in admin user",
+        "description": "Authenticate an admin user by validating username and password and return an access token.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "example": "admin@example.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "yourPassword123"
+                  }
+                },
+                "required": ["username", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User successfully authenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "email": {
+                          "type": "string",
+                          "example": "admin@example.com"
+                        }
+                      }
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "UserVerified"
+                    },
+                    "statusCode": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Invalid username or password",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Required correct password"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Error in signIn User"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/product": {
+      "post": {
+        "summary": "Create product",
+        "description": "Create a new product in the system. Only developers can create products.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "example": "prod_001"
+                  },
+                  "title": {
+                    "type": "string",
+                    "example": "Sample Product"
+                  },
+                  "count": {
+                    "type": "integer",
+                    "example": 10
+                  },
+                  "icon": {
+                    "type": "string",
+                    "example": "icon_url"
+                  },
+                  "period": {
+                    "type": "string",
+                    "example": "2021-2022"
+                  },
+                  "tooltip": {
+                    "type": "string",
+                    "example": "This is a product tooltip"
+                  },
+                  "type": {
+                    "type": "string",
+                    "example": "widget"
+                  },
+                  "url": {
+                    "type": "string",
+                    "example": "http://product-url.com"
+                  },
+                  "table": {
+                    "type": "string",
+                    "example": "products_table"
+                  },
+                  "swagger": {
+                    "type": "boolean",
+                    "example": true
+                  },
+                  "viz": {
+                    "type": "string",
+                    "example": "viz_url"
+                  },
+                  "category": {
+                    "type": "string",
+                    "example": "Category 1"
+                  }
+                },
+                "required": ["id", "title", "count", "type", "category"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Product created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "prod_001"
+                        },
+                        "title": {
+                          "type": "string",
+                          "example": "Sample Product"
+                        },
+                        "count": {
+                          "type": "integer",
+                          "example": 10
+                        },
+                        "icon": {
+                          "type": "string",
+                          "example": "icon_url"
+                        },
+                        "period": {
+                          "type": "string",
+                          "example": "2021-2022"
+                        },
+                        "tooltip": {
+                          "type": "string",
+                          "example": "This is a product tooltip"
+                        },
+                        "type": {
+                          "type": "string",
+                          "example": "widget"
+                        },
+                        "url": {
+                          "type": "string",
+                          "example": "http://product-url.com"
+                        },
+                        "table": {
+                          "type": "string",
+                          "example": "products_table"
+                        },
+                        "swagger": {
+                          "type": "boolean",
+                          "example": "swagger_url"
+                        },
+                        "viz": {
+                          "type": "string",
+                          "example": "viz_url"
+                        },
+                        "category": {
+                          "type": "string",
+                          "example": "Category 1"
+                        }
+                      }
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "Product created successfully"
+                    },
+                    "statusCode": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Unauthorized user (only admin can create the product)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Only admin can create the product"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Error in Creating product: [error details]"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/theme":{
+      "summary":"Create Theme",
+      "description":"Create a new Theme in the system. Only developers can create products."
+
+    }
+  }
+}

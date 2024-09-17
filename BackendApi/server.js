@@ -7,11 +7,11 @@ const db = require('./models')
 const userRoutes = require('./routes/userRoutes')
 const ip = require('ip');
 const host = ip.address();
-const SwaggerUi = require("swagger-ui-express")
 const cors = require('cors');
 const fs = require('fs');
 const userModel = require('./models/userModel.js');
-const { apiDocument } = require("./openapiSpec.js");
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('./swagger.json');
 
 const logModel = db.log;
 //setting up your port
@@ -87,8 +87,8 @@ const registerLog = (userId, ipAddress, request, statusCode) => {
 
 // Apply the rate limiter middleware to specific routes
 app.use('/api/', limiterMiddleware);
-app.use("/documentation", SwaggerUi.serve, SwaggerUi.setup(apiDocument));
 
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 db.sequelize.sync().then(() => {
 })

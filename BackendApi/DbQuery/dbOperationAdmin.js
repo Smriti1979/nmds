@@ -7,7 +7,7 @@ require("dotenv").config();
 const pooladmin = new Pool({
   user: process.env.DB_USERNAME,
   host: process.env.DB_HOST,
-  database: process.env.DB_DATABASE,
+  database: process.env.DB_DATABASETPM,
   password: process.env.DB_PASSWORD,
   port: process.env.DB_PORT, // Default PostgreSQL port
 });
@@ -210,6 +210,7 @@ async function getProuduct() {
   }
 }
 
+
 async function getProductByIddb(productId) {
   try {
     const getQuery = `SELECT * FROM product WHERE id = $1`;
@@ -237,6 +238,8 @@ async function getProductByIddb(productId) {
     };
   }
 }
+
+
 
 /*
  * -----------Get MetaData------------
@@ -409,7 +412,7 @@ async function updateProductDomdb(
 }
 
 /**
- * --------------------Update Product Developer ------------------
+ * --------------------Update Product admin ------------------
  */
 
 async function updateProductDevdb(

@@ -55,12 +55,12 @@ CREATE TABLE Users IF NOT EXISTS(
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     username VARCHAR(40) NOT NULL UNIQUE,
     password VARCHAR(300) NOT NULL,
-    -- developer BOOLEAN
+    -- admin BOOLEAN
     title  varchar(20) NOT NULL,
     -- FOREIGN KEY (title) REFERENCES UserRetation(id)
 );
 -- password 123456
-INSERT INTO adminusers(username, password,title) VALUES ('shubham@gmail.com', '$2a$10$IDhLRlEAHiff18CIk5eKkeTfSIVG/YEFDB859xJklP8xIbTwbZ1kC','developer');
+INSERT INTO adminusers(username, password,title) VALUES ('shubham@gmail.com', '$2a$10$IDhLRlEAHiff18CIk5eKkeTfSIVG/YEFDB859xJklP8xIbTwbZ1kC','admin');
 INSERT INTO adminusers(username, password,title) VALUES ('rahul@gmail.com', '$2a$10$IDhLRlEAHiff18CIk5eKkeTfSIVG/YEFDB859xJklP8xIbTwbZ1kC','domain');
 INSERT INTO adminusers(username, password,title) VALUES ('rohit@gmail.com', '$2a$10$IDhLRlEAHiff18CIk5eKkeTfSIVG/YEFDB859xJklP8xIbTwbZ1kC','cpi');
 

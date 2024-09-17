@@ -11,7 +11,7 @@ const { Sequelize, DataTypes } = require("sequelize");
 const sequelize = new Sequelize({
   host: DB_HOST,
   username: DB_USERNAME,
-  password: (DB_PASSWORD),
+  password: DB_PASSWORD,
   database: DB_DATABASE,
   dialect: DB_DIALECT,
   port: DB_PORT,

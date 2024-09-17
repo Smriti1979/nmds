@@ -82,10 +82,10 @@ const createProduct = async (req, res) => {
   try {
     const productID=id.toLowerCase()
     const user = req.user;
-    if (user.title !== "developer") {
+    if (user.title !== "admin") {
       return res
         .status(405)
-        .json({ error: `Only developer can create the product` });
+        .json({ error: `Only admin can create the product` });
     }
     const categories = await createProductdb(
       productID,
@@ -140,10 +140,10 @@ const createTheme = async (req, res) => {
   const { category, name } = req.body;
   try {
     const user = req.user;
-    if (user.title !== "developer") {
+    if (user.title !== "admin") {
       return res
         .status(405)
-        .json({ error: `Only developer can create the theme}` });
+        .json({ error: `Only admin can create the theme}` });
     }
 
     const result = await createThemedb(category, name);
@@ -186,10 +186,10 @@ const createMetadata = async (req, res) => {
   } = req.body;
   try {
     const user = req.user;
-    if (user.title !== "developer") {
+    if (user.title !== "admin") {
       return res
         .status(405)
-        .json({ error: `Only developer can create the metadata` });
+        .json({ error: `Only admin can create the metadata` });
     }
     const productID=Product.toLowerCase()
     const result = await createMetadatadb(
@@ -231,10 +231,10 @@ const getProductById = async (req, res) => {
   let { productId } = req.params;
   productId=productId.toLowerCase()
   const user = req.user;
-  if (user.title !== "developer" && user.title !== "domain") {
+  if (user.title !== "admin" && user.title !== "domain") {
     return res
       .status(405)
-      .json({ error: `Only developer can see the product` });
+      .json({ error: `Only admin can see the product` });
   }
   if (!productId) {
     return res.status(400).json({ error: `productID is required` });
@@ -260,10 +260,10 @@ const getProductById = async (req, res) => {
 const getProduct = async (req, res) => {
   try {
     const user = req.user;
-    if (user.title !== "developer" && user.title !== "domain") {
+    if (user.title !== "admin" && user.title !== "domain") {
       return res
         .status(405)
-        .json({ error: `Only developer can see the product` });
+        .json({ error: `Only admin can see the product` });
     }
     const product = await getProuduct();
     if (product?.error == true) {
@@ -335,7 +335,7 @@ const getMetaDataById = async (req, res) => {
 const getTheme = async (req, res) => {
   try {
     const user = req.user;
-    if (user.title !== "developer" && user.title !== "domain") {
+    if (user.title !== "admin" && user.title !== "domain") {
       return res
         .status(403) 
         .json({ error: "Only developers or domain users can access the theme." });
@@ -358,7 +358,7 @@ const getTheme = async (req, res) => {
 };
 const getThemeById = async (req, res) => {
   const user = req.user;
-  if (user.title !== "developer" && user.title !== "domain") {
+  if (user.title !== "admin" && user.title !== "domain") {
     return res
       .status(403) 
       .json({ error: "Only developers or domain users can access the theme." });
@@ -395,10 +395,10 @@ const updateProduct = async (req, res) => {
   let  { id } = req.params;
   id=id.toLowerCase()
   const user = req.user;
-  if (user.title !== "developer" && user.title !== "domain") {
+  if (user.title !== "admin" && user.title !== "domain") {
     return res
       .status(405)
-      .json({ error: `Only developer and domain can edit ` });
+      .json({ error: `Only admin and domain can edit ` });
   }
   const {
     title,
@@ -435,7 +435,7 @@ const updateProduct = async (req, res) => {
         msg: "product updated successfully",
         statusCode: true,
       });
-    } else if (user.title == "developer") {
+    } else if (user.title == "admin") {
       const product = await updateProductDevdb(
         id,
         title,
@@ -478,10 +478,10 @@ const updateTheme = async (req, res) => {
   const { category } = req.params;
   const { name } = req.body;
   const user = req.user;
-  if (user.title !== "developer" && user.title !== "domain") {
+  if (user.title !== "admin" && user.title !== "domain") {
     return res
       .status(405)
-      .json({ error: `Only developer and domain can edit ` });
+      .json({ error: `Only admin and domain can edit ` });
   }
   if (name == "" || name == null || name == undefined) {
     return res.status(405).json({ error: `category,name are required` });
@@ -537,7 +537,7 @@ const updatedMetadata = async (req, res) => {
 
   try {
     const user = req.user;
-    if(user.title=="developer" || user.title==Product || user.title=="domain"){
+    if(user.title=="admin" || user.title==Product || user.title=="domain"){
       const result = await updateMetadatadb(
         Product,
         title,
@@ -586,10 +586,10 @@ const updatedMetadata = async (req, res) => {
 
 const deleteProduct = async (req, res) => {
   const user = req.user;
-  if (user.title !== "developer") {
+  if (user.title !== "admin") {
     return res
       .status(405)
-      .json({ error: `Only developer can delete the product` });
+      .json({ error: `Only admin can delete the product` });
   }
   let { id } = req.params;
   id=id.toLowerCase()
@@ -625,10 +625,10 @@ const deleteMetadata = async (req, res) => {
   let { Product } = req.params;
   Product=Product.toLowerCase()
   const user = req.user;
-  if (user.title !== "developer" && user.title !== Product) {
+  if (user.title !== "admin" && user.title !== Product) {
     return res
       .status(405)
-      .json({ error: `Only developer can delete the METADATA` });
+      .json({ error: `Only admin can delete the METADATA` });
   }
   if (Product == null || Product == undefined || Product == "") {
     return res.status(400).json({ error: `product not define ` });
@@ -662,10 +662,10 @@ const deleteMetadata = async (req, res) => {
 const deleteTheme = async (req, res) => {
   const { category } = req.params;
   const user = req.user;
-  if (user.title !== "developer" ) {
+  if (user.title !== "admin" ) {
     return res
       .status(405)
-      .json({ error: `Only developer can delete the Theme` });
+      .json({ error: `Only admin can delete the Theme` });
   }
   if (!category) {
     return res.status(405).json({ error: `Category is invalid` });
