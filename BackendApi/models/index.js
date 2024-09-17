@@ -2,7 +2,7 @@
 
 require("dotenv").config();
 
-const { DB_HOST, DB_USERNAME, DB_PASSWORD, DB_DATABASE, DB_DIALECT, DB_PORT } =
+const { DB_HOST, DB_USERNAME, DB_PASSWORD, DB_DATABASETPM, DB_DIALECT, DB_PORT } =
   process.env;
 const { Sequelize, DataTypes } = require("sequelize");
 
@@ -12,7 +12,7 @@ const sequelize = new Sequelize({
   host: DB_HOST,
   username: DB_USERNAME,
   password: DB_PASSWORD,
-  database: DB_DATABASE,
+  database: DB_DATABASETPM,
   dialect: DB_DIALECT,
   port: DB_PORT,
 });
@@ -24,11 +24,8 @@ sequelize
 const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
-db.sequelize = sequelize;
+// db.sequelize = sequelize;
 
-//connecting to model
-db.users = require("./userModel")(sequelize, DataTypes);
-db.log = require("./logModel")(sequelize, DataTypes);
 
 db.AdminUser = require("./admin/AdminUsers")(sequelize, DataTypes);
 db.metadata = require("./admin/meta")(sequelize, DataTypes);

@@ -9,11 +9,9 @@ const ip = require('ip');
 const host = ip.address();
 const cors = require('cors');
 const fs = require('fs');
-const userModel = require('./models/userModel.js');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger.json');
 
-const logModel = db.log;
 //setting up your port
 const port = process.env.PORT
 //assigning the variable app to express
@@ -24,69 +22,7 @@ app.use(express.json())
 app.use(cors());
 app.use(cookieParser())
 
-// Create a rate limiter instance
-const rateLimiter = new RateLimiterMemory({
-  points: 100000000, // Number of points
-  // duration: 60 * 60, // Per 60 minutes
-  duration: 60, // Per 60 seconds
-});
 
-// Middleware to check rate limit for each request
-const limiterMiddleware = (req, res, next) => {
-
-  // Use the user ID as the key for rate limiting
-  const data = functionFromModule1.verifyToken(req.headers['authorization']);
-  var userId = "";
-  if (data == undefined) {
-    userId = "";
-  } else {
-    userId = data.id;
-  }
-  // console.log('data',data);
-  // console.log('userId',userId);
-
-  var ipAddress =req.headers['x-forwarded-for'] ||  req.connection.remoteAddress; 
-  const key = userId + ipAddress;
-
-  rateLimiter.consume(key)
-    .then(() => {
-      registerLog(userId, ipAddress, req, "200")
-      next();
-    })
-    .catch(() => {
-
-      registerLog(userId, ipAddress, req, "429")
-      res.status(429).send({ msg: 'Too many requests from this user, please try again later', statusCode: false });
-    });
-
-};
-
-
-
-
-const registerLog = (userId, ipAddress, request, statusCode) => {
-
-  const userLogs = new logModel({
-    userId: userId,
-    userIp: ipAddress,
-    api: request.originalUrl,
-    // requestType: '' ,
-    // requestType: JSON.stringify(request.body) ,
-    statusCode: statusCode
-  });
-  userLogs.save()
-    .then((userLogs) => {
-      // console.log('report',userLogs);
-    })
-    .catch((error) => {
-      // console.log('report',error);
-    });
-
-};
-
-
-// Apply the rate limiter middleware to specific routes
-app.use('/api/', limiterMiddleware);
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 

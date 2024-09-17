@@ -276,10 +276,94 @@
         }
       }
     },
-    "/api/admin/theme":{
-      "summary":"Create Theme",
-      "description":"Create a new Theme in the system. Only developers can create products."
-
+    "/api/admin/theme": {
+      "post": {
+        "summary": "Create Theme",
+        "description": "Create a new Theme in the system. Only admin users can create themes.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "category": {
+                    "type": "string",
+                    "example": "NSS"
+                  },
+                  "name": {
+                    "type": "string",
+                    "example": "NSS"
+                  }
+                },
+                "required": ["category", "name"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Theme created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "example": {
+                        "category": "NSS",
+                        "name": "NSS"
+                      }
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "Theme created successfully"
+                    },
+                    "statusCode": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Unauthorized user (only admin can create the theme)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Only admin can create the theme"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Error in Creating theme: [error details]"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
+  
   }
 }
