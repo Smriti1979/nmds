@@ -21,6 +21,7 @@ const {
   getThemedb,
   createMetadatadb,
   getMetaDatadb,
+  handleExtraColumns
 } = admindb;
 /**
  * Sign In
@@ -518,9 +519,72 @@ const updateTheme = async (req, res) => {
  *
  */
 
+// const updatedMetadata = async (req, res) => {
+//   let { Product } = req.params;
+//   Product=Product.toLowerCase()
+//   const {
+//     title,
+//     Category,
+//     Geography,
+//     Frequency,
+//     TimePeriod,
+//     DataSource,
+//     Description,
+//     lastUpdateDate,
+//     FutureRelease,
+//     BasePeriod,
+//     Keystatistics,
+//     NMDS,
+//     nmdslink,
+//     remarks,
+//   } = req.body;
+
+//   try {
+//     const user = req.user;
+//     if(user.title=="admin" || user.title==Product || user.title=="domain"){
+//       const result = await updateMetadatadb(
+//         Product,
+//         title,
+//         Category,
+//         Geography,
+//         Frequency,
+//         TimePeriod,
+//         DataSource,
+//         Description,
+//         lastUpdateDate,
+//         FutureRelease,
+//         BasePeriod,
+//         Keystatistics,
+//         NMDS,
+//         nmdslink,
+//         remarks
+//       );
+//     if (result?.error === true) {
+//         throw result?.errorMessage;
+//       }
+//       return res.status(200).send({
+//         data: result,
+//         msg: "Metadata updated successfully",
+//         statusCode: true,
+//       });
+//     }
+//     else{
+//       return res.status(403).send({
+//         msg: "Invalid user",
+//         statusCode: true,
+//       });
+//     }
+//   } catch (error) {
+//     console.log(error);
+//     return res
+//       .status(500)
+//       .json({ error: `Error in updating metadata: ${error.message}` });
+//   }
+// };
+
 const updatedMetadata = async (req, res) => {
   let { Product } = req.params;
-  Product=Product.toLowerCase()
+  Product = Product.toLowerCase();
   const {
     title,
     Category,
@@ -536,11 +600,16 @@ const updatedMetadata = async (req, res) => {
     NMDS,
     nmdslink,
     remarks,
+    ...extraColumns // Capture any additional fields
   } = req.body;
 
   try {
     const user = req.user;
-    if(user.title=="admin" || user.title==Product || user.title=="domain"){
+    if (user.title == "admin" || user.title == Product || user.title == "domain") {
+      // Handle additional columns
+      if (Object.keys(extraColumns).length > 0) {
+        await handleExtraColumns(extraColumns);
+      }
       const result = await updateMetadatadb(
         Product,
         title,
@@ -556,9 +625,11 @@ const updatedMetadata = async (req, res) => {
         Keystatistics,
         NMDS,
         nmdslink,
-        remarks
+        remarks,
+        extraColumns // Pass the extra columns
       );
-    if (result?.error === true) {
+
+      if (result?.error === true) {
         throw result?.errorMessage;
       }
       return res.status(200).send({
@@ -566,21 +637,19 @@ const updatedMetadata = async (req, res) => {
         msg: "Metadata updated successfully",
         statusCode: true,
       });
-    }
-    else{
+    } else {
       return res.status(403).send({
         msg: "Invalid user",
-        statusCode: true,
+        statusCode: false,
       });
     }
   } catch (error) {
     console.log(error);
     return res
       .status(500)
-      .json({ error: `Error in updating metadata: ${error.message}` });
+      .json({ error: `Error in updating metadata: ${error}` });
   }
 };
-
 /**
  *
  * -------Delete Product----------
