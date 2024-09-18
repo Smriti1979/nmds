@@ -18,61 +18,20 @@ module.exports = (sequelize, DataTypes) => {
           key: "id",
         },
       },
-      title: {
-        type: DataTypes.TEXT,
+      data:{
+        type: DataTypes.JSON,
         allowNull: false,
       },
-      Category: {
-        type: DataTypes.TEXT,
-        allowNull: false,
+      status:{
+        type:DataTypes.BOOLEAN,
+        defaultValue: true,
       },
-      Geography: {
-        type: DataTypes.TEXT,
-        allowNull: false,
+      user_id:{
+      type: DataTypes.INTEGER,
+      references: {
+        model: "adminusers",
+        key: "id",
       },
-      Frequency: {
-        type: DataTypes.TEXT,
-        allowNull: false,
-      },
-      TimePeriod: {
-        type: DataTypes.TEXT,
-        allowNull: false,
-      },
-      DataSource: {
-        type: DataTypes.TEXT,
-        allowNull: false,
-      },
-      Description: {
-        type: DataTypes.TEXT,
-        allowNull: false,
-      },
-      lastUpdateDate: {
-        type: DataTypes.DATE,
-        allowNull: false,
-      },
-      FutureRelease: {
-        type: DataTypes.TEXT,
-        allowNull: false,
-      },
-      BasePeriod: {
-        type: DataTypes.TEXT,
-        allowNull: false,
-      },
-      Keystatistics: {
-        type: DataTypes.TEXT,
-        allowNull: false,
-      },
-      NMDS: {
-        type: DataTypes.TEXT,
-        allowNull: false,
-      },
-      nmdslink: {
-        type: DataTypes.TEXT,
-        allowNull: false,
-      },
-      remarks: {
-        type: DataTypes.TEXT,
-        allowNull:true
       },
       latest:{
         type:DataTypes.BOOLEAN,

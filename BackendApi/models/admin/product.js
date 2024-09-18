@@ -49,10 +49,22 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.TEXT,
         allowNull: false,
       },
+      authorId: {
+        type: DataTypes.INTEGER,
+        references: {
+          model: "adminusers",
+          key: "id",
+        },
+      },
+      createdDate: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: DataTypes.NOW
+      },
     },
     {
       tableName: "product",
-      timestamps: false,
+      timestamps: false, 
       freezeTableName: true,
     }
   );

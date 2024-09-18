@@ -21,7 +21,6 @@ const {
   getThemedb,
   createMetadatadb,
   getMetaDatadb,
-  handleExtraColumns
 } = admindb;
 /**
  * Sign In
@@ -91,6 +90,7 @@ const createProduct = async (req, res) => {
         .status(405)
         .json({ error: `Only admin can create the product` });
     }
+    const authorId=req.user.id
     const categories = await createProductdb(
       productID,
       title,
@@ -104,7 +104,9 @@ const createProduct = async (req, res) => {
       swagger,
       viz,
       category,
+      authorId,
       res
+      
     );
     if (categories?.error == true) {
       throw categories?.errorMessage;
@@ -171,63 +173,42 @@ const createTheme = async (req, res) => {
  * Metadata
  */
 const createMetadata = async (req, res) => {
-  const {
-    Product,
-    title,
-    Category,
-    Geography,
-    Frequency,
-    TimePeriod,
-    DataSource,
-    Description,
-    lastUpdateDate,
-    FutureRelease,
-    BasePeriod,
-    Keystatistics,
-    NMDS,
-    nmdslink,
-    remarks,
-  } = req.body;
   try {
-    const user = req.user;
-    if (user.title !== "admin") {
-      return res
-        .status(405)
-        .json({ error: `Only admin can create the metadata` });
-    }
-    const productID=Product.toLowerCase()
-    const result = await createMetadatadb(
-      productID,
-      title,
-      Category,
-      Geography,
-      Frequency,
-      TimePeriod,
-      DataSource,
-      Description,
-      lastUpdateDate,
-      FutureRelease,
-      BasePeriod,
-      Keystatistics,
-      NMDS,
-      nmdslink,
-      remarks
-    );
 
-    if (result?.error == true) {
+    const user = req.user;
+
+    if (user.title !== "admin") {
+      return res.status(405).json({ error: `Only admin can create metadata` });
+    }
+
+  
+
+    // Exclude predefined fields and store the rest in the `data` column as JSON
+    const {Product, ...dynamicData } = req.body; // Capture all other dynamic fields into `dynamicData`
+    const productID = Product.toLowerCase();
+    const result = await createMetadatadb({
+      Product: productID,
+      data: dynamicData,  // Store the remaining dynamic fields as JSON
+      user_id: user.id,
+      version: 1,
+      latest: true,
+    });
+
+    if (result?.error) {
       throw result?.errorMessage;
     }
 
     return res.status(201).send({
       data: result,
-      msg: "Meata data create successfully",
+      msg: "Metadata created successfully",
       statusCode: true,
     });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ error: `Error in Creating Metadata: ${error}` });
+    res.status(500).json({ error: `Error in creating metadata: ${error}` });
   }
 };
+
 /*
 Get product 
 */
@@ -519,117 +500,21 @@ const updateTheme = async (req, res) => {
  *
  */
 
-// const updatedMetadata = async (req, res) => {
-//   let { Product } = req.params;
-//   Product=Product.toLowerCase()
-//   const {
-//     title,
-//     Category,
-//     Geography,
-//     Frequency,
-//     TimePeriod,
-//     DataSource,
-//     Description,
-//     lastUpdateDate,
-//     FutureRelease,
-//     BasePeriod,
-//     Keystatistics,
-//     NMDS,
-//     nmdslink,
-//     remarks,
-//   } = req.body;
-
-//   try {
-//     const user = req.user;
-//     if(user.title=="admin" || user.title==Product || user.title=="domain"){
-//       const result = await updateMetadatadb(
-//         Product,
-//         title,
-//         Category,
-//         Geography,
-//         Frequency,
-//         TimePeriod,
-//         DataSource,
-//         Description,
-//         lastUpdateDate,
-//         FutureRelease,
-//         BasePeriod,
-//         Keystatistics,
-//         NMDS,
-//         nmdslink,
-//         remarks
-//       );
-//     if (result?.error === true) {
-//         throw result?.errorMessage;
-//       }
-//       return res.status(200).send({
-//         data: result,
-//         msg: "Metadata updated successfully",
-//         statusCode: true,
-//       });
-//     }
-//     else{
-//       return res.status(403).send({
-//         msg: "Invalid user",
-//         statusCode: true,
-//       });
-//     }
-//   } catch (error) {
-//     console.log(error);
-//     return res
-//       .status(500)
-//       .json({ error: `Error in updating metadata: ${error.message}` });
-//   }
-// };
-
 const updatedMetadata = async (req, res) => {
   let { Product } = req.params;
-  Product = Product.toLowerCase();
-  const {
-    title,
-    Category,
-    Geography,
-    Frequency,
-    TimePeriod,
-    DataSource,
-    Description,
-    lastUpdateDate,
-    FutureRelease,
-    BasePeriod,
-    Keystatistics,
-    NMDS,
-    nmdslink,
-    remarks,
-    ...extraColumns // Capture any additional fields
-  } = req.body;
+  Product=Product.toLowerCase()
+  const {...metadata}=req.body
 
   try {
     const user = req.user;
-    if (user.title == "admin" || user.title == Product || user.title == "domain") {
-      // Handle additional columns
-      if (Object.keys(extraColumns).length > 0) {
-        await handleExtraColumns(extraColumns);
-      }
+    const user_id=user.id
+    if(user.title=="admin" || user.title==Product || user.title=="domain"){
       const result = await updateMetadatadb(
         Product,
-        title,
-        Category,
-        Geography,
-        Frequency,
-        TimePeriod,
-        DataSource,
-        Description,
-        lastUpdateDate,
-        FutureRelease,
-        BasePeriod,
-        Keystatistics,
-        NMDS,
-        nmdslink,
-        remarks,
-        extraColumns // Pass the extra columns
+        metadata,
+        user_id
       );
-
-      if (result?.error === true) {
+    if (result?.error === true) {
         throw result?.errorMessage;
       }
       return res.status(200).send({
@@ -637,19 +522,22 @@ const updatedMetadata = async (req, res) => {
         msg: "Metadata updated successfully",
         statusCode: true,
       });
-    } else {
+    }
+    else{
       return res.status(403).send({
         msg: "Invalid user",
-        statusCode: false,
+        statusCode: true,
       });
     }
   } catch (error) {
     console.log(error);
     return res
       .status(500)
-      .json({ error: `Error in updating metadata: ${error}` });
+      .json({ error: `Error in updating metadata: ${error.message}` });
   }
 };
+
+
 /**
  *
  * -------Delete Product----------

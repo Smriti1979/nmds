@@ -41,12 +41,13 @@ async function createProductdb(
   table,
   swagger,
   viz,
-  category
+  category,
+  authorId
 ) {
   try {
     await pooladmin.query("BEGIN");
 
-    const productQuery = `INSERT INTO product(id, title, count, icon, period, tooltip, type, url, "table", swagger, viz) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`;
+    const productQuery = `INSERT INTO product(id, title, count, icon, period, tooltip, type, url, "table", swagger, viz,"authorId","createdDate") VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11,$12,$13)`;
     await pooladmin.query(productQuery, [
       id,
       title,
@@ -59,6 +60,8 @@ async function createProductdb(
       table,
       swagger,
       viz,
+      authorId,
+      new Date()
     ]);
 
     const categories = category.split(",").map((cat) => cat.trim());
@@ -98,8 +101,8 @@ async function createProductdb(
  */
 async function createThemedb(category, name) {
   try {
-    const sqlQuery = `INSERT INTO theme(category,name) VALUES($1,$2)`;
-    await pooladmin.query(sqlQuery, [category, name]);
+    const sqlQuery = `INSERT INTO theme(category,name,"createdDate") VALUES($1,$2,$3)`;
+    await pooladmin.query(sqlQuery, [category, name,new Date()]);
     const result = await pooladmin.query(
       "SELECT * FROM theme WHERE category=$1",
       [category]
@@ -123,50 +126,25 @@ async function createThemedb(category, name) {
 /**
  * Metadata
  */
-async function createMetadatadb(
-  Product,
-  title,
-  Category,
-  Geography,
-  Frequency,
-  TimePeriod,
-  DataSource,
-  Description,
-  lastUpdateDate,
-  FutureRelease,
-  BasePeriod,
-  Keystatistics,
-  NMDS,
-  nmdslink,
-  remarks
-) {
+async function createMetadatadb({ Product, data, user_id, version, latest }) {
   try {
-    // const metaQuery = `INSERT INTO metadata(product,title,category,geography,frequency,timePeriod,dataSource,description,lastUpdateDate,futureRelease,basePeriod,keystatistics,NMDS,nmdslink,remarks) values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)`;
-    const metaQuery = `INSERT INTO metadata("Product",title,"Category","Geography","Frequency","TimePeriod","DataSource","Description","lastUpdateDate","FutureRelease","BasePeriod","Keystatistics","NMDS",nmdslink,remarks,version,latest) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)`;
+    const metaQuery = `INSERT INTO metadata("Product", data, user_id, version, latest) 
+                       VALUES($1, $2, $3, $4, $5)`;
 
     await pooladmin.query(metaQuery, [
       Product,
-      title,
-      Category,
-      Geography,
-      Frequency,
-      TimePeriod,
-      DataSource,
-      Description,
-      lastUpdateDate,
-      FutureRelease,
-      BasePeriod,
-      Keystatistics,
-      NMDS,
-      nmdslink,
-      remarks,
-      1,
-      true
+
+      data, 
+      user_id,
+      version,
+      latest,
     ]);
+
     const result = await pooladmin.query(
-      `SELECT * FROM metadata where "Product"=$1`,
+      `SELECT * FROM metadata WHERE "Product"=$1 AND latest=true`,
       [Product]
     );
+
     if (result.rows.length == 0) {
       return {
         error: true,
@@ -174,12 +152,13 @@ async function createMetadatadb(
         errorMessage: `Error in creating metadata`,
       };
     }
+
     return result.rows[0];
   } catch (error) {
     return {
       error: true,
       errorCode: 500,
-      errorMessage: `Error in createMetadatadb ${error}`,
+      errorMessage: `Error in createMetadatadb: ${error}`,
     };
   }
 }
@@ -540,187 +519,50 @@ async function updateThemedb(name, category) {
  *
  */
 
-// async function updateMetadatadb(
-//   Product,
-//   title,
-//   Category,
-//   Geography,
-//   Frequency,
-//   TimePeriod,
-//   DataSource,
-//   Description,
-//   lastUpdateDate,
-//   FutureRelease,
-//   BasePeriod,
-//   Keystatistics,
-//   NMDS,
-//   nmdslink,
-//   remarks
-// ) {
-//   try {
-//     await pooladmin.query("BEGIN");
-//     const getQuery=`SELECT * FROM metadata where latest=true`
-//     const data=await pooladmin.query(getQuery)
-//     if(data.rowCount==0){
-//       return {
-//         error: true,
-//         errorCode: 400,
-//         errorMessage: `Error in getting metadata`,
-//       };
-//     }
-//     const {version}=data.rows[0];
-//     const newVersion=version+1;
-//     await pooladmin.query(`Update metadata SET latest=false where "Product"=$1 ANd version=$2`,[Product,version])
-//     const metaQuery = `INSERT INTO metadata("Product",title,"Category","Geography","Frequency","TimePeriod","DataSource","Description","lastUpdateDate","FutureRelease","BasePeriod","Keystatistics","NMDS",nmdslink,remarks,version,latest) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)`;
-
-//     await pooladmin.query(metaQuery, [
-//       Product,
-//       title,
-//       Category,
-//       Geography,
-//       Frequency,
-//       TimePeriod,
-//       DataSource,
-//       Description,
-//       lastUpdateDate,
-//       FutureRelease,
-//       BasePeriod,
-//       Keystatistics,
-//       NMDS,
-//       nmdslink,
-//       remarks,
-//       newVersion,
-//       true
-//     ]);
-//     const result = await pooladmin.query(
-//       `SELECT * FROM metadata where "version"=$1`,
-//       [newVersion]
-//     );
-//     if (result.rows.length == 0) {
-//       return {
-//         error: true,
-//         errorCode: 400,
-//         errorMessage: `Error in update metadata`,
-//       };
-//     }
-//     await pooladmin.query("COMMIT");
-//     return result.rows[0];
-//   } catch (error) {
-//     await pooladmin.query("ROLLBACK");
-//     return {
-//       error: true,
-//       errorCode: 500,
-//       errorMessage: `Error in createMetadatadb ${error}`,
-//     };
-//   }
-// }
-async function handleExtraColumns(extraColumns) {
-  try {
-    for (let column in extraColumns) {
-      // Check if the column already exists in the metadata table
-      const checkColumnQuery = `
-        SELECT column_name
-        FROM information_schema.columns
-        WHERE table_name = 'metadata' AND column_name = $1
-      `;
-      const columnExists = await pooladmin.query(checkColumnQuery, [column]);
-
-      // If the column doesn't exist, add it to the table
-      if (columnExists.rows.length === 0) {
-        const alterTableQuery = `
-          ALTER TABLE metadata ADD COLUMN "${column}" TEXT
-        `;
-        await pooladmin.query(alterTableQuery);
-      }
-    }
-  } catch (error) {
-    throw new Error(`Error handling extra columns: ${error}`);
-  }
-}
-
 async function updateMetadatadb(
   Product,
-  title,
-  Category,
-  Geography,
-  Frequency,
-  TimePeriod,
-  DataSource,
-  Description,
-  lastUpdateDate,
-  FutureRelease,
-  BasePeriod,
-  Keystatistics,
-  NMDS,
-  nmdslink,
-  remarks,
-  extraColumns
+  metadata,
+  user_id
 ) {
+
   try {
     await pooladmin.query("BEGIN");
-    const getQuery=`SELECT * FROM  metadata where "Product"=$1  AND  latest=true`
+    const getQuery=`SELECT * FROM metadata where latest=true AND "Product"=$1`
     const data=await pooladmin.query(getQuery,[Product])
     if(data.rowCount==0){
-      await pooladmin.query("ROLLBACK");
       return {
-
         error: true,
         errorCode: 400,
         errorMessage: `Error in getting metadata`,
-      };}
-      const {version}=data.rows[0];
-      const newVersion=version+1;
-      await pooladmin.query(`Update metadata SET latest=$1 where "Product"=$2 ANd version=$3`,[false,Product,version])
-      const check=await pooladmin.query(getQuery,[Product])
-    if(check.rowCount>0){
-      await pooladmin.query("ROLLBACK");
-      return {
+      };
+    }
+    const {version}=data.rows[0];
+    const newVersion=version+1;
+    await pooladmin.query(`Update metadata SET latest=$1 where "Product"=$2 ANd version=$3`,[false,Product,version])
+    const metaQuery = `INSERT INTO metadata("Product",data,version,latest,user_id) VALUES($1,$2,$3,$4,$5)`;
 
-        error: true,
-        errorCode: 400,
-        errorMessage: `Error in lastest =true`,
-      };}
-    const metaQuery = `INSERT INTO metadata("Product",title,"Category","Geography","Frequency","TimePeriod","DataSource","Description","lastUpdateDate","FutureRelease","BasePeriod","Keystatistics","NMDS",nmdslink,remarks,version,latest${Object.keys(extraColumns).length > 0 ? ',' + Object.keys(extraColumns).map(col => `"${col}"`).join(',') : ''}) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17${Object.keys(extraColumns).length > 0 ? ',' + Object.keys(extraColumns).map((_, i) => `$${18 + i}`).join(',') : ''})`;
-
-    const values = [
+    await pooladmin.query(metaQuery, [
       Product,
-      title,
-      Category,
-      Geography,
-      Frequency,
-      TimePeriod,
-      DataSource,
-      Description,
-      lastUpdateDate,
-      FutureRelease,
-      BasePeriod,
-      Keystatistics,
-      NMDS,
-      nmdslink,
-      remarks,
+      metadata,
       newVersion,
       true,
-      ...Object.values(extraColumns) // Include additional values
-    ];
-
-    await pooladmin.query(metaQuery, values);
-
+      user_id
+    ]);
     const result = await pooladmin.query(
-      `SELECT * FROM metadata WHERE "Product"=$1 AND latest=$2 `,
-      [Product,true]
+      `SELECT * FROM metadata where "version"=$1 And "Product"=$2`,
+      [newVersion,Product]
     );
-    if (result.rows.length === 0) {
-      await pooladmin.query("ROLLBACK");
+    if (result.rows.length == 0) {
       return {
         error: true,
         errorCode: 400,
-        errorMessage: `Error in creating metadata`,
+        errorMessage: `Error in update metadata`,
       };
     }
     await pooladmin.query("COMMIT");
     return result.rows[0];
   } catch (error) {
-     await pooladmin.query("ROLLBACK");
+    await pooladmin.query("ROLLBACK");
     return {
       error: true,
       errorCode: 500,
@@ -728,6 +570,9 @@ async function updateMetadatadb(
     };
   }
 }
+
+
+
 
 
 /***
@@ -834,7 +679,7 @@ module.exports = {
   // updateMetadataDevdb,
   // updateMetadataDomdb,
   updateMetadatadb,
-  handleExtraColumns,
+
   updateThemedb,
   updateProductDevdb,
   updateProductDomdb,
