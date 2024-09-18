@@ -63,6 +63,7 @@ CREATE TABLE Users IF NOT EXISTS(
 INSERT INTO adminusers(username, password,title) VALUES ('admin', '$2a$10$IDhLRlEAHiff18CIk5eKkeTfSIVG/YEFDB859xJklP8xIbTwbZ1kC','admin');
 INSERT INTO adminusers(username, password,title) VALUES ('domain', '$2a$10$IDhLRlEAHiff18CIk5eKkeTfSIVG/YEFDB859xJklP8xIbTwbZ1kC','domain');
 INSERT INTO adminusers(username, password,title) VALUES ('cpi_user', '$2a$10$IDhLRlEAHiff18CIk5eKkeTfSIVG/YEFDB859xJklP8xIbTwbZ1kC','cpi');
+INSERT INTO adminusers(username, password,title) VALUES ('asi_user', '$2a$10$IDhLRlEAHiff18CIk5eKkeTfSIVG/YEFDB859xJklP8xIbTwbZ1kC','asi');
 
 -- CREATE TABLE UserRetation (
 --     id SERIAL PRIMARY KEY,

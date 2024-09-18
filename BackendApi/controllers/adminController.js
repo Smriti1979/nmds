@@ -291,6 +291,12 @@ const getMetaData = async (req, res) => {
 };
 const getMetaDataById = async (req, res) => {
   const { Product } = req.params;
+  const user=req.user
+  if(user.title!="admin" && user.title!=Product && user.title!="domain"){
+    return res
+    .status(400)
+    .json({ error: `only admin domain and ${user.title} can access the api ` });
+  }
   if (Product == undefined) {
     return res.status(400).json({ error: `productID is required` });
   }
