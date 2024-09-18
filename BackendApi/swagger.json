@@ -451,7 +451,7 @@
         }
       }
     },
-    "/api/admin/products": {
+    "/api/admin/product ": {
       "get": {
         "summary": "Get All Products",
         "description": "Retrieve all products. Only admin or domain users can access.",
@@ -477,7 +477,7 @@
         }
       }
     },
-    "/api/products/{productId}": {
+    "/api/product/{productId} ": {
       "get": {
         "summary": "Get Product by ID",
         "description": "Retrieve a product by its ID",
@@ -579,7 +579,7 @@
         }
       }
     },
-    "/api/admin/product/{id}": {
+    "/api/admin/product/{id} ": {
       "put": {
         "summary": "Update product",
         "tags": ["Products"],
@@ -1004,7 +1004,7 @@
         }
       }
     },
-    "/api/admin/metadata/{Product}": {
+    "/api/admin/metadata/{Product} ": {
       "delete": {
         "summary": "Delete metadata",
         "description": "Delete metadata for a specific product. Only admin or the product owner can delete metadata.",
