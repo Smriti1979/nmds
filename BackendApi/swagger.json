@@ -106,6 +106,7 @@
       "post": {
         "summary": "Create product",
         "description": "Create a new product in the system. Only developers can create products.",
+        "tags": ["Products"],
         "requestBody": {
           "required": true,
           "content": {
@@ -279,6 +280,7 @@
     "/api/admin/theme": {
       "post": {
         "summary": "Create Theme",
+        "tags": ["Themes"],
         "description": "Create a new Theme in the system. Only admin users can create themes.",
         "requestBody": {
           "required": true,
@@ -363,7 +365,805 @@
           }
         }
       }
+    },
+    "/api/admin/metadata": {
+      "post": {
+        "summary": "Create Metadata",
+        "description": "Create metadata for a product. Only admin users can create metadata.",
+        "tags": ["Metadata"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "metadata",
+            "description": "Metadata object to create",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "Product": {
+                  "type": "string"
+                },
+                "dynamicData": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Metadata created successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "data": { "type": "object" },
+                "msg": { "type": "string" },
+                "statusCode": { "type": "boolean" }
+              }
+            }
+          },
+          "405": {
+            "description": "Only admin users can create metadata"
+          },
+          "500": {
+            "description": "Error in creating metadata"
+          }
+        },
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/api/admin/metadata/{Product}": {
+      "get": {
+        "summary": "Get Metadata by Product",
+        "description": "Retrieve metadata by product ID",
+        "tags": ["Metadata"],
+        "parameters": [
+          {
+            "name": "Product",
+            "in": "path",
+            "required": true,
+            "description": "Product ID",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Product metadata retrieved",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "data": { "type": "object" },
+                "msg": { "type": "string" },
+                "statusCode": { "type": "boolean" }
+              }
+            }
+          },
+          "400": {
+            "description": "Product ID is required"
+          },
+          "500": {
+            "description": "Error in fetching metadata"
+          }
+        }
+      }
+    },
+    "/api/admin/products": {
+      "get": {
+        "summary": "Get All Products",
+        "description": "Retrieve all products. Only admin or domain users can access.",
+        "tags": ["Products"],
+        "responses": {
+          "200": {
+            "description": "Product data retrieved",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "data": { "type": "array", "items": { "type": "object" } },
+                "msg": { "type": "string" },
+                "statusCode": { "type": "boolean" }
+              }
+            }
+          },
+          "405": {
+            "description": "Only admin or domain users can access the product data"
+          },
+          "500": {
+            "description": "Unable to fetch product data"
+          }
+        }
+      }
+    },
+    "/api/products/{productId}": {
+      "get": {
+        "summary": "Get Product by ID",
+        "description": "Retrieve a product by its ID",
+        "tags": ["Products"],
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "path",
+            "required": true,
+            "description": "Product ID",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Product data retrieved",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "data": { "type": "object" },
+                "msg": { "type": "string" },
+                "statusCode": { "type": "boolean" }
+              }
+            }
+          },
+          "400": {
+            "description": "Product ID is required"
+          },
+          "405": {
+            "description": "Only admin or domain users can access the product data"
+          },
+          "500": {
+            "description": "Unable to fetch product data"
+          }
+        }
+      }
+    },
+    "/api/admin/themes": {
+      "get": {
+        "summary": "Get All Themes",
+        "description": "Retrieve all themes. Only admin, developers, or domain users can access.",
+        "tags": ["Themes"],
+        "responses": {
+          "200": {
+            "description": "Theme data retrieved",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "data": { "type": "array", "items": { "type": "object" } },
+                "msg": { "type": "string" },
+                "statusCode": { "type": "boolean" }
+              }
+            }
+          },
+          "403": {
+            "description": "Only developers or domain users can access the themes"
+          },
+          "500": {
+            "description": "Unable to fetch theme data"
+          }
+        }
+      }
+    },
+    "/api/admin/themes/{category}": {
+      "get": {
+        "summary": "Get Theme by Category",
+        "description": "Retrieve a theme by its category",
+        "tags": ["Themes"],
+        "parameters": [
+          {
+            "name": "category",
+            "in": "path",
+            "required": true,
+            "description": "Category of the theme",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Theme data retrieved",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "data": { "type": "object" },
+                "msg": { "type": "string" },
+                "statusCode": { "type": "boolean" }
+              }
+            }
+          },
+          "400": {
+            "description": "Category is required"
+          },
+          "403": {
+            "description": "Only developers or domain users can access the themes"
+          },
+          "500": {
+            "description": "Unable to fetch theme data"
+          }
+        }
+      }
+    },
+    "/api/admin/product/{id}": {
+      "put": {
+        "summary": "Update product",
+        "tags": ["Products"],
+        "description": "Update an existing product. Only admin and domain users can edit products.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "prod_001"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "example": "Sample Product"
+                  },
+                  "count": {
+                    "type": "integer",
+                    "example": 10
+                  },
+                  "icon": {
+                    "type": "string",
+                    "example": "icon_url"
+                  },
+                  "period": {
+                    "type": "string",
+                    "example": "2021-2022"
+                  },
+                  "tooltip": {
+                    "type": "string",
+                    "example": "This is a product tooltip"
+                  },
+                  "type": {
+                    "type": "string",
+                    "example": "widget"
+                  },
+                  "url": {
+                    "type": "string",
+                    "example": "http://product-url.com"
+                  },
+                  "table": {
+                    "type": "string",
+                    "example": "products_table"
+                  },
+                  "swagger": {
+                    "type": "boolean",
+                    "example": true
+                  },
+                  "viz": {
+                    "type": "string",
+                    "example": "viz_url"
+                  },
+                  "category": {
+                    "type": "string",
+                    "example": "Category 1"
+                  }
+                },
+                "required": ["title", "count", "type", "category"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Product updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "title": {
+                          "type": "string",
+                          "example": "Sample Product"
+                        },
+                        "count": {
+                          "type": "integer",
+                          "example": 10
+                        },
+                        "icon": {
+                          "type": "string",
+                          "example": "icon_url"
+                        },
+                        "period": {
+                          "type": "string",
+                          "example": "2021-2022"
+                        },
+                        "tooltip": {
+                          "type": "string",
+                          "example": "This is a product tooltip"
+                        },
+                        "type": {
+                          "type": "string",
+                          "example": "widget"
+                        },
+                        "url": {
+                          "type": "string",
+                          "example": "http://product-url.com"
+                        },
+                        "table": {
+                          "type": "string",
+                          "example": "products_table"
+                        },
+                        "swagger": {
+                          "type": "boolean",
+                          "example": true
+                        },
+                        "viz": {
+                          "type": "string",
+                          "example": "viz_url"
+                        },
+                        "category": {
+                          "type": "string",
+                          "example": "Category 1"
+                        }
+                      }
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "Product updated successfully"
+                    },
+                    "statusCode": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Unauthorized user (only admin and domain can edit the product)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Only admin and domain can edit"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Error in Updating product: [error details]"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/theme/{category}": {
+      "put": {
+        "summary": "Update theme",
+        "tags": ["Themes"],
+        "description": "Update an existing theme. Only admin and domain users can edit themes.",
+        "parameters": [
+          {
+            "name": "category",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "category_001"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "New Theme Name"
+                  }
+                },
+                "required": ["name"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Theme updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "example": "New Theme Name"
+                        }
+                      }
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "Theme updated successfully"
+                    },
+                    "statusCode": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Invalid input or unauthorized user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Category and name are required"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Error in Updating theme data: [error details]"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/api/admin/metadata/{Product} ": {
+      "put": {
+        "summary": "Update Metadata",
+        "description": "Update metadata for a product. Only admin users or the owner of the product can update metadata.",
+        "tags": ["Metadata"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "Product",
+            "description": "The product for which metadata needs to be updated. This is a required path parameter.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "body",
+            "name": "metadata",
+            "description": "Metadata object to update",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "Product": {
+                  "type": "string"
+                },
+                "dynamicData": {
+                  "type": "object"
+                }
+              },
+              "example": {
+                "Product": "exampleProduct",
+                "dynamicData": {
+                  "key": "value"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Metadata updated successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "data": {
+                  "type": "object"
+                },
+                "msg": {
+                  "type": "string"
+                },
+                "statusCode": {
+                  "type": "boolean"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Invalid user. Only admin or authorized users can update metadata."
+          },
+          "500": {
+            "description": "Error in updating metadata"
+          }
+        },
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ]
+      }
+    },
+
+    "/api/admin/product/{id}": {
+      "delete": {
+        "summary": "Delete product",
+        "tags": ["Products"],
+        "description": "Delete an existing product. Only admin users can delete products.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "prod_001"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Product deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {}
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "Product deleted successfully"
+                    },
+                    "statusCode": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Unauthorized user (only admin can delete the product)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Only admin can delete the product"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service unavailable or internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Unable to delete the product: [error details]"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/metadata/{Product}": {
+      "delete": {
+        "summary": "Delete metadata",
+        "description": "Delete metadata for a specific product. Only admin or the product owner can delete metadata.",
+        "tags": ["Metadata"],
+        "parameters": [
+          {
+            "name": "Product",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "product_001"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Metadata deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {}
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "Metadata deleted successfully"
+                    },
+                    "statusCode": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Unauthorized user (only admin or product owner can delete metadata)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Only admin or product owner can delete the metadata"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Unable to delete the metadata: [error details]"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/metadata |": {
+      "get": {
+        "summary": "Get All Metadata",
+        "description": "Fetch all metadata for products.",
+        "tags": ["Metadata"],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved all metadata",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                },
+                "msg": {
+                  "type": "string"
+                },
+                "statusCode": {
+                  "type": "boolean"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error in retrieving metadata"
+          }
+        },
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/api/admin/metadata/{Product} |": {
+      "get": {
+        "summary": "Get Metadata by Product",
+        "description": "Fetch metadata for a specific product based on the product ID.",
+        "tags": ["Metadata"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "Product",
+            "description": "The product ID for which metadata needs to be retrieved.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved metadata for the specified product",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "data": {
+                  "type": "object"
+                },
+                "msg": {
+                  "type": "string"
+                },
+                "statusCode": {
+                  "type": "boolean"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request. Product ID is required."
+          },
+          "500": {
+            "description": "Error in retrieving metadata"
+          }
+        },
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ]
+      }
     }
-  
   }
 }
