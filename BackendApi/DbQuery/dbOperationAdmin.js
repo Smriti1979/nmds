@@ -285,6 +285,7 @@ async function getThemedb() {
 async function getThemeByIddb(category) {
   const getQuery = `SELECT * FROM theme where category=$1`;
   const data = await pooladmin.query(getQuery, [category]);
+  console.log(category)
   if (data.rows.length == 0) {
     return {
       error: true,

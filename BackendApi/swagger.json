@@ -7,8 +7,12 @@
   },
   "servers": [
     {
-      "url": "http://localhost:5000",
+      "url": "http://localhost:5003",
       "description": "Local development server"
+    },
+    {
+      "url": "http://10.24.89.9:5003",
+      "description": "Mospi Development Server"
     }
   ],
   "paths": {
@@ -25,11 +29,11 @@
                 "properties": {
                   "username": {
                     "type": "string",
-                    "example": "admin@example.com"
+                    "example": "admin"
                   },
                   "password": {
                     "type": "string",
-                    "example": "yourPassword123"
+                    "example": "123456"
                   }
                 },
                 "required": ["username", "password"]
@@ -48,9 +52,9 @@
                     "data": {
                       "type": "object",
                       "properties": {
-                        "email": {
+                        "username": {
                           "type": "string",
-                          "example": "admin@example.com"
+                          "example": "admin"
                         }
                       }
                     },
@@ -104,6 +108,11 @@
     },
     "/api/admin/product": {
       "post": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Create product",
         "description": "Create a new product in the system. Only developers can create products.",
         "tags": ["Products"],
@@ -116,54 +125,58 @@
                 "properties": {
                   "id": {
                     "type": "string",
-                    "example": "prod_001"
+                    "example": "cpi"
                   },
                   "title": {
                     "type": "string",
-                    "example": "Sample Product"
-                  },
-                  "count": {
-                    "type": "integer",
-                    "example": 10
-                  },
-                  "icon": {
-                    "type": "string",
-                    "example": "icon_url"
-                  },
-                  "period": {
-                    "type": "string",
-                    "example": "2021-2022"
-                  },
-                  "tooltip": {
-                    "type": "string",
-                    "example": "This is a product tooltip"
-                  },
-                  "type": {
-                    "type": "string",
-                    "example": "widget"
-                  },
-                  "url": {
-                    "type": "string",
-                    "example": "http://product-url.com"
-                  },
-                  "table": {
-                    "type": "string",
-                    "example": "products_table"
-                  },
-                  "swagger": {
-                    "type": "boolean",
-                    "example": true
-                  },
-                  "viz": {
-                    "type": "string",
-                    "example": "viz_url"
+                    "example": "Consumer Price Index"
                   },
                   "category": {
                     "type": "string",
-                    "example": "Category 1"
+                    "example": "Economy"
+                  },
+                  "count": {
+                    "type": "string",
+                    "example": "5.08%"
+                  },
+                  "icon": {
+                    "type": "string",
+                    "example": ""
+                  },
+                  "product": {
+                    "type": "string",
+                    "example": "CPI"
+                  },
+                  "period": {
+                    "type": "string",
+                    "example": "May 2024"
+                  },
+                  "tooltip": {
+                    "type": "string",
+                    "example": "Click to View CPI Datasets"
+                  },
+                  "type": {
+                    "type": "string",
+                    "example": "Inflation"
+                  },
+                  "url": {
+                    "type": "string",
+                    "example": "macroindicators?product=cpi"
+                  },
+                  "table": {
+                    "type": "string",
+                    "example": "https://esankhyiki.mospi.gov.in/dashboard/cpi"
+                  },
+                  "swagger": {
+                    "type": "string",
+                    "example": "Y"
+                  },
+                  "viz": {
+                    "type": "string",
+                    "example": "https://esankhyiki.mospi.gov.in/viz/cpi"
                   }
                 },
-                "required": ["id", "title", "count", "type", "category"]
+                "required": ["id", "title", "category", "count", "type"]
               }
             }
           }
@@ -181,51 +194,55 @@
                       "properties": {
                         "id": {
                           "type": "string",
-                          "example": "prod_001"
+                          "example": "cpi"
                         },
                         "title": {
                           "type": "string",
-                          "example": "Sample Product"
-                        },
-                        "count": {
-                          "type": "integer",
-                          "example": 10
-                        },
-                        "icon": {
-                          "type": "string",
-                          "example": "icon_url"
-                        },
-                        "period": {
-                          "type": "string",
-                          "example": "2021-2022"
-                        },
-                        "tooltip": {
-                          "type": "string",
-                          "example": "This is a product tooltip"
-                        },
-                        "type": {
-                          "type": "string",
-                          "example": "widget"
-                        },
-                        "url": {
-                          "type": "string",
-                          "example": "http://product-url.com"
-                        },
-                        "table": {
-                          "type": "string",
-                          "example": "products_table"
-                        },
-                        "swagger": {
-                          "type": "boolean",
-                          "example": "swagger_url"
-                        },
-                        "viz": {
-                          "type": "string",
-                          "example": "viz_url"
+                          "example": "Consumer Price Index"
                         },
                         "category": {
                           "type": "string",
-                          "example": "Category 1"
+                          "example": "Economy"
+                        },
+                        "count": {
+                          "type": "string",
+                          "example": "5.08%"
+                        },
+                        "icon": {
+                          "type": "string",
+                          "example": ""
+                        },
+                        "product": {
+                          "type": "string",
+                          "example": "CPI"
+                        },
+                        "period": {
+                          "type": "string",
+                          "example": "May 2024"
+                        },
+                        "tooltip": {
+                          "type": "string",
+                          "example": "Click to View CPI Datasets"
+                        },
+                        "type": {
+                          "type": "string",
+                          "example": "Inflation"
+                        },
+                        "url": {
+                          "type": "string",
+                          "example": "macroindicators?product=cpi"
+                        },
+                        "table": {
+                          "type": "string",
+                          "example": "https://esankhyiki.mospi.gov.in/dashboard/cpi"
+                        },
+                        "swagger": {
+                          "type": "string",
+                          "example": "Y"
+                        },
+                        "viz": {
+                          "type": "string",
+                          "example": "https://esankhyiki.mospi.gov.in/viz/cpi"
                         }
                       }
                     },
@@ -275,13 +292,48 @@
             }
           }
         }
+      },
+      "get": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Get All Products",
+        "description": "Retrieve all products. Only admin or domain users can access.",
+        "tags": ["Products"],
+        "responses": {
+          "200": {
+            "description": "Product data retrieved",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "data": { "type": "array", "items": { "type": "object" } },
+                "msg": { "type": "string" },
+                "statusCode": { "type": "boolean" }
+              }
+            }
+          },
+          "405": {
+            "description": "Only admin or domain users can access the product data"
+          },
+          "500": {
+            "description": "Unable to fetch product data"
+          }
+        }
       }
     },
+
     "/api/admin/theme": {
       "post": {
         "summary": "Create Theme",
         "tags": ["Themes"],
-        "description": "Create a new Theme in the system. Only admin users can create themes.",
+        "description": "Create a new theme in the system. Only admin users can create themes.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -331,8 +383,24 @@
               }
             }
           },
-          "405": {
-            "description": "Unauthorized user (only admin can create the theme)",
+          "401": {
+            "description": "Unauthorized request due to missing or invalid token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Unauthorized request"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Only admin users can create themes",
             "content": {
               "application/json": {
                 "schema": {
@@ -366,122 +434,20 @@
         }
       }
     },
-    "/api/admin/metadata": {
-      "post": {
-        "summary": "Create Metadata",
-        "description": "Create metadata for a product. Only admin users can create metadata.",
-        "tags": ["Metadata"],
-        "parameters": [
-          {
-            "in": "body",
-            "name": "metadata",
-            "description": "Metadata object to create",
-            "required": true,
-            "schema": {
-              "type": "object",
-              "properties": {
-                "Product": {
-                  "type": "string"
-                },
-                "dynamicData": {
-                  "type": "object"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Metadata created successfully",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "data": { "type": "object" },
-                "msg": { "type": "string" },
-                "statusCode": { "type": "boolean" }
-              }
-            }
-          },
-          "405": {
-            "description": "Only admin users can create metadata"
-          },
-          "500": {
-            "description": "Error in creating metadata"
-          }
-        },
-        "security": [
-          {
-            "apiKeyAuth": []
-          }
-        ]
-      }
-    },
-    "/api/admin/metadata/{Product}": {
-      "get": {
-        "summary": "Get Metadata by Product",
-        "description": "Retrieve metadata by product ID",
-        "tags": ["Metadata"],
-        "parameters": [
-          {
-            "name": "Product",
-            "in": "path",
-            "required": true,
-            "description": "Product ID",
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Product metadata retrieved",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "data": { "type": "object" },
-                "msg": { "type": "string" },
-                "statusCode": { "type": "boolean" }
-              }
-            }
-          },
-          "400": {
-            "description": "Product ID is required"
-          },
-          "500": {
-            "description": "Error in fetching metadata"
-          }
-        }
-      }
-    },
-    "/api/admin/product ": {
-      "get": {
-        "summary": "Get All Products",
-        "description": "Retrieve all products. Only admin or domain users can access.",
-        "tags": ["Products"],
-        "responses": {
-          "200": {
-            "description": "Product data retrieved",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "data": { "type": "array", "items": { "type": "object" } },
-                "msg": { "type": "string" },
-                "statusCode": { "type": "boolean" }
-              }
-            }
-          },
-          "405": {
-            "description": "Only admin or domain users can access the product data"
-          },
-          "500": {
-            "description": "Unable to fetch product data"
-          }
-        }
-      }
-    },
-    "/api/product/{productId} ": {
+
+
+
+
+    "/api/admin/product/{productId}": {
       "get": {
         "summary": "Get Product by ID",
         "description": "Retrieve a product by its ID",
         "tags": ["Products"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "productId",
@@ -515,11 +481,16 @@
         }
       }
     },
-    "/api/admin/themes": {
+    "/api/admin/theme ": {
       "get": {
         "summary": "Get All Themes",
         "description": "Retrieve all themes. Only admin, developers, or domain users can access.",
         "tags": ["Themes"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "Theme data retrieved",
@@ -541,120 +512,31 @@
         }
       }
     },
-    "/api/admin/themes/{category}": {
+
+    "/api/admin/theme/{category}": {
       "get": {
         "summary": "Get Theme by Category",
-        "description": "Retrieve a theme by its category",
         "tags": ["Themes"],
+        "description": "Retrieve a theme by its category",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "category",
             "in": "path",
             "required": true,
             "description": "Category of the theme",
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "Theme data retrieved",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "data": { "type": "object" },
-                "msg": { "type": "string" },
-                "statusCode": { "type": "boolean" }
-              }
-            }
-          },
-          "400": {
-            "description": "Category is required"
-          },
-          "403": {
-            "description": "Only developers or domain users can access the themes"
-          },
-          "500": {
-            "description": "Unable to fetch theme data"
-          }
-        }
-      }
-    },
-    "/api/admin/product/{id} ": {
-      "put": {
-        "summary": "Update product",
-        "tags": ["Products"],
-        "description": "Update an existing product. Only admin and domain users can edit products.",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "example": "prod_001"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "title": {
-                    "type": "string",
-                    "example": "Sample Product"
-                  },
-                  "count": {
-                    "type": "integer",
-                    "example": 10
-                  },
-                  "icon": {
-                    "type": "string",
-                    "example": "icon_url"
-                  },
-                  "period": {
-                    "type": "string",
-                    "example": "2021-2022"
-                  },
-                  "tooltip": {
-                    "type": "string",
-                    "example": "This is a product tooltip"
-                  },
-                  "type": {
-                    "type": "string",
-                    "example": "widget"
-                  },
-                  "url": {
-                    "type": "string",
-                    "example": "http://product-url.com"
-                  },
-                  "table": {
-                    "type": "string",
-                    "example": "products_table"
-                  },
-                  "swagger": {
-                    "type": "boolean",
-                    "example": true
-                  },
-                  "viz": {
-                    "type": "string",
-                    "example": "viz_url"
-                  },
-                  "category": {
-                    "type": "string",
-                    "example": "Category 1"
-                  }
-                },
-                "required": ["title", "count", "type", "category"]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Product updated successfully",
+            "description": "Theme data retrieved successfully",
             "content": {
               "application/json": {
                 "schema": {
@@ -662,56 +544,14 @@
                   "properties": {
                     "data": {
                       "type": "object",
-                      "properties": {
-                        "title": {
-                          "type": "string",
-                          "example": "Sample Product"
-                        },
-                        "count": {
-                          "type": "integer",
-                          "example": 10
-                        },
-                        "icon": {
-                          "type": "string",
-                          "example": "icon_url"
-                        },
-                        "period": {
-                          "type": "string",
-                          "example": "2021-2022"
-                        },
-                        "tooltip": {
-                          "type": "string",
-                          "example": "This is a product tooltip"
-                        },
-                        "type": {
-                          "type": "string",
-                          "example": "widget"
-                        },
-                        "url": {
-                          "type": "string",
-                          "example": "http://product-url.com"
-                        },
-                        "table": {
-                          "type": "string",
-                          "example": "products_table"
-                        },
-                        "swagger": {
-                          "type": "boolean",
-                          "example": true
-                        },
-                        "viz": {
-                          "type": "string",
-                          "example": "viz_url"
-                        },
-                        "category": {
-                          "type": "string",
-                          "example": "Category 1"
-                        }
+                      "example": {
+                        "category": "NSS",
+                        "name": "NSS"
                       }
                     },
                     "msg": {
                       "type": "string",
-                      "example": "Product updated successfully"
+                      "example": "Theme data retrieved"
                     },
                     "statusCode": {
                       "type": "boolean",
@@ -722,8 +562,8 @@
               }
             }
           },
-          "405": {
-            "description": "Unauthorized user (only admin and domain can edit the product)",
+          "400": {
+            "description": "Category is required",
             "content": {
               "application/json": {
                 "schema": {
@@ -731,15 +571,18 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "example": "Only admin and domain can edit"
+                      "example": "Category is required"
                     }
                   }
                 }
               }
             }
           },
+          "403": {
+            "description": "Only authorized users can access this endpoint"
+          },
           "500": {
-            "description": "Internal server error",
+            "description": "Unable to fetch theme data",
             "content": {
               "application/json": {
                 "schema": {
@@ -747,7 +590,7 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "example": "Error in Updating product: [error details]"
+                      "example": "Unable to fetch data from theme Table"
                     }
                   }
                 }
@@ -755,11 +598,14 @@
             }
           }
         }
-      }
-    },
-    "/api/admin/theme/{category}": {
+      },
       "put": {
         "summary": "Update theme",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "tags": ["Themes"],
         "description": "Update an existing theme. Only admin and domain users can edit themes.",
         "parameters": [
@@ -856,82 +702,196 @@
       }
     },
 
-    "/api/admin/metadata/{Product} ": {
+    "/api/admin/product/{id}": {
       "put": {
-        "summary": "Update Metadata",
-        "description": "Update metadata for a product. Only admin users or the owner of the product can update metadata.",
-        "tags": ["Metadata"],
+        "summary": "Update product",
+        "tags": ["Products"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Update an existing product. Only admin and domain users can edit products.",
         "parameters": [
           {
+            "name": "id",
             "in": "path",
-            "name": "Product",
-            "description": "The product for which metadata needs to be updated. This is a required path parameter.",
             "required": true,
             "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "body",
-            "name": "metadata",
-            "description": "Metadata object to update",
-            "required": true,
-            "schema": {
-              "type": "object",
-              "properties": {
-                "Product": {
-                  "type": "string"
-                },
-                "dynamicData": {
-                  "type": "object"
-                }
-              },
-              "example": {
-                "Product": "exampleProduct",
-                "dynamicData": {
-                  "key": "value"
-                }
-              }
+              "type": "string",
+              "example": "cpi"
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "example": "Consumer Price Index"
+                  },
+                  "count": {
+                    "type": "string",
+                    "example": "5.08%"
+                  },
+                  "icon": {
+                    "type": "string",
+                    "example": ""
+                  },
+                  "period": {
+                    "type": "string",
+                    "example": "May 2024"
+                  },
+                  "tooltip": {
+                    "type": "string",
+                    "example": "Click to View CPI Datasets"
+                  },
+                  "type": {
+                    "type": "string",
+                    "example": "Inflation"
+                  },
+                  "url": {
+                    "type": "string",
+                    "example": "macroindicators?product=cpi"
+                  },
+                  "table": {
+                    "type": "string",
+                    "example": "https://esankhyiki.mospi.gov.in/dashboard/cpi"
+                  },
+                  "swagger": {
+                    "type": "string",
+                    "example": "Y"
+                  },
+                  "viz": {
+                    "type": "string",
+                    "example": "https://esankhyiki.mospi.gov.in/viz/cpi"
+                  },
+                  "category": {
+                    "type": "string",
+                    "example": "Economy"
+                  }
+                },
+                "required": ["title", "count", "type", "category"]
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
-            "description": "Metadata updated successfully",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "data": {
-                  "type": "object"
-                },
-                "msg": {
-                  "type": "string"
-                },
-                "statusCode": {
-                  "type": "boolean"
+            "description": "Product updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "title": {
+                          "type": "string",
+                          "example": "Consumer Price Index"
+                        },
+                        "count": {
+                          "type": "string",
+                          "example": "5.08%"
+                        },
+                        "icon": {
+                          "type": "string",
+                          "example": ""
+                        },
+                        "period": {
+                          "type": "string",
+                          "example": "May 2024"
+                        },
+                        "tooltip": {
+                          "type": "string",
+                          "example": "Click to View CPI Datasets"
+                        },
+                        "type": {
+                          "type": "string",
+                          "example": "Inflation"
+                        },
+                        "url": {
+                          "type": "string",
+                          "example": "macroindicators?product=cpi"
+                        },
+                        "table": {
+                          "type": "string",
+                          "example": "https://esankhyiki.mospi.gov.in/dashboard/cpi"
+                        },
+                        "swagger": {
+                          "type": "string",
+                          "example": "Y"
+                        },
+                        "viz": {
+                          "type": "string",
+                          "example": "https://esankhyiki.mospi.gov.in/viz/cpi"
+                        },
+                        "category": {
+                          "type": "string",
+                          "example": "Economy"
+                        }
+                      }
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "Product updated successfully"
+                    },
+                    "statusCode": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
                 }
               }
             }
           },
-          "403": {
-            "description": "Invalid user. Only admin or authorized users can update metadata."
+          "405": {
+            "description": "Unauthorized user (only admin and domain users can edit the product)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Only admin and domain users can edit"
+                    }
+                  }
+                }
+              }
+            }
           },
           "500": {
-            "description": "Error in updating metadata"
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Error in Updating product: [error details]"
+                    }
+                  }
+                }
+              }
+            }
           }
-        },
-        "security": [
-          {
-            "apiKeyAuth": []
-          }
-        ]
-      }
-    },
-
-    "/api/admin/product/{id}": {
+        }
+      },
       "delete": {
         "summary": "Delete product",
         "tags": ["Products"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "description": "Delete an existing product. Only admin users can delete products.",
         "parameters": [
           {
@@ -1004,49 +964,144 @@
         }
       }
     },
-    "/api/admin/metadata/{Product} ": {
-      "delete": {
-        "summary": "Delete metadata",
-        "description": "Delete metadata for a specific product. Only admin or the product owner can delete metadata.",
+"/api/admin/metadata/{Product}": {
+      "put": {
+        "summary": "Update Metadata",
+        "description": "Update metadata for a product. Only admin users or the owner of the product can update metadata.",
         "tags": ["Metadata"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
-            "name": "Product",
             "in": "path",
+            "name": "Product",
+            "description": "The product for which metadata needs to be updated.",
             "required": true,
             "schema": {
-              "type": "string",
-              "example": "product_001"
+              "type": "string"
+            }
+          },
+          {
+            "in": "body",
+            "name": "metadata",
+            "description": "Metadata object to update",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "Product": {
+                  "type": "string",
+                  "description": "The product ID associated with the metadata."
+                },
+                "title": {
+                  "type": "string",
+                  "description": "Title of the metadata."
+                },
+                "Category": {
+                  "type": "string",
+                  "description": "Category of the metadata."
+                },
+                "Geography": {
+                  "type": "string",
+                  "description": "Geographical area covered by the metadata."
+                },
+                "Frequency": {
+                  "type": "string",
+                  "description": "Frequency of the data collection."
+                },
+                "TimePeriod": {
+                  "type": "string",
+                  "description": "Time period covered by the data."
+                },
+                "DataSource": {
+                  "type": "string",
+                  "description": "Source of the data."
+                },
+                "Description": {
+                  "type": "string",
+                  "description": "Detailed description of the data."
+                },
+                "lastUpdateDate": {
+                  "type": "string",
+                  "format": "date",
+                  "description": "Date of the last update."
+                },
+                "FutureRelease": {
+                  "type": "string",
+                  "description": "Future release information."
+                },
+                "BasePeriod": {
+                  "type": "string",
+                  "description": "Base period for the data."
+                },
+                "Keystatistics": {
+                  "type": "string",
+                  "description": "Key statistics included in the data."
+                },
+                "NMDS": {
+                  "type": "string",
+                  "description": "Compliance with the National Metadata Structure."
+                },
+                "nmdslink": {
+                  "type": "string",
+                  "format": "url",
+                  "description": "Link to NMDS compliance documentation."
+                },
+                "abc": {
+                  "type": "string",
+                  "description": "Additional custom field."
+                }
+              },
+              "example": {
+                "Product": "cpi",
+                "title": "Annual Survey of Industries (ASI)",
+                "Category": "Industrial Statistics",
+                "Geography": "All India",
+                "Frequency": "Annual",
+                "TimePeriod": "2004-05 to 2021-22",
+                "DataSource": "IS Wing, Ministry of Statistics & Programme Implementation",
+                "Description": "Annual Survey of Industries broadly covers the manufacturing units in the registered sector. It provides comprehensive information relating to input, output, value added, employment, assets etc. of the registered factories.Fixed Capital, Working Capital, No. of Employees, Wages & Salaries, Fuels Consumed, Depreciation, Gross Value Added, Net Value Added, Total Emoluments, Total Input, Total Output Etc. For details of statistical concepts and definitions including major statistical variables used in the survey, the Instruction Manual for ASI may be referred to. Source: National Metadata Structure (NMDS) for Statistical Products",
+                "lastUpdateDate": "20-Feb-24",
+                "FutureRelease": "As and when released by the IS Wing, MoSPI",
+                "BasePeriod": "NA",
+                "Keystatistics": "Number of factories, Net Value Added (NVA), Number of workers, Total persons engaged, State-wise Number of factories, Industry-wise Number of factories, Top 10 States by Number of Factories, Time series Trend of Important Principal Characteristics at all India level, Time series trend of important Principal Characteristics at all India level by Major Industry Group (NIC Divisions), Time series trend of Important Characteristics Structural Ratios, Time series trend of Important Characteristics Technical Co-efficients, ASI - State Wise number of factories",
+                "NMDS": "Compliance of Metadata of Annual Survey of Industries(ASI)",
+                "nmdslink": "https://www.mospi.gov.in/sites/default/files/Compliance_of_Metadata_of_Annual_Survey_of_Industries_(ASI).pdf",
+                "abc": "ew"
+              }
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "Metadata deleted successfully",
+            "description": "Metadata updated successfully",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
                     "data": {
-                      "type": "array",
-                      "items": {}
+                      "type": "object",
+                      "description": "The updated metadata object."
                     },
                     "msg": {
                       "type": "string",
-                      "example": "Metadata deleted successfully"
+                      "description": "A message indicating the success of the operation."
                     },
                     "statusCode": {
                       "type": "boolean",
-                      "example": true
+                      "description": "Indicates the status of the operation (true for success)."
                     }
                   }
                 }
               }
             }
           },
-          "405": {
-            "description": "Unauthorized user (only admin or product owner can delete metadata)",
+          "403": {
+            "description": "Invalid user. Only admin or authorized users can update metadata.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1054,7 +1109,7 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "example": "Only admin or product owner can delete the metadata"
+                      "example": "Invalid user. Only admin or authorized users can update metadata."
                     }
                   }
                 }
@@ -1062,7 +1117,7 @@
             }
           },
           "500": {
-            "description": "Internal server error",
+            "description": "Error in updating metadata",
             "content": {
               "application/json": {
                 "schema": {
@@ -1070,7 +1125,7 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "example": "Unable to delete the metadata: [error details]"
+                      "example": "Error updating metadata: [error details]"
                     }
                   }
                 }
@@ -1079,90 +1134,321 @@
           }
         }
       }
+    
+
+  
+,
+  "get": {
+    "security": [
+      {
+        "bearerAuth": []
+      }
+    ],
+    "summary": "Get Metadata by Product",
+    "description": "Retrieve metadata by product ID",
+    "tags": ["Metadata"],
+    "parameters": [
+      {
+        "name": "Product",
+        "in": "path",
+        "description": "Product ID",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Product metadata retrieved",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "data": {
+                  "type": "object",
+                  "description": "The metadata for the specified product."
+                },
+                "msg": {
+                  "type": "string",
+                  "description": "A message indicating the success of the operation."
+                },
+                "statusCode": {
+                  "type": "boolean",
+                  "description": "Indicates the status of the operation (true for success)."
+                }
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Product ID is required",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Product ID is required."
+                }
+              }
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Error in fetching metadata",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Error fetching metadata: [error details]"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "delete": {
+    "summary": "Delete Metadata",
+    "description": "Delete metadata for a specific product. Only admin or the product owner can delete metadata.",
+    "tags": ["Metadata"],
+    "parameters": [
+      {
+        "name": "Product",
+        "in": "path",
+        "description": "The product for which metadata needs to be deleted.",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "example": "product_001"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Metadata deleted successfully",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "data": {
+                  "type": "array",
+                  "items": {}
+                },
+                "msg": {
+                  "type": "string",
+                  "example": "Metadata deleted successfully"
+                },
+                "statusCode": {
+                  "type": "boolean",
+                  "example": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "405": {
+        "description": "Unauthorized user (only admin or product owner can delete metadata)",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Only admin or product owner can delete the metadata"
+                }
+              }
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal server error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Unable to delete the metadata: [error details]"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+,
+"/api/admin/metadata": {
+  "post": {
+     "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+    "summary": "Create Metadata",
+    "description": "Create metadata for a product. Only admin users can create metadata.",
+    "tags": ["Metadata"],
+    "requestBody": {
+      "required": true,
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "properties": {
+              "Product": {
+                "type": "string",
+                "description": "The identifier of the product for which metadata is being created."
+              },
+              "data": {
+                "type": "object",
+                "description": "The metadata details as a JSON object."
+              }
+            },
+            "required": ["Product", "data"]
+          }
+        }
+      }
     },
-    "/api/admin/metadata |": {
-      "get": {
-        "summary": "Get All Metadata",
-        "description": "Fetch all metadata for products.",
-        "tags": ["Metadata"],
-        "responses": {
-          "200": {
-            "description": "Successfully retrieved all metadata",
+    "responses": {
+      "201": {
+        "description": "Metadata created successfully",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "data": {
+                  "type": "object",
+                  "description": "The created metadata object."
+                },
+                "msg": {
+                  "type": "string",
+                  "description": "A message indicating the success of the operation."
+                },
+                "statusCode": {
+                  "type": "boolean",
+                  "description": "Indicates the status of the operation (true for success)."
+                }
+              }
+            }
+          }
+        }
+      },
+      "405": {
+        "description": "Only admin users can create metadata",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Only admin users can create metadata."
+                }
+              }
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Error in creating metadata",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Error creating metadata: [error details]"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "get": {
+
+    "summary": "Get All Metadata",
+    "description": "Fetch all metadata for products.",
+    "tags": ["Metadata"],
+    "security": [
+      {
+        "bearerAuth": []
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Successfully retrieved all metadata",
+        "content": {
+          "application/json": {
             "schema": {
               "type": "object",
               "properties": {
                 "data": {
                   "type": "array",
                   "items": {
-                    "type": "object"
+                    "type": "object",
+                    "description": "An array of metadata objects."
                   }
                 },
                 "msg": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "A message indicating the success of the operation."
                 },
                 "statusCode": {
-                  "type": "boolean"
+                  "type": "boolean",
+                  "description": "Indicates the status of the operation (true for success)."
                 }
               }
             }
-          },
-          "500": {
-            "description": "Error in retrieving metadata"
           }
-        },
-        "security": [
-          {
-            "apiKeyAuth": []
-          }
-        ]
-      }
-    },
-    "/api/admin/metadata/{Product} |": {
-      "get": {
-        "summary": "Get Metadata by Product",
-        "description": "Fetch metadata for a specific product based on the product ID.",
-        "tags": ["Metadata"],
-        "parameters": [
-          {
-            "in": "path",
-            "name": "Product",
-            "description": "The product ID for which metadata needs to be retrieved.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successfully retrieved metadata for the specified product",
+        }
+      },
+      "500": {
+        "description": "Error in retrieving metadata",
+        "content": {
+          "application/json": {
             "schema": {
               "type": "object",
               "properties": {
-                "data": {
-                  "type": "object"
-                },
-                "msg": {
-                  "type": "string"
-                },
-                "statusCode": {
-                  "type": "boolean"
+                "error": {
+                  "type": "string",
+                  "example": "Error retrieving metadata: [error details]"
                 }
               }
             }
-          },
-          "400": {
-            "description": "Bad request. Product ID is required."
-          },
-          "500": {
-            "description": "Error in retrieving metadata"
           }
-        },
-        "security": [
-          {
-            "apiKeyAuth": []
-          }
-        ]
+        }
+      }
+    }
+  }
+}
+
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
       }
     }
   }

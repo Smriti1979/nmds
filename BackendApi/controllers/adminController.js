@@ -28,13 +28,13 @@ const {
 const signInAdmin = async (req, res) => {
   const { username, password } = req.body;
   try {
-    const UserssDetail = await EmailValidation(username);
-    if (UserssDetail?.error == true) {
+    const UsersDetail = await EmailValidation(username);
+    if (UsersDetail?.error == true) {
       return res.status(403).json({ error: `User does not exist` });
     }
     const correctpassword = await bcrypt.compare(
       password,
-      UserssDetail.password
+      UsersDetail.password
     );
     if (!correctpassword) {
       return res.status(403).json({ error: `Required correct password` });
@@ -42,7 +42,7 @@ const signInAdmin = async (req, res) => {
 
     const adminAccessToken = generateAccessToken({
       username: username,
-      id: UserssDetail.id,
+      id: UsersDetail.id,
     });
     const cookieOptions = {
       httpOnly: true,
@@ -54,9 +54,10 @@ const signInAdmin = async (req, res) => {
     res.cookie('adminAccessToken', adminAccessToken, cookieOptions);
     return res.status(200).send({
       data: {
-        eamil: username,
+        username: username,
+        role:UsersDetail.title
       },
-      msg: "UserVerfied",
+      msg: "UserVerified",
       statusCode: true,
     });
   } catch (error) {
@@ -452,7 +453,7 @@ const updateProduct = async (req, res) => {
         statusCode: true,
       });
     } else {
-      res.status(400).json({ error: `Unkown user ` });
+      res.status(400).json({ error: `Unknown user ` });
     }
   } catch (error) {
     console.error(error);
