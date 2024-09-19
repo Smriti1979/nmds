@@ -1,6 +1,6 @@
 /** @format */
 
-const { generateAccessToken } = require("../helper_utils/genrateAccessToken");
+const { generateAccessToken } = require("../helper_utils/generateAccessToken");
 const bcrypt = require("bcrypt");
 const admindb = require("../DbQuery/dbOperationAdmin");
 const {
