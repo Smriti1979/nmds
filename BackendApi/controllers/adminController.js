@@ -8,7 +8,7 @@ const {
   createProductdb,
   createThemedb,
   getProductByIddb,
-  getProuduct,
+  getProductdb,
   getMetaDataByIddb,
   getThemeByIddb,
   updateProductDevdb,
@@ -55,7 +55,8 @@ const signInAdmin = async (req, res) => {
     return res.status(200).send({
       data: {
         username: username,
-        role:UsersDetail.title
+        role:UsersDetail.title,
+        token:adminAccessToken
       },
       msg: "UserVerified",
       statusCode: true,
@@ -251,7 +252,7 @@ const getProduct = async (req, res) => {
         .status(405)
         .json({ error: `Only admin can see the product` });
     }
-    const product = await getProuduct();
+    const product = await getProductdb();
     if (product?.error == true) {
       throw product?.errorMessage;
     }

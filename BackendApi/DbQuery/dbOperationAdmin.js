@@ -168,7 +168,7 @@ async function createMetadatadb({ Product, data, user_id, version, latest }) {
  * -----------Get product ------------
  *
  */
-async function getProuduct() {
+async function getProductdb() {
   try {
     const getQuery = `SELECT * FROM product`;
     const productResult = await pooladmin.query(getQuery);
@@ -692,5 +692,5 @@ module.exports = {
   createProductdb,
   getMetaDatadb,
   getThemedb,
-  getProuduct,
+  getProductdb,
 };
