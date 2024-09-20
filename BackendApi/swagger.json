@@ -1052,30 +1052,30 @@
   
     },
 "/api/admin/metadata/{Product}": {
-      "put": {
-        "summary": "Update Metadata",
-        "description": "Update metadata for a product. Only admin users or the owner of the product can update metadata.",
-        "tags": ["Metadata"],
-        "security": [
-          {
-            "bearerAuth": []
+
+    "put": {
+      "summary": "Update Metadata",
+      "description": "Update metadata for a product. Only admin users or the owner of the product can update metadata.",
+      "tags": ["Metadata"],
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "in": "path",
+          "name": "Product",
+          "description": "The product for which metadata needs to be updated.",
+          "required": true,
+          "schema": {
+            "type": "string"
           }
-        ],
-        "parameters": [
-          {
-            "in": "path",
-            "name": "Product",
-            "description": "The product for which metadata needs to be updated.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "body",
-            "name": "metadata",
-            "description": "Metadata object to update",
-            "required": true,
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "application/json": {
             "schema": {
               "type": "object",
               "properties": {
@@ -1083,63 +1083,9 @@
                   "type": "string",
                   "description": "The product ID associated with the metadata."
                 },
-                "title": {
-                  "type": "string",
-                  "description": "Title of the metadata."
-                },
-                "Category": {
-                  "type": "string",
-                  "description": "Category of the metadata."
-                },
-                "Geography": {
-                  "type": "string",
-                  "description": "Geographical area covered by the metadata."
-                },
-                "Frequency": {
-                  "type": "string",
-                  "description": "Frequency of the data collection."
-                },
-                "TimePeriod": {
-                  "type": "string",
-                  "description": "Time period covered by the data."
-                },
-                "DataSource": {
-                  "type": "string",
-                  "description": "Source of the data."
-                },
-                "Description": {
-                  "type": "string",
-                  "description": "Detailed description of the data."
-                },
-                "lastUpdateDate": {
-                  "type": "string",
-                  "format": "date",
-                  "description": "Date of the last update."
-                },
-                "FutureRelease": {
-                  "type": "string",
-                  "description": "Future release information."
-                },
-                "BasePeriod": {
-                  "type": "string",
-                  "description": "Base period for the data."
-                },
-                "Keystatistics": {
-                  "type": "string",
-                  "description": "Key statistics included in the data."
-                },
-                "NMDS": {
-                  "type": "string",
-                  "description": "Compliance with the National Metadata Structure."
-                },
-                "nmdslink": {
-                  "type": "string",
-                  "format": "url",
-                  "description": "Link to NMDS compliance documentation."
-                },
-                "abc": {
-                  "type": "string",
-                  "description": "Additional custom field."
+                "data": {
+                  "type": "json",
+                  "description": "Metadata"
                 }
               },
               "example": {
@@ -1150,77 +1096,80 @@
                 "Frequency": "Annual",
                 "TimePeriod": "2004-05 to 2021-22",
                 "DataSource": "IS Wing, Ministry of Statistics & Programme Implementation",
-                "Description": "Annual Survey of Industries broadly covers the manufacturing units in the registered sector. It provides comprehensive information relating to input, output, value added, employment, assets etc. of the registered factories.Fixed Capital, Working Capital, No. of Employees, Wages & Salaries, Fuels Consumed, Depreciation, Gross Value Added, Net Value Added, Total Emoluments, Total Input, Total Output Etc. For details of statistical concepts and definitions including major statistical variables used in the survey, the Instruction Manual for ASI may be referred to. Source: National Metadata Structure (NMDS) for Statistical Products",
+                "Description": "Annual Survey of Industries broadly covers the manufacturing units...",
                 "lastUpdateDate": "20-Feb-24",
                 "FutureRelease": "As and when released by the IS Wing, MoSPI",
                 "BasePeriod": "NA",
-                "Keystatistics": "Number of factories, Net Value Added (NVA), Number of workers, Total persons engaged, State-wise Number of factories, Industry-wise Number of factories, Top 10 States by Number of Factories, Time series Trend of Important Principal Characteristics at all India level, Time series trend of important Principal Characteristics at all India level by Major Industry Group (NIC Divisions), Time series trend of Important Characteristics Structural Ratios, Time series trend of Important Characteristics Technical Co-efficients, ASI - State Wise number of factories",
+                "Keystatistics": "Number of factories, Net Value Added (NVA), Number of workers...",
                 "NMDS": "Compliance of Metadata of Annual Survey of Industries(ASI)",
                 "nmdslink": "https://www.mospi.gov.in/sites/default/files/Compliance_of_Metadata_of_Annual_Survey_of_Industries_(ASI).pdf",
                 "abc": "ew"
               }
             }
           }
-        ],
-        "responses": {
-          "200": {
-            "description": "Metadata updated successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "object",
-                      "description": "The updated metadata object."
-                    },
-                    "msg": {
-                      "type": "string",
-                      "description": "A message indicating the success of the operation."
-                    },
-                    "statusCode": {
-                      "type": "boolean",
-                      "description": "Indicates the status of the operation (true for success)."
-                    }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Metadata updated successfully",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "type": "object",
+                    "description": "The updated metadata object."
+                  },
+                  "msg": {
+                    "type": "string",
+                    "description": "A message indicating the success of the operation."
+                  },
+                  "statusCode": {
+                    "type": "boolean",
+                    "description": "Indicates the status of the operation (true for success)."
                   }
                 }
               }
             }
-          },
-          "403": {
-            "description": "Invalid user. Only admin or authorized users can update metadata.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": {
-                      "type": "string",
-                      "example": "Invalid user. Only admin or authorized users can update metadata."
-                    }
+          }
+        },
+        "403": {
+          "description": "Invalid user. Only admin or authorized users can update metadata.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "error": {
+                    "type": "string",
+                    "example": "Invalid user. Only admin or authorized users can update metadata."
                   }
                 }
               }
             }
-          },
-          "500": {
-            "description": "Error in updating metadata",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": {
-                      "type": "string",
-                      "example": "Error updating metadata: [error details]"
-                    }
+          }
+        },
+        "500": {
+          "description": "Error in updating metadata",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "error": {
+                    "type": "string",
+                    "example": "Error updating metadata: [error details]"
                   }
                 }
               }
             }
           }
         }
-      },
+      }
+    }
+  ,
+  
   "get": {
     "security": [
       {
@@ -1380,6 +1329,93 @@
       }
     }
   }
+},
+"/api/admin/metadata/version": {
+  "get": {
+    "summary": "Get Metadata by Product and Version",
+     "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+    "tags": ["Metadata"],
+    "parameters": [
+      {
+        "name": "product",
+        "in": "query",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "description": "The product ID"
+      },
+      {
+        "name": "version",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        },
+        "description": "The version of the product"
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Successful response with metadata",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "data": {
+                  "type": "object"
+                },
+                "msg": {
+                  "type": "string"
+                },
+                "statusCode": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Bad Request - Product is required",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "msg": {
+                  "type": "string"
+                },
+                "statusCode": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal Server Error - Unable to fetch data",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }
 ,
 "/api/admin/metadata": {
@@ -1407,6 +1443,23 @@
                 "type": "object",
                 "description": "The metadata details as a JSON object."
               }
+            },
+            "example": {
+              "Product": "cpi",
+              "title": "Annual Survey of Industries (ASI)",
+              "Category": "Industrial Statistics",
+              "Geography": "All India",
+              "Frequency": "Annual",
+              "TimePeriod": "2004-05 to 2021-22",
+              "DataSource": "IS Wing, Ministry of Statistics & Programme Implementation",
+              "Description": "Annual Survey of Industries broadly covers the manufacturing units...",
+              "lastUpdateDate": "20-Feb-24",
+              "FutureRelease": "As and when released by the IS Wing, MoSPI",
+              "BasePeriod": "NA",
+              "Keystatistics": "Number of factories, Net Value Added (NVA), Number of workers...",
+              "NMDS": "Compliance of Metadata of Annual Survey of Industries(ASI)",
+              "nmdslink": "https://www.mospi.gov.in/sites/default/files/Compliance_of_Metadata_of_Annual_Survey_of_Industries_(ASI).pdf",
+              "abc": "ew"
             },
             "required": ["Product", "data"]
           }

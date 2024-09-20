@@ -256,6 +256,34 @@ async function getMetaDataByIddb(Product) {
   return data.rows[0];
 }
 
+
+async function  getMetaDataByVersionP(product) {
+  const getQuery=`SELECT * FROM metadata where "Product"=$1`;
+  const data = await pooladmin.query(getQuery, [product]);
+  if (data.rows.length == 0) {
+    return {
+      error: true,
+      errorCode: 402,
+      errorMessage: `Unable to fetch data from metaTable`,
+    };
+  }
+  return data.rows;
+}
+
+async function  getMetaDataByVersionPV(product,version) {
+  const getQuery=`SELECT * FROM metadata where "Product"=$1 AND version=$2`;
+  const data = await pooladmin.query(getQuery, [product,version]);
+  if (data.rows.length == 0) {
+    return {
+      error: true,
+      errorCode: 402,
+      errorMessage: `Unable to fetch data from metaTable`,
+    };
+  }
+  return data.rows;
+}
+
+
 /**
  *
  * ---------------Get Theme--------------
@@ -680,7 +708,8 @@ module.exports = {
   // updateMetadataDevdb,
   // updateMetadataDomdb,
   updateMetadatadb,
-
+  getMetaDataByVersionP,
+  getMetaDataByVersionPV,
   updateThemedb,
   updateProductDevdb,
   updateProductDomdb,

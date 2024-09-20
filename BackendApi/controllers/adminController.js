@@ -11,6 +11,8 @@ const {
   getProductdb,
   getMetaDataByIddb,
   getThemeByIddb,
+  getMetaDataByVersionP,
+  getMetaDataByVersionPV,
   updateProductDevdb,
   updateProductDomdb,
   updateThemedb,
@@ -280,7 +282,7 @@ const getMetaData = async (req, res) => {
     }
     return res.status(200).send({
       data: metadata,
-      msg: "product data",
+      msg: "metadata",
       statusCode: true,
     });
   } catch (error) {
@@ -309,7 +311,7 @@ const getMetaDataById = async (req, res) => {
     }
     return res.status(200).send({
       data: metadata,
-      msg: "product data",
+      msg: "metadata",
       statusCode: true,
     });
   } catch (error) {
@@ -320,6 +322,45 @@ const getMetaDataById = async (req, res) => {
       .json({ error: `Unable to fetch data Error=${error}` });
   }
 };
+const getMetaDataByVersion=async(req,res)=>{
+  const { product, version } = req.query;
+  console.log(product,version)
+  try {
+    if(version==null && product!==null){
+      const metadata=await getMetaDataByVersionP(product)
+      if (metadata?.error == true) {
+        throw metadata?.errorMessage;
+      }
+      return res.status(200).send({
+        data: metadata,
+        msg: "meta data",
+        statusCode: true,
+      });
+    }
+    else if(product!=null && version!=null){
+      const metadata=await getMetaDataByVersionPV(product,version)
+      if (metadata?.error == true) {
+        throw metadata?.errorMessage;
+      }
+      return res.status(200).send({
+        data: metadata,
+        msg: "meta data",
+        statusCode: true,
+      });
+    }
+    else{
+      return res.status(200).send({
+        msg: "product is required",
+        statusCode: true,})
+    }
+  } catch (error) {
+    console.log(error);
+
+    return res
+      .status(500)
+      .json({ error: `Unable to fetch data Error=${error}` });
+  }
+}
 /**
  *
  * ---------Get Theme---------
@@ -672,4 +713,5 @@ module.exports = {
   getTheme,
   getProduct,
   getMetaData,
+  getMetaDataByVersion,
 };

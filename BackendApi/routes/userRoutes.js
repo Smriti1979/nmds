@@ -22,7 +22,8 @@ const {
   deleteTheme,
   getTheme,
   getMetaData,
-  getProduct
+  getProduct,
+  getMetaDataByVersion
 } = adminController;
 const router = express.Router();
 
@@ -45,6 +46,7 @@ router.route("/admin/theme/:category").put(verifyJWT, updateTheme);
 router.route("/admin/theme/:category").delete(verifyJWT, deleteTheme);
 
 router.route("/admin/metadata").post(verifyJWT, createMetadata);
+router.route("/admin/metadata/version").get(verifyJWT, getMetaDataByVersion);
 router.route("/admin/metadata/:Product").get(verifyJWT, getMetaDataById);
 router.route("/admin/metadata").get(verifyJWT, getMetaData);
 router.route("/admin/metadata/:Product").put(verifyJWT, updatedMetadata);
