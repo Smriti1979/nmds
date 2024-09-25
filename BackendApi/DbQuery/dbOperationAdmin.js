@@ -92,7 +92,7 @@ async function createProductdb(
     return {
       error: true,
       errorCode: 500,
-      errorMessage: `Problem in db unable to create product: ${error.message}`,
+      errorMessage: `Problem in db unable to create product: ${error}`,
     };
   }
 }

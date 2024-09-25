@@ -3,6 +3,7 @@
 const { generateAccessToken } = require("../helper_utils/generateAccessToken");
 const bcrypt = require("bcrypt");
 const admindb = require("../DbQuery/dbOperationAdmin");
+// var AES = require("crypto-js/aes");
 const {
   EmailValidation,
   createProductdb,
@@ -28,8 +29,14 @@ const {
  * Sign In
  */
 const signInAdmin = async (req, res) => {
-  const { username, password } = req.body;
+  const userAgents = req.headers['x-from-swagger'];
+ const userAgent = req.headers['user-agent'] || ''
+  let { username, password } = req.body;
   try {
+    const key = process.env.PASSWORD_KEY;
+    if (!userAgents && !userAgent.includes('Postman') ) {
+      // password = AES.decrypt(password, key);
+    }
     const UsersDetail = await EmailValidation(username);
     if (UsersDetail?.error == true) {
       return res.status(403).json({ error: `User does not exist` });
@@ -137,7 +144,7 @@ const createProduct = async (req, res) => {
   } catch (error) {
     console.error(error);
     return res
-      .status(500)
+      .status(error?.errorCode || 500)
       .json({ error: `Error in Creating product: ${error}` });
   }
 };
@@ -293,6 +300,7 @@ const getMetaData = async (req, res) => {
       .json({ error: `Unable to fetch data Error=${error}` });
   }
 };
+
 const getMetaDataById = async (req, res) => {
   const { Product } = req.params;
   const user=req.user

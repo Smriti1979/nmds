@@ -20,6 +20,18 @@
       "post": {
         "summary": "Sign in admin user",
         "tags": ["signin"],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-From-Swagger",
+            "user-agent":"swagger",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "true"
+            }
+          }
+        ],
         "description": "Authenticate an admin user by validating username and password and return an access token.",
         "requestBody": {
           "required": true,
