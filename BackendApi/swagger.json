@@ -42,7 +42,7 @@
                 "properties": {
                   "username": {
                     "type": "string",
-                    "example": "admin"
+                    "example": "Admin"
                   },
                   "password": {
                     "type": "string",
@@ -1093,7 +1093,7 @@
               "properties": {
                 "Product": {
                   "type": "string",
-                  "description": "The product ID associated with the metadata."
+                  "description": "The product ID associated with the metadata ."
                 },
                 "data": {
                   "type": "json",
@@ -1101,21 +1101,20 @@
                 }
               },
               "example": {
-                "Product": "cpi",
-                "title": "Annual Survey of Industries (ASI)",
-                "Category": "Industrial Statistics",
-                "Geography": "All India",
-                "Frequency": "Annual",
-                "TimePeriod": "2004-05 to 2021-22",
-                "DataSource": "IS Wing, Ministry of Statistics & Programme Implementation",
-                "Description": "Annual Survey of Industries broadly covers the manufacturing units...",
-                "lastUpdateDate": "20-Feb-24",
-                "FutureRelease": "As and when released by the IS Wing, MoSPI",
-                "BasePeriod": "NA",
-                "Keystatistics": "Number of factories, Net Value Added (NVA), Number of workers...",
-                "NMDS": "Compliance of Metadata of Annual Survey of Industries(ASI)",
-                "nmdslink": "https://www.mospi.gov.in/sites/default/files/Compliance_of_Metadata_of_Annual_Survey_of_Industries_(ASI).pdf",
-                "abc": "ew"
+                "title": "Consumer Price Index (CPI)",
+                "Category": "Price Statistics",
+                "Geography": "All India, Rural, Urban, States",
+                "Frequency": "Monthly",
+                "TimePeriod": "2012 onwards",
+                "DataSource": "Price Statistics Division, Ministry of Statistics & Programme Implementation",
+                "Description": "Consumer Price Index (CPI) is designed to measure the changes over time in general level of retail prices of selected goods and services that households purchase for the purpose of consumption. Consumer Food Price Index (CFPI) are being compiled as weighted average of the indices of the ten subgroups, out of 12 sub-groups contained in ‘Food and Beverages’ group, excluding ‘Non-alcoholic beverages’ and ‘Prepared meals, snacks, sweets etc.’. The CPI and CFPI is compiled at the All India level for the Rural, Urban & Combined Sector. Source: National Metadata Structure (NMDS) for Statistical Products",
+                "lastUpdateDate": "2024-07-12T00:00:00Z",
+                "FutureRelease": "August, 2024",
+                "BasePeriod": "2012",
+                "Keystatistics": "Inflation Rate, Consumer Price index, Consumer Food Price Index",
+                "NMDS": "Compliance of Metadata of Price Statistics",
+                "nmdslink": "https://www.mospi.gov.in/sites/default/files/Compliance_of_Metadata_of_Price_StatisticsUpdated.pdf",
+                "remarks": "Back series is the projection of the old series on a new base with the help of a suitable linking factor."
               }
             }
           }
@@ -1458,22 +1457,22 @@
             },
             "example": {
               "Product": "cpi",
-              "title": "Annual Survey of Industries (ASI)",
-              "Category": "Industrial Statistics",
-              "Geography": "All India",
-              "Frequency": "Annual",
-              "TimePeriod": "2004-05 to 2021-22",
-              "DataSource": "IS Wing, Ministry of Statistics & Programme Implementation",
-              "Description": "Annual Survey of Industries broadly covers the manufacturing units...",
-              "lastUpdateDate": "20-Feb-24",
-              "FutureRelease": "As and when released by the IS Wing, MoSPI",
-              "BasePeriod": "NA",
-              "Keystatistics": "Number of factories, Net Value Added (NVA), Number of workers...",
-              "NMDS": "Compliance of Metadata of Annual Survey of Industries(ASI)",
-              "nmdslink": "https://www.mospi.gov.in/sites/default/files/Compliance_of_Metadata_of_Annual_Survey_of_Industries_(ASI).pdf",
-              "abc": "ew"
+              "title": "Consumer Price Index (CPI)",
+              "Category": "Price Statistics",
+              "Geography": "All India, Rural, Urban, States",
+              "Frequency": "Monthly",
+              "TimePeriod": "2012 onwards",
+              "DataSource": "Price Statistics Division, Ministry of Statistics & Programme Implementation",
+              "Description": "Consumer Price Index (CPI) is designed to measure the changes over time in general level of retail prices of selected goods and services that households purchase for the purpose of consumption. Consumer Food Price Index (CFPI) are being compiled as weighted average of the indices of the ten subgroups, out of 12 sub-groups contained in ‘Food and Beverages’ group, excluding ‘Non-alcoholic beverages’ and ‘Prepared meals, snacks, sweets etc.’. The CPI and CFPI is compiled at the All India level for the Rural, Urban & Combined Sector. Source: National Metadata Structure (NMDS) for Statistical Products",
+              "lastUpdateDate": "2024-07-12T00:00:00Z",
+              "FutureRelease": "August, 2024",
+              "BasePeriod": "2012",
+              "Keystatistics": "Inflation Rate, Consumer Price index, Consumer Food Price Index",
+              "NMDS": "Compliance of Metadata of Price Statistics",
+              "nmdslink": "https://www.mospi.gov.in/sites/default/files/Compliance_of_Metadata_of_Price_StatisticsUpdated.pdf",
+              "remarks": "Back series is the projection of the old series on a new base with the help of a suitable linking factor."
             },
-            "required": ["Product", "data"]
+            "required": ["Product"]
           }
         }
       }
