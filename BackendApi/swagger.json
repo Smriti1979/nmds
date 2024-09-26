@@ -196,7 +196,7 @@
         },
         "responses": {
           "201": {
-            "description": "Product created successfully",
+            "description": "Sample Response ",
             "content": {
               "application/json": {
                 "schema": {
@@ -1479,7 +1479,7 @@
     },
     "responses": {
       "201": {
-        "description": "Metadata created successfully",
+        "description": "Sample Response",
         "content": {
           "application/json": {
             "schema": {
