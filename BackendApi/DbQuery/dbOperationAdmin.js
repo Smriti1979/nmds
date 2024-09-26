@@ -128,8 +128,8 @@ async function createThemedb(category, name) {
  */
 async function createMetadatadb({ Product, data, user_id, version, latest }) {
   try {
-    const metaQuery = `INSERT INTO metadata("Product", data, user_id, version, latest) 
-                       VALUES($1, $2, $3, $4, $5)`;
+    const metaQuery = `INSERT INTO metadata("Product", data, user_id, version, latest,"createdDate") 
+                       VALUES($1, $2, $3, $4, $5,$6)`;
 
     await pooladmin.query(metaQuery, [
       Product,
@@ -138,6 +138,7 @@ async function createMetadatadb({ Product, data, user_id, version, latest }) {
       user_id,
       version,
       latest,
+      new Date()
     ]);
 
     const result = await pooladmin.query(
@@ -225,7 +226,7 @@ async function getProductByIddb(productId) {
  */
 async function getMetaDatadb() {
   try {
-    const getQuery = `SELECT * FROM  metadata  where latest=true`;
+    const getQuery = `SELECT * FROM  metadata  where latest=true ORDER BY "createdDate" DESC`;
     const data = await pooladmin.query(getQuery);
     if (data.rows.length == 0) {
       return {
@@ -567,15 +568,16 @@ async function updateMetadatadb(
     }
     const {version}=data.rows[0];
     const newVersion=version+1;
-    await pooladmin.query(`Update metadata SET latest=$1 where "Product"=$2 ANd version=$3`,[false,Product,version])
-    const metaQuery = `INSERT INTO metadata("Product",data,version,latest,user_id) VALUES($1,$2,$3,$4,$5)`;
+    await pooladmin.query(`Update metadata SET latest=$1 where "Product"=$2 ANd version=$3 `,[false,Product,version])
+    const metaQuery = `INSERT INTO metadata("Product",data,version,latest,user_id,"createdDate") VALUES($1,$2,$3,$4,$5,$6)`;
 
     await pooladmin.query(metaQuery, [
       Product,
       metadata,
       newVersion,
       true,
-      user_id
+      user_id,
+      new Date()
     ]);
     const result = await pooladmin.query(
       `SELECT * FROM metadata where "version"=$1 And "Product"=$2`,

@@ -36,8 +36,14 @@ module.exports = (sequelize, DataTypes) => {
       latest:{
         type:DataTypes.BOOLEAN,
         allowNull:false
-      }
+      },
+      createdDate: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: DataTypes.NOW
+      },
     },
+
     {
       tableName: "metadata",
       timestamps: false,
