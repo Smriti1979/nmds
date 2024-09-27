@@ -9,21 +9,27 @@ const adminController = require("../controllers/adminController.js");
 const {
   signInAdmin,
   createProduct,
-  createTheme,
+  createagency,
   createMetadata,
   getProductById,
   getMetaDataById,
-  getThemeById,
+  getagencyById,
   updateProduct,
-  updateTheme,
+  updateagency,
   updatedMetadata,
   deleteProduct,
   deleteMetadata,
-  deleteTheme,
-  getTheme,
+  deleteagency,
+  getagency,
+  searchMetaData,
   getMetaData,
   getProduct,
-  getMetaDataByVersion
+  getMetaDataByVersion,
+  createUser,
+  getUser,
+  getUserByUsername,
+  deleteUser,
+  updateUser
 } = adminController;
 const router = express.Router();
 
@@ -31,19 +37,29 @@ const app = express();
 
 app.use(express.json());
 
+router.route("/admin/meta/search").get(searchMetaData); 
+
 
 router.route("/signin").post(signInAdmin);
+
+router.route("/admin/user").post(verifyJWT,createUser);
+router.route("/admin/user").get(verifyJWT,getUser);
+router.route("/admin/user/:username").get(verifyJWT,getUserByUsername);
+router.route("/admin/user/:username").delete(verifyJWT,deleteUser);
+router.route("/admin/user/:username").put(verifyJWT,updateUser);
+
+
 router.route("/admin/product").post(verifyJWT, createProduct);
 router.route("/admin/product/:productId").get(verifyJWT, getProductById);
 router.route("/admin/product").get(verifyJWT, getProduct);
 router.route("/admin/product/:id").put(verifyJWT, updateProduct);
 router.route("/admin/product/:id").delete(verifyJWT, deleteProduct);
 
-router.route("/admin/theme").post(verifyJWT, createTheme);
-router.route("/admin/theme/:category").get(verifyJWT, getThemeById);
-router.route("/admin/theme").get(verifyJWT, getTheme);
-router.route("/admin/theme/:category").put(verifyJWT, updateTheme);
-router.route("/admin/theme/:category").delete(verifyJWT, deleteTheme);
+router.route("/admin/agency").post(verifyJWT, createagency);
+router.route("/admin/agency/:category").get(verifyJWT, getagencyById);
+router.route("/admin/agency").get(verifyJWT, getagency);
+router.route("/admin/agency/:category").put(verifyJWT, updateagency);
+router.route("/admin/agency/:category").delete(verifyJWT, deleteagency);
 
 router.route("/admin/metadata").post(verifyJWT, createMetadata);
 router.route("/admin/metadata/version").get(verifyJWT, getMetaDataByVersion);

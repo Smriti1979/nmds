@@ -641,11 +641,11 @@
         }
       }
     },
-    "/api/admin/theme": {
+    "/api/admin/agency": {
       "post": {
-        "summary": "Create Theme",
-        "tags": ["Themes"],
-        "description": "Create a new theme in the system. Only admin users can create themes.",
+        "summary": "Create agency",
+        "tags": ["agencys"],
+        "description": "Create a new agency in the system. Only admin users can create agencys.",
         "security": [
           {
             "bearerAuth": []
@@ -674,7 +674,7 @@
         },
         "responses": {
           "201": {
-            "description": "Theme created successfully",
+            "description": "agency created successfully",
             "content": {
               "application/json": {
                 "schema": {
@@ -689,7 +689,7 @@
                     },
                     "msg": {
                       "type": "string",
-                      "example": "Theme created successfully"
+                      "example": "agency created successfully"
                     },
                     "statusCode": {
                       "type": "boolean",
@@ -717,7 +717,7 @@
             }
           },
           "403": {
-            "description": "Only admin users can create themes",
+            "description": "Only admin users can create agencys",
             "content": {
               "application/json": {
                 "schema": {
@@ -725,7 +725,7 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "example": "Only admin can create the theme"
+                      "example": "Only admin can create the agency"
                     }
                   }
                 }
@@ -741,7 +741,7 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "example": "Error in Creating theme: [error details]"
+                      "example": "Error in Creating agency: [error details]"
                     }
                   }
                 }
@@ -751,11 +751,11 @@
         }
       }
     },
-    "/api/admin/theme ": {
+    "/api/admin/agency ": {
       "get": {
-        "summary": "Get All Themes",
-        "description": "Retrieve all themes. Only admin, developers, or domain users can access.",
-        "tags": ["Themes"],
+        "summary": "Get All agencys",
+        "description": "Retrieve all agencys. Only admin, developers, or domain users can access.",
+        "tags": ["agencys"],
         "security": [
           {
             "bearerAuth": []
@@ -763,7 +763,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Theme data retrieved",
+            "description": "agency data retrieved",
             "schema": {
               "type": "object",
               "properties": {
@@ -774,19 +774,19 @@
             }
           },
           "403": {
-            "description": "Only developers or domain users can access the themes"
+            "description": "Only developers or domain users can access the agencys"
           },
           "500": {
-            "description": "Unable to fetch theme data"
+            "description": "Unable to fetch agency data"
           }
         }
       }
     },
-    "/api/admin/theme/{category}": {
+    "/api/admin/agency/{category}": {
       "get": {
-        "summary": "Get Theme by Category",
-        "tags": ["Themes"],
-        "description": "Retrieve a theme by its category",
+        "summary": "Get agency by Category",
+        "tags": ["agencys"],
+        "description": "Retrieve a agency by its category",
         "security": [
           {
             "bearerAuth": []
@@ -797,7 +797,7 @@
             "name": "category",
             "in": "path",
             "required": true,
-            "description": "Category of the theme",
+            "description": "Category of the agency",
             "schema": {
               "type": "string"
             }
@@ -805,7 +805,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Theme data retrieved successfully",
+            "description": "agency data retrieved successfully",
             "content": {
               "application/json": {
                 "schema": {
@@ -820,7 +820,7 @@
                     },
                     "msg": {
                       "type": "string",
-                      "example": "Theme data retrieved"
+                      "example": "agency data retrieved"
                     },
                     "statusCode": {
                       "type": "boolean",
@@ -851,7 +851,7 @@
             "description": "Only authorized users can access this endpoint"
           },
           "500": {
-            "description": "Unable to fetch theme data",
+            "description": "Unable to fetch agency data",
             "content": {
               "application/json": {
                 "schema": {
@@ -859,7 +859,7 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "example": "Unable to fetch data from theme Table"
+                      "example": "Unable to fetch data from agency Table"
                     }
                   }
                 }
@@ -869,14 +869,14 @@
         }
       },
       "put": {
-        "summary": "Update theme",
+        "summary": "Update agency",
         "security": [
           {
             "bearerAuth": []
           }
         ],
-        "tags": ["Themes"],
-        "description": "Update an existing theme. Only admin and domain users can edit themes.",
+        "tags": ["agencys"],
+        "description": "Update an existing agency. Only admin and domain users can edit agencys.",
         "parameters": [
           {
             "name": "category",
@@ -897,7 +897,7 @@
                 "properties": {
                   "name": {
                     "type": "string",
-                    "example": "New Theme Name"
+                    "example": "New agency Name"
                   }
                 },
                 "required": ["name"]
@@ -907,7 +907,7 @@
         },
         "responses": {
           "200": {
-            "description": "Theme updated successfully",
+            "description": "agency updated successfully",
             "content": {
               "application/json": {
                 "schema": {
@@ -918,13 +918,13 @@
                       "properties": {
                         "name": {
                           "type": "string",
-                          "example": "New Theme Name"
+                          "example": "New agency Name"
                         }
                       }
                     },
                     "msg": {
                       "type": "string",
-                      "example": "Theme updated successfully"
+                      "example": "agency updated successfully"
                     },
                     "statusCode": {
                       "type": "boolean",
@@ -960,7 +960,7 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "example": "Error in Updating theme data: [error details]"
+                      "example": "Error in Updating agency data: [error details]"
                     }
                   }
                 }
@@ -970,9 +970,9 @@
         }
       },
       "delete": {
-      "summary": "Delete Theme by Category",
-      "tags": ["Themes"],
-      "description": "Delete a theme by its category. Only admin users can delete themes.",
+      "summary": "Delete agency by Category",
+      "tags": ["agencys"],
+      "description": "Delete a agency by its category. Only admin users can delete agencys.",
       "security": [
         {
           "bearerAuth": []
@@ -983,7 +983,7 @@
           "name": "category",
           "in": "path",
           "required": true,
-          "description": "Category of the theme to be deleted",
+          "description": "Category of the agency to be deleted",
           "schema": {
             "type": "string",
             "example": "category_001"
@@ -992,7 +992,7 @@
       ],
       "responses": {
         "200": {
-          "description": "Theme and associated data deleted successfully",
+          "description": "agency and associated data deleted successfully",
           "content": {
             "application/json": {
               "schema": {
@@ -1000,7 +1000,7 @@
                 "properties": {
                   "msg": {
                     "type": "string",
-                    "example": "Theme and associated data successfully deleted"
+                    "example": "agency and associated data successfully deleted"
                   },
                   "statusCode": {
                     "type": "boolean",
@@ -1012,7 +1012,7 @@
           }
         },
         "403": {
-          "description": "Unauthorized user (only admin can delete themes)",
+          "description": "Unauthorized user (only admin can delete agencys)",
           "content": {
             "application/json": {
               "schema": {
@@ -1020,7 +1020,7 @@
                 "properties": {
                   "error": {
                     "type": "string",
-                    "example": "Only admin can delete the theme"
+                    "example": "Only admin can delete the agency"
                   }
                 }
               }
@@ -1044,7 +1044,7 @@
           }
         },
         "500": {
-          "description": "Error in deleting theme",
+          "description": "Error in deleting agency",
           "content": {
             "application/json": {
               "schema": {
@@ -1052,7 +1052,7 @@
                 "properties": {
                   "error": {
                     "type": "string",
-                    "example": "Unable to delete the theme: [error details]"
+                    "example": "Unable to delete the agency: [error details]"
                   }
                 }
               }

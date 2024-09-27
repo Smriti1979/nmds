@@ -1,8 +1,8 @@
 /** @format */
 
 module.exports = (sequelize, DataTypes) => {
-  const theme = sequelize.define(
-    "theme",
+  const agency = sequelize.define(
+    "agency",
     {
       category: {
         type: DataTypes.STRING(20), 
@@ -20,10 +20,10 @@ module.exports = (sequelize, DataTypes) => {
       },
     },
     {
-      tableName: "theme",
+      tableName: "agency",
       timestamps: false,
       freezeTableName: true,
     }
   );
-  return theme;
+  return agency;
 };

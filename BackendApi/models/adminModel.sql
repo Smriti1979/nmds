@@ -37,16 +37,16 @@ CREATE TABLE MetaData IF NOT EXISTS (
     UNIQUE (product)
 );
 
-CREATE TABLE Theme IF NOT EXISTS(
+CREATE TABLE agency IF NOT EXISTS(
     category varchar(20) NOT NULL,
     name varchar(40) NOT NULL,
     PRIMARY KEY (category)
 );
-CREATE TABLE ProductTheme IF NOT EXISTS(
+CREATE TABLE Productagency IF NOT EXISTS(
     productId varchar(20) NOT NULL,
     category varchar(20) NOT NULL,
     FOREIGN KEY (productId) REFERENCES product(id),
-    FOREIGN KEY (category) REFERENCES Theme(category),
+    FOREIGN KEY (category) REFERENCES agency(category),
     PRIMARY KEY (productId, category)
 );
 
@@ -60,10 +60,11 @@ CREATE TABLE Users IF NOT EXISTS(
     -- FOREIGN KEY (title) REFERENCES UserRetation(id)
 );
 -- password 123456
-INSERT INTO adminusers(username, password,title) VALUES ('Admin', '$2a$10$IDhLRlEAHiff18CIk5eKkeTfSIVG/YEFDB859xJklP8xIbTwbZ1kC','admin');
-INSERT INTO adminusers(username, password,title) VALUES ('Domain', '$2a$10$IDhLRlEAHiff18CIk5eKkeTfSIVG/YEFDB859xJklP8xIbTwbZ1kC','domain');
-INSERT INTO adminusers(username, password,title) VALUES ('Cpi_user', '$2a$10$IDhLRlEAHiff18CIk5eKkeTfSIVG/YEFDB859xJklP8xIbTwbZ1kC','cpi');
-INSERT INTO adminusers(username, password,title) VALUES ('Asi_user', '$2a$10$IDhLRlEAHiff18CIk5eKkeTfSIVG/YEFDB859xJklP8xIbTwbZ1kC','asi');
+INSERT INTO adminusers(username, password,title) VALUES ('CC_User', '$2a$10$sJEW.LK10vwLPR2Id0NFLecgddzFsdcJPLIAmSZjVxQBEGAXM9e36','CC_User');
+INSERT INTO adminusers(username, password,title) VALUES ('Admin', '$2a$10$HH0NU1fuSr3y6ZuEN057g.TPkDVsO1mU0qcgbpZqGeX93jVQSlAfS','admin');
+INSERT INTO adminusers(username, password,title) VALUES ('Domain', '$2a$10$HH0NU1fuSr3y6ZuEN057g.TPkDVsO1mU0qcgbpZqGeX93jVQSlAfS','domain');
+INSERT INTO adminusers(username, password,title) VALUES ('Cpi_user', '$2a$10$HH0NU1fuSr3y6ZuEN057g.TPkDVsO1mU0qcgbpZqGeX93jVQSlAfS','cpi');
+INSERT INTO adminusers(username, password,title) VALUES ('Asi_user', '$2a$10$HH0NU1fuSr3y6ZuEN057g.TPkDVsO1mU0qcgbpZqGeX93jVQSlAfS','asi');
 
 -- CREATE TABLE UserRetation (
 --     id SERIAL PRIMARY KEY,

@@ -30,8 +30,8 @@ db.sequelize = sequelize;
 db.AdminUser = require("./admin/AdminUsers")(sequelize, DataTypes);
 db.metadata = require("./admin/meta")(sequelize, DataTypes);
 db.product = require("./admin/product")(sequelize, DataTypes);
-db.producttheme = require("./admin/producttheme")(sequelize, DataTypes);
-db.theme = require("./admin/theme")(sequelize, DataTypes);
+db.productagency = require("./admin/productagency")(sequelize, DataTypes);
+db.agency= require("./admin/agency")(sequelize, DataTypes);
 
 //exporting the module
 module.exports = db;

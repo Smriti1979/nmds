@@ -7,24 +7,160 @@ const admindb = require("../DbQuery/dbOperationAdmin");
 const {
   EmailValidation,
   createProductdb,
-  createThemedb,
+  createagencydb,
   getProductByIddb,
   getProductdb,
   getMetaDataByIddb,
-  getThemeByIddb,
+  getagencyByIddb,
   getMetaDataByVersionP,
   getMetaDataByVersionPV,
   updateProductDevdb,
   updateProductDomdb,
-  updateThemedb,
-  deleteThemedb,
+  updateagencydb,
+  deleteagencydb,
   updateMetadatadb,
   deleteProductdb,
   deleteMetadatadb,
-  getThemedb,
+  getagencydb,
   createMetadatadb,
   getMetaDatadb,
+  searchMetaDatadb,
+  createUserdb,
+  getUserdb,
+  getUserByUsernameDb,
+  deleteUserDb,
+  updateUserDb
 } = admindb;
+
+
+/**
+ * 
+ * ---Create user access
+ * 
+ */
+
+const createUser=async(req,res)=>{
+  let {username,password,title,name,email,phno,address}=req.body;
+  const user = req.user;
+    if (user.title !== "CC_User") {
+      return res
+        .status(405)
+        .json({ error: `Only CC_User can create the user` });
+    }
+  try {
+    // use it for encryption and decryption
+    // const key = process.env.PASSWORD_KEY;
+    // password = AES.decrypt(password, key);
+    const user = await createUserdb(username,password,title,name,email,phno,address);
+    if (user.error == true) {
+      return res.status(403).json({ error: user.error });
+    }
+    return res.status(201).send({
+      data: {
+        user
+      },
+      msg: "user creates successfully",
+      statusCode: true,
+    });
+
+  } catch (error) {
+    return res.status(500).json({ error: `Error in signIn User ${error}` });
+  }
+
+}
+const getUser=async(req,res)=>{
+  const user = req.user;
+    if (user.title !== "CC_User") {
+      return res
+        .status(405)
+        .json({ error: `Only CC_User can create the user` });
+    }
+  try {
+
+    const user = await getUserdb();
+    if (user.error == true) {
+      return res.status(403).json({ error: `User does not exist` });
+    }
+    return res.status(201).send({
+      data: {
+        user
+      },
+      msg: "user creates successfully",
+      statusCode: true,
+    });
+
+  } catch (error) {
+    return res.status(500).json({ error: `Error in signIn User ${error}` });
+  }
+
+}
+const getUserByUsername = async (req, res) => {
+  let { username } = req.params;
+  const user = req.user;
+  if (user.title !== "CC_User") {
+    return res.status(405).json({ error: `Only CC_User can access this data` });
+  }
+  try {
+    const user = await getUserByUsernameDb(username);
+    if (user.error == true) {
+      return res.status(403).json({ error: user.errorMessage });
+    }
+    return res.status(200).send({
+      data: user,
+      msg: "User fetched successfully",
+      statusCode: true,
+    });
+  } catch (error) {
+    return res.status(500).json({ error: `Error fetching user: ${error}` });
+  }
+};
+const deleteUser = async (req, res) => {
+  let { username } = req.params;
+  const user = req.user;
+  if (user.title !== "CC_User"){
+    return res.status(405).json({ error: `Only CC_User can delete the user` });
+  }
+  if (username == "CC_User"){
+    return res.status(405).json({ error: `you can not delete CC_User` });
+  }
+  try {
+    const deletedUser = await deleteUserDb(username);
+    if (deletedUser.error == true) {
+      return res.status(404).json({ error: deletedUser.errorMessage });
+    }
+    return res.status(200).send({
+      msg: "User deleted successfully",
+      statusCode: true,
+    });
+  } catch (error) {
+    return res.status(500).json({ error: `Error deleting user: ${error}` });
+  }
+};
+const updateUser = async (req, res) => {
+  let { username } = req.params;
+  let { title, name, email, phno, address, password } = req.body; // Password is now part of the request body
+  const user = req.user;
+
+  if (user.title !== "CC_User") {
+    return res.status(405).json({ error: `Only CC_User can update the user` });
+  }
+
+  try {
+    const updatedUser = await updateUserDb(username, title, name, email, phno, address, password); // Pass password to the update function
+    if (updatedUser.error == true) {
+      return res.status(404).json({ error: updatedUser.errorMessage });
+    }
+    return res.status(200).send({
+      data: {username, title, name, email, phno, address,},
+      msg: "User updated successfully",
+      statusCode: true,
+    });
+  } catch (error) {
+    return res.status(500).json({ error: `Error updating user: ${error}` });
+  }
+};
+
+
 /**
  * Sign In
  */
@@ -149,34 +285,34 @@ const createProduct = async (req, res) => {
   }
 };
 /**
- * -----Create theme ------
+ * -----Create agency ------
  *
  */
 
-const createTheme = async (req, res) => {
+const createagency = async (req, res) => {
   const { category, name } = req.body;
   try {
     const user = req.user;
     if (user.title !== "admin") {
       return res
         .status(405)
-        .json({ error: `Only admin can create the theme}` });
+        .json({ error: `Only admin can create the agency}` });
     }
 
-    const result = await createThemedb(category, name);
+    const result = await createagencydb(category, name);
     if (result?.error == true) {
       throw result?.errorMessage;
     }
     return res.status(201).send({
       data: result,
-      msg: "theme created successfully",
+      msg: "agency created successfully",
       statusCode: true,
     });
   } catch (error) {
     console.error(error);
     return res
       .status(500)
-      .json({ error: `Error in Creating theme: ${error.message}` });
+      .json({ error: `Error in Creating agency: ${error.message}` });
   }
 };
 
@@ -282,6 +418,7 @@ const getProduct = async (req, res) => {
  * metadata
  */
 const getMetaData = async (req, res) => {
+  console.log("getMetaData")
   try {
     const metadata = await getMetaDatadb();
     if (metadata?.error == true) {
@@ -302,6 +439,7 @@ const getMetaData = async (req, res) => {
 };
 
 const getMetaDataById = async (req, res) => {
+  console.log("getMetaDataById")
   const { Product } = req.params;
   const user=req.user
   if(user.title!="admin" && user.title!=Product && user.title!="domain"){
@@ -332,7 +470,7 @@ const getMetaDataById = async (req, res) => {
 };
 const getMetaDataByVersion=async(req,res)=>{
   const { product, version } = req.query;
-  console.log(product,version)
+  console.log("getMetaDataByVersion")
   try {
     if(version==null && product!==null){
       const metadata=await getMetaDataByVersionP(product)
@@ -369,61 +507,88 @@ const getMetaDataByVersion=async(req,res)=>{
       .json({ error: `Unable to fetch data Error=${error}` });
   }
 }
+
+const searchMetaData=async(req,res)=>{
+  const searchParams = req.query;
+  console.log("hello") ;
+ 
+  try {
+   
+    const metadata=await searchMetaDatadb(searchParams);
+    if(metadata?.error){
+      return res.status(400).send({
+        data: [],
+        msg: "data not found",
+        statusCode: false,
+      });
+    }
+    return res.status(200).send({
+      data: metadata,
+      msg: "meta data",
+      statusCode: true,
+    });
+  
+  } catch (error) {
+    return res
+    .status(500)
+    .json({ error: `Unable to fetch data Error=${error}` });
+  }
+}
 /**
  *
- * ---------Get Theme---------
+ * ---------Get agency---------
  *
  */
-const getTheme = async (req, res) => {
+const getagency = async (req, res) => {
   try {
     const user = req.user;
     if (user.title !== "admin" && user.title !== "domain") {
       return res
         .status(403) 
-        .json({ error: "Only developers or domain users can access the theme." });
+        .json({ error: "Only developers or domain users can access the agency." });
     }
-    const theme = await getThemedb();
+    const agency = await getagencydb();
 
-    if (theme?.error == true) {
-      throw theme?.errorMessage;
+    if (agency?.error == true) {
+      throw agency?.errorMessage;
     }
 
     return res.status(200).send({
-      data: theme,
-      msg: "theme data",
+      data: agency,
+      msg: "agency data",
       statusCode: true,
     });
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ error: `Unable to get theme ${error}` });
+    return res.status(500).json({ error: `Unable to get agency ${error}` });
   }
 };
-const getThemeById = async (req, res) => {
+const getagencyById = async (req, res) => {
   const user = req.user;
   if (user.title !== "admin" && user.title !== "domain") {
     return res
       .status(403) 
-      .json({ error: "Only developers or domain users can access the theme." });
+      .json({ error: "Only developers or domain users can access the agency." });
   }
   const { category } = req.params;
   if (category == undefined) {
     return res.status(400).json({ error: `category is required` });
   }
   try {
-    const theme = await getThemeByIddb(category);
+    const agency = await getagencyByIddb(category);
 
-    if (theme?.error == true) {
-      throw theme?.errorMessage;
+    if (agency?.error == true) {
+      throw agency?.errorMessage;
     }
 
     return res.status(200).send({
-      data: theme,
-      msg: "theme data",
+      data: agency,
+      msg: "agency data",
       statusCode: true,
     });
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ error: `Unable to get theme ${error}` });
+    return res.status(500).json({ error: `Unable to get agency ${error}` });
   }
 };
 
@@ -513,10 +678,10 @@ const updateProduct = async (req, res) => {
 
 /**
  *
- * --------Update Theme----------------
+ * --------Update agency----------------
  *
  */
-const updateTheme = async (req, res) => {
+const updateagency = async (req, res) => {
   const { category } = req.params;
   const { name } = req.body;
   const user = req.user;
@@ -532,14 +697,14 @@ const updateTheme = async (req, res) => {
     return res.status(405).json({ error: `Category is undefined` });
   }
   try {
-    const theme = await updateThemedb(name, category);
-    if (theme?.error == true) {
-      throw theme?.errorMessage;
+    const agency = await updateagencydb(name, category);
+    if (agency?.error == true) {
+      throw agency?.errorMessage;
     }
 
     return res.status(200).send({
-      data: theme,
-      msg: "theme updated successfully",
+      data: agency,
+      msg: "agency updated successfully",
       statusCode: true,
     });
   } catch (error) {
@@ -547,7 +712,7 @@ const updateTheme = async (req, res) => {
 
     return res
       .status(500)
-      .json({ error: `Error in Updating theme data: ${error}` });
+      .json({ error: `Error in Updating agency data: ${error}` });
   }
 };
 
@@ -590,7 +755,7 @@ const updatedMetadata = async (req, res) => {
     console.log(error);
     return res
       .status(500)
-      .json({ error: `Error in updating metadata: ${error.message}` });
+      .json({ error: `Error in updating metadata: ${error}` });
   }
 };
 
@@ -672,54 +837,60 @@ const deleteMetadata = async (req, res) => {
 
 /**
  *
- * --------Delete Theme----------
+ * --------Delete agency----------
  *
  */
 
-const deleteTheme = async (req, res) => {
+const deleteagency = async (req, res) => {
   const { category } = req.params;
   const user = req.user;
   if (user.title !== "admin" ) {
     return res
       .status(405)
-      .json({ error: `Only admin can delete the Theme` });
+      .json({ error: `Only admin can delete the agency` });
   }
   if (!category) {
     return res.status(405).json({ error: `Category is invalid` });
   }
 
   try {
-    const result = await deleteThemedb(category);
+    const result = await deleteagencydb(category);
     if (result?.error == true) {
       throw result?.errorMessage;
     }
     return res
       .status(200)
-      .json({ message: "theme and associated data successfully deleted" });
+      .json({ message: "agency and associated data successfully deleted" });
   } catch (error) {
     console.error(error);
     return res
       .status(500)
-      .json({ error: `Unable to delete the theme: ${error}` });
+      .json({ error: `Unable to delete the agency: ${error}` });
   }
 };
 
 module.exports = {
   getMetaDataById,
-  getThemeById,
+  getagencyById,
   updateProduct,
-  updateTheme,
+  updateagency,
   updatedMetadata,
   deleteProduct,
   deleteMetadata,
-  deleteTheme,
+  deleteagency,
   getProductById,
   createMetadata,
-  createTheme,
+  createagency,
   createProduct,
   signInAdmin,
-  getTheme,
+  getagency,
   getProduct,
   getMetaData,
   getMetaDataByVersion,
+  searchMetaData,
+  createUser,
+  getUser,
+  getUserByUsername,
+  deleteUser,
+  updateUser
 };

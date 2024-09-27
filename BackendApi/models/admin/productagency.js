@@ -1,8 +1,8 @@
 /** @format */
 
 module.exports = (sequelize, DataTypes) => {
-  const producttheme = sequelize.define(
-    "productTheme",
+  const productagency = sequelize.define(
+    "productagency",
     {
       productId: {
         type: DataTypes.TEXT, 
@@ -16,13 +16,13 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.TEXT, 
         allowNull: false,
         references: {
-          model: "theme",
+          model: "agency",
           key: "category",
         },
       },
     },
     {
-      tableName: "producttheme",
+      tableName: "productagency",
       timestamps: false,
       freezeTableName: true,
       indexes: [
@@ -34,5 +34,5 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
-  return producttheme;
+  return productagency;
 };
