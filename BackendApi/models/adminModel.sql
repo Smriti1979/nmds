@@ -59,12 +59,18 @@ CREATE TABLE Users IF NOT EXISTS(
     title  varchar(20) NOT NULL,
     -- FOREIGN KEY (title) REFERENCES UserRetation(id)
 );
--- password 123456
+
+
+
+-- "password": "CCUSER123!"
 INSERT INTO adminusers(username, password,title) VALUES ('CC_User', '$2a$10$sJEW.LK10vwLPR2Id0NFLecgddzFsdcJPLIAmSZjVxQBEGAXM9e36','CC_User');
+-- password 123456
 INSERT INTO adminusers(username, password,title) VALUES ('Admin', '$2a$10$HH0NU1fuSr3y6ZuEN057g.TPkDVsO1mU0qcgbpZqGeX93jVQSlAfS','admin');
 INSERT INTO adminusers(username, password,title) VALUES ('Domain', '$2a$10$HH0NU1fuSr3y6ZuEN057g.TPkDVsO1mU0qcgbpZqGeX93jVQSlAfS','domain');
 INSERT INTO adminusers(username, password,title) VALUES ('Cpi_user', '$2a$10$HH0NU1fuSr3y6ZuEN057g.TPkDVsO1mU0qcgbpZqGeX93jVQSlAfS','cpi');
 INSERT INTO adminusers(username, password,title) VALUES ('Asi_user', '$2a$10$HH0NU1fuSr3y6ZuEN057g.TPkDVsO1mU0qcgbpZqGeX93jVQSlAfS','asi');
+
+
 
 -- CREATE TABLE UserRetation (
 --     id SERIAL PRIMARY KEY,

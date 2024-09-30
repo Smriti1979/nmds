@@ -270,6 +270,141 @@
       }
     }
   },
+"/api/admin/meta/search": {
+    "get": {
+      "summary": "Search metadata",
+      "tags": ["Metadata"],
+      "description": "Search for metadata records based on query parameters.",
+      "parameters": [
+        {
+          "name": "version",
+          "in": "query",
+          "description": "Version of the metadata",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "example": 1
+          }
+        },
+        {
+          "name": "Product",
+          "in": "query",
+          "description": "Product associated with the metadata",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "example": "ProductA"
+          }
+        },
+        {
+          "name": "latest",
+          "in": "query",
+          "description": "Whether the metadata is the latest version (true or false)",
+          "required": false,
+          "schema": {
+            "type": "boolean",
+            "example": true
+          }
+        },
+        {
+          "name": "user_id",
+          "in": "query",
+          "description": "ID of the user associated with the metadata",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "example": 123
+          }
+        },
+        {
+          "name": "title",
+          "in": "query",
+          "description": "Search by title in the metadata",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "example": "Consumer"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Metadata records successfully fetched",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "version": { "type": "integer", "example": 1 },
+                        "Product": { "type": "string", "example": "ProductA" },
+                        "latest": { "type": "boolean", "example": true },
+                        "user_id": { "type": "integer", "example": 123 },
+                        "data": { "type": "object" },
+                        "createdDate": { "type": "string", "example": "2024-09-29T12:34:56Z" }
+                      }
+                    }
+                  },
+                  "msg": {
+                    "type": "string",
+                    "example": "meta data"
+                  },
+                  "statusCode": {
+                    "type": "boolean",
+                    "example": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "No metadata found",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "type": "array",
+                    "example": []
+                  },
+                  "msg": {
+                    "type": "string",
+                    "example": "data not found"
+                  },
+                  "statusCode": {
+                    "type": "boolean",
+                    "example": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Internal server error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "error": {
+                    "type": "string",
+                    "example": "Unable to fetch data Error=some_error"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
 "/api/admin/user/{username}": {
       "get": {
         "security": [

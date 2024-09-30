@@ -55,7 +55,8 @@
         "type": "GDP",
         "url": "macroindicators?product=nas",
         "table": "https://esankhyiki.mospi.gov.in/dashboard/nas",
-        "viz": "https://esankhyiki.mospi.gov.in/viz/nas"
+        "viz": "https://esankhyiki.mospi.gov.in/viz/nas",
+        "swagger": "Y"
       },
       {
         "id": "asi",
