@@ -17,7 +17,6 @@ const pooladmin = new Pool({
 async function  createUserdb(username,password,title,name,email,phno,address){
   const hashedPassword = await bcrypt.hash(password, 10);
   const query='INSERT INTO adminusers(username,password,title,name,email,phno,address,"createdDate") VALUES($1, $2, $3, $4, $5, $6, $7, $8)';
-  console.log("hello") 
   await pooladmin.query(query, [username,hashedPassword,title,name,email,phno,address,new Date()]);
 
  const user=await pooladmin.query(`SELECT username,title,name,email,phno,address,"createdDate"  FROM adminusers where username=$1`,[username])
@@ -445,7 +444,7 @@ async function getagencydb() {
 async function getagencyByIddb(category) {
   const getQuery = `SELECT * FROM agency where category=$1`;
   const data = await pooladmin.query(getQuery, [category]);
-  console.log(category)
+
   if (data.rows.length == 0) {
     return {
       error: true,

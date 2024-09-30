@@ -79,7 +79,7 @@ const getUser=async(req,res)=>{
 
     const user = await getUserdb();
     if (user.error == true) {
-      return res.status(403).json({ error: `User does not exist` });
+      return res.status(400).json({ error: `User does not exist` });
     }
     return res.status(201).send({
       data: {
@@ -90,7 +90,7 @@ const getUser=async(req,res)=>{
     });
 
   } catch (error) {
-    return res.status(500).json({ error: `Error in signIn User ${error}` });
+    return res.status(500).json({ error: `Error in getting all user ${error}` });
   }
 
 }
@@ -103,7 +103,7 @@ const getUserByUsername = async (req, res) => {
   try {
     const user = await getUserByUsernameDb(username);
     if (user.error == true) {
-      return res.status(403).json({ error: user.errorMessage });
+      return res.status(400).json({ error: user.errorMessage });
     }
     return res.status(200).send({
       data: user,
@@ -418,7 +418,7 @@ const getProduct = async (req, res) => {
  * metadata
  */
 const getMetaData = async (req, res) => {
-  console.log("getMetaData")
+
   try {
     const metadata = await getMetaDatadb();
     if (metadata?.error == true) {
@@ -439,7 +439,6 @@ const getMetaData = async (req, res) => {
 };
 
 const getMetaDataById = async (req, res) => {
-  console.log("getMetaDataById")
   const { Product } = req.params;
   const user=req.user
   if(user.title!="admin" && user.title!=Product && user.title!="domain"){
@@ -470,7 +469,6 @@ const getMetaDataById = async (req, res) => {
 };
 const getMetaDataByVersion=async(req,res)=>{
   const { product, version } = req.query;
-  console.log("getMetaDataByVersion")
   try {
     if(version==null && product!==null){
       const metadata=await getMetaDataByVersionP(product)
@@ -510,7 +508,6 @@ const getMetaDataByVersion=async(req,res)=>{
 
 const searchMetaData=async(req,res)=>{
   const searchParams = req.query;
-  console.log("hello") ;
  
   try {
    

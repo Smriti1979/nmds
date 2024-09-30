@@ -1,6 +1,5 @@
 const express = require('express')
-const { RateLimiterMemory } = require('rate-limiter-flexible');
-const functionFromModule1 = require('./helper_utils/tokenVerifier.js');
+
 const { createServer } = require("http");
 const cookieParser = require('cookie-parser')
 const db = require('./models')
@@ -35,7 +34,7 @@ const server = createServer(app);
 //listening to server connection
 server.listen(port, function (error) {
   if (error) console.log("Error in server setup");
-  // console.log(`Server is listening on http://${host}:${port}`);
+  console.log(`Server is listening on http://${host}:${port}`);
 })
 
 app.on('close', function () {
