@@ -27,11 +27,14 @@ db.sequelize = sequelize;
 // db.sequelize = sequelize;
 
 
-db.AdminUser = require("./admin/AdminUsers")(sequelize, DataTypes);
-db.metadata = require("./admin/meta")(sequelize, DataTypes);
-db.product = require("./admin/product")(sequelize, DataTypes);
-db.productagency = require("./admin/productagency")(sequelize, DataTypes);
-db.agency= require("./admin/agency")(sequelize, DataTypes);
+db.pimdUser = require("./pimd/pimdUsers")(sequelize, DataTypes);
+db.metadata = require("./pimd/meta")(sequelize, DataTypes);
+db.product = require("./pimd/product")(sequelize, DataTypes);
+db.productagency = require("./pimd/productagency")(sequelize, DataTypes);
+db.agency= require("./pimd/agency")(sequelize, DataTypes);
+db.userroles = require("./pimd/userroles")(sequelize, DataTypes); 
+db.role = require("./pimd/role")(sequelize, DataTypes); 
+
 
 //exporting the module
 module.exports = db;

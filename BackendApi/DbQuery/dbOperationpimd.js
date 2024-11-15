@@ -1,11 +1,12 @@
 /** @format */
 
+
 const db = require("../models/index.js");
 const { Pool } = require("pg");
 require("dotenv").config();
 const bcrypt = require("bcrypt");
 // DB connection for ASI
-const pooladmin = new Pool({
+const poolpimd = new Pool({
   user: process.env.DB_USERNAME,
   host: process.env.DB_HOST,
   database: process.env.DB_DATABASETPM,
@@ -14,23 +15,79 @@ const pooladmin = new Pool({
 });
 
 
-async function  createUserdb(username,password,title,name,email,phno,address){
-  const hashedPassword = await bcrypt.hash(password, 10);
-  const query='INSERT INTO adminusers(username,password,title,name,email,phno,address,"createdDate") VALUES($1, $2, $3, $4, $5, $6, $7, $8)';
-  await pooladmin.query(query, [username,hashedPassword,title,name,email,phno,address,new Date()]);
+poolpimd.connect((err, client, release) => {
+  if (err) {
+    return console.error("Error acquiring client", err.stack);
+  }
+  console.log("Database connected successfully");
+  release();
+});
 
- const user=await pooladmin.query(`SELECT username,title,name,email,phno,address,"createdDate"  FROM adminusers where username=$1`,[username])
- if (user.rows.length === 0) {
-  return {
-    error: true,
-    errorCode: 405,
-    errorMessage: `unable to create user`,
-  };
+
+
+// async function  createUserdb(username,password,title,name,email,phno,address, roleIds){
+//   const hashedPassword = await bcrypt.hash(password, 10);
+//   const query='INSERT INTO pimdusers(username,password,title,name,email,phno,address,"createdDate") VALUES($1, $2, $3, $4, $5, $6, $7, $8)';
+//   await poolpimd.query(query, [username,hashedPassword,title,name,email,phno,address,new Date()]);
+
+//  const user=await poolpimd.query(`SELECT username,title,name,email,phno,address,"createdDate"  FROM pimdusers where username=$1`,[username])
+//  if (user.rows.length === 0) {
+//   return {
+//     error: true,
+//     errorCode: 405,
+//     errorMessage: `unable to create user`,
+//   };
+// }
+//  return user.rows[0];
+// }
+
+async function createUserdb(username, password, title, name, email, phno, address, roleIds) {
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  // Start a transaction to ensure atomicity in creating a user and assigning roles
+  const client = await poolpimd.connect();
+  try {
+    await client.query('BEGIN');
+
+    // Insert the new user
+    const insertUserQuery = `
+      INSERT INTO pimdusers(username, password, title, name, email, phno, address, "createdDate")
+      VALUES($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id, username, title, name, email, phno, address, "createdDate"
+    `;
+    const userResult = await client.query(insertUserQuery, [
+      username, hashedPassword, title, name, email, phno, address, new Date()
+    ]);
+
+    const newUser = userResult.rows[0];
+
+    // Check if the roles are provided
+    if (!roleIds || roleIds.length === 0) {
+      throw new Error("User creation failed: at least one role must be assigned.");
+    }
+
+    // Insert roles for the user in the userroles table
+    const insertrolePromises = roleIds.map(roleId => {
+      const insertUserroleQuery = `
+        INSERT INTO userroles(userId, roleId) VALUES($1, $2)
+      `;
+      return client.query(insertUserroleQuery, [newUser.id, roleId]);
+    });
+    await Promise.all(insertrolePromises);
+
+    await client.query('COMMIT');
+    return newUser;
+
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error("Error in createUserdb:", error.message);
+    return { error: true, errorMessage: `Unable to create user: ${error.message}` };
+  } finally {
+    client.release();
+  }
 }
- return user.rows[0];
-}
+
 async function  getUserdb(){
- const user=await pooladmin.query(`SELECT username,title,name,email,phno,address,"createdDate"  FROM adminusers `)
+ const user=await poolpimd.query(`SELECT username,title,name,email,phno,address,"createdDate"  FROM pimdusers `)
 if (user.rows.length === 0) {
   return {
     error: true,
@@ -41,8 +98,8 @@ if (user.rows.length === 0) {
  return user.rows;
 }
 async function getUserByUsernameDb(username) {
-  const user = await pooladmin.query(
-    `SELECT username, title, name, email, phno, address, "createdDate" FROM adminusers WHERE username = $1`,
+  const user = await poolpimd.query(
+    `SELECT username, title, name, email, phno, address, "createdDate" FROM pimdusers WHERE username = $1`,
     [username]
   );
   if (user.rows.length === 0) {
@@ -55,8 +112,8 @@ async function getUserByUsernameDb(username) {
   return user.rows[0];
 }
 async function deleteUserDb(username) {
-  const query = `DELETE FROM adminusers WHERE username = $1 RETURNING *`;
-  const user = await pooladmin.query(query, [username]);
+  const query = `DELETE FROM pimdusers WHERE username = $1 RETURNING *`;
+  const user = await poolpimd.query(query, [username]);
 
   if (user.rows.length === 0) {
     return {
@@ -74,7 +131,7 @@ async function updateUserDb(username, title, name, email, phno, address, passwor
     hashedPassword = await bcrypt.hash(password, 10); // Hash the new password if provided
   }
 
-  const query = `UPDATE adminusers SET 
+  const query = `UPDATE pimdusers SET 
                   title = $1, 
                   name = $2, 
                   email = $3, 
@@ -84,7 +141,7 @@ async function updateUserDb(username, title, name, email, phno, address, passwor
                 WHERE username = $7 
                 RETURNING *`;
 
-  const user = await pooladmin.query(query, [
+  const user = await poolpimd.query(query, [
     title, name, email, phno, address, hashedPassword, username
   ]);
 
@@ -98,14 +155,65 @@ async function updateUserDb(username, title, name, email, phno, address, passwor
   return user.rows[0];
 }
 
+async function updateuserroles(username, roleIds) {
+  let client;
+
+  try {
+    // Get a client from the pool
+    client = await poolpimd.connect();
+  
+    // First, check if the user exists
+    const userCheckQuery = `SELECT * FROM pimdusers WHERE username = $1`;
+    const userCheck = await client.query(userCheckQuery, [username]);
+
+    if (userCheck.rows.length === 0) {
+      return {
+        error: true,
+        errorCode: 404,
+        errorMessage: `User not found`,
+      };
+    }
+
+    // Delete existing roles associated with this user (if any)
+    const deleterolesQuery = `DELETE FROM "userroles" WHERE userId = (SELECT id FROM pimdusers WHERE username = $1)`;
+    await client.query(deleterolesQuery, [username]);
+
+    // Now, insert the new roles for the user
+    const insertrolesQuery = `INSERT INTO "userroles" (userId, roleId) 
+                               SELECT id, unnest($1::int[]) FROM pimdusers WHERE username = $2`;
+    await client.query(insertrolesQuery, [roleIds, username]);
+
+    // Return success message or the updated roles (optional)
+    return {
+      success: true,
+      message: 'User roles updated successfully',
+    };
+
+  } catch (error) {
+    console.error('Error updating user roles:', error);
+    return {
+      error: true,
+      errorCode: 500,
+      errorMessage: 'Something went wrong while updating user roles',
+    };
+  } finally {
+    // Release the client back to the pool
+    if (client) {
+      client.release();
+    }
+  }
+}
+
+
+
 /**
- * --------Admin validation-----------
+ * --------pimd validation-----------
  *
  */
 
 async function EmailValidation(username) {
-  const query = "SELECT * FROM adminusers WHERE username = $1";
-  const result = await pooladmin.query(query, [username]);
+  const query = "SELECT * FROM pimdusers WHERE username = $1";
+  const result = await poolpimd.query(query, [username]);
   return result.rows[0];
 }
 
@@ -128,13 +236,24 @@ async function createProductdb(
   swagger,
   viz,
   category,
-  authorId
+  authorId,
+  userRoles // Added userRoles parameter
 ) {
   try {
-    await pooladmin.query("BEGIN");
+    // Check if the user has roleId 1 or 2
+    const hasRole1or2 = userRoles.includes(1) || userRoles.includes(2);
+    if (!hasRole1or2) {
+      return {
+        error: true,
+        errorCode: 405,
+        errorMessage: `User doesn't have permission to create a product`
+      };
+    }
 
-    const productQuery = `INSERT INTO product(id, title, count, icon, period, tooltip, type, url, "table", swagger, viz,"authorId","createdDate") VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11,$12,$13)`;
-    await pooladmin.query(productQuery, [
+    await poolpimd.query("BEGIN");
+
+    const productQuery = `INSERT INTO product(id, title, count, icon, period, tooltip, type, url, "table", swagger, viz, "authorId", "createdDate") VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`;
+    await poolpimd.query(productQuery, [
       id,
       title,
       count,
@@ -154,7 +273,7 @@ async function createProductdb(
 
     for (const cat of categories) {
       const categoryExistsQuery = `SELECT 1 FROM agency WHERE category = $1`;
-      const categoryExistsResult = await pooladmin.query(categoryExistsQuery, [
+      const categoryExistsResult = await poolpimd.query(categoryExistsQuery, [
         cat,
       ]);
 
@@ -167,13 +286,13 @@ async function createProductdb(
       }
 
       const productagencyQuery = `INSERT INTO productagency("productId", category) VALUES($1, $2)`;
-      await pooladmin.query(productagencyQuery, [id, cat]);
+      await poolpimd.query(productagencyQuery, [id, cat]);
     }
 
-    await pooladmin.query("COMMIT");
+    await poolpimd.query("COMMIT");
     return categories;
   } catch (error) {
-    await pooladmin.query("ROLLBACK");
+    await poolpimd.query("ROLLBACK");
     console.error(error);
     return {
       error: true,
@@ -182,14 +301,15 @@ async function createProductdb(
     };
   }
 }
+
 /**
  * create agency
  */
 async function createagencydb(category, name) {
   try {
     const sqlQuery = `INSERT INTO agency(category,name,"createdDate") VALUES($1,$2,$3)`;
-    await pooladmin.query(sqlQuery, [category, name,new Date()]);
-    const result = await pooladmin.query(
+    await poolpimd.query(sqlQuery, [category, name,new Date()]);
+    const result = await poolpimd.query(
       "SELECT * FROM agency WHERE category=$1",
       [category]
     );
@@ -217,7 +337,7 @@ async function createMetadatadb({ Product, data, user_id, version, latest }) {
     const metaQuery = `INSERT INTO metadata("Product", data, user_id, version, latest,"createdDate") 
                        VALUES($1, $2, $3, $4, $5,$6)`;
 
-    await pooladmin.query(metaQuery, [
+    await poolpimd.query(metaQuery, [
       Product,
 
       data, 
@@ -227,7 +347,7 @@ async function createMetadatadb({ Product, data, user_id, version, latest }) {
       new Date()
     ]);
 
-    const result = await pooladmin.query(
+    const result = await poolpimd.query(
       `SELECT * FROM metadata WHERE "Product"=$1 AND latest=true`,
       [Product]
     );
@@ -258,7 +378,7 @@ async function createMetadatadb({ Product, data, user_id, version, latest }) {
 async function getProductdb() {
   try {
     const getQuery = `SELECT * FROM product`;
-    const productResult = await pooladmin.query(getQuery);
+    const productResult = await poolpimd.query(getQuery);
     if (productResult.rows.length === 0) {
       return {
         error: true,
@@ -280,7 +400,7 @@ async function getProductdb() {
 async function getProductByIddb(productId) {
   try {
     const getQuery = `SELECT * FROM product WHERE id = $1`;
-    const productResult = await pooladmin.query(getQuery, [productId]);
+    const productResult = await poolpimd.query(getQuery, [productId]);
     if (productResult.rows.length === 0) {
       return {
         error: true,
@@ -289,7 +409,7 @@ async function getProductByIddb(productId) {
       };
     }
     const getQueryCategory = `SELECT category FROM productagency WHERE "productId" = $1`;
-    const categoriesResult = await pooladmin.query(getQueryCategory, [
+    const categoriesResult = await poolpimd.query(getQueryCategory, [
       productId,
     ]);
     const product = productResult.rows[0];
@@ -312,27 +432,35 @@ async function getProductByIddb(productId) {
  */
 async function getMetaDatadb() {
   try {
-    const getQuery = `SELECT * FROM  metadata  where latest=true ORDER BY "createdDate" DESC`;
-    const data = await pooladmin.query(getQuery);
-    if (data.rows.length == 0) {
+    const getQuery = `SELECT * FROM metadata WHERE latest=true ORDER BY "createdDate" DESC`;
+    const data = await poolpimd.query(getQuery);
+
+    if (data.rows.length === 0) {
       return {
         error: true,
         errorCode: 402,
-        errorMessage: `Unable to fetch data from metaTable`,
+        errorMessage: "No data found in metaTable",
       };
     }
-    return data.rows;
+
+    // Return consistent object structure on success
+    return {
+      error: false,
+      data: data.rows,
+    };
   } catch (error) {
+    // Return detailed error message
     return {
       error: true,
-      errorCode: 402,
-      errorMessage: `Unable to fetch data from metaTable=${error}`,
+      errorCode: 500,
+      errorMessage: `Database error: ${error.message}`,
     };
   }
 }
+
 async function getMetaDataByIddb(Product) {
   const getQuery = `SELECT * FROM  metadata where "Product"=$1  AND  latest=true`;
-  const data = await pooladmin.query(getQuery, [Product]);
+  const data = await poolpimd.query(getQuery, [Product]);
   if (data.rows.length == 0) {
     return {
       error: true,
@@ -367,7 +495,7 @@ async function searchMetaDatadb(searchParams) {
     });
     getQuery += ' ORDER BY "createdDate" DESC';
     
-    const data = await pooladmin.query(getQuery);
+    const data = await poolpimd.query(getQuery);
 
     if (data.rows.length === 0) {
       return {
@@ -390,7 +518,7 @@ async function searchMetaDatadb(searchParams) {
 
 async function  getMetaDataByVersionP(product) {
   const getQuery=`SELECT * FROM metadata where "Product"=$1`;
-  const data = await pooladmin.query(getQuery, [product]);
+  const data = await poolpimd.query(getQuery, [product]);
   if (data.rows.length == 0) {
     return {
       error: true,
@@ -403,7 +531,7 @@ async function  getMetaDataByVersionP(product) {
 
 async function  getMetaDataByVersionPV(product,version) {
   const getQuery=`SELECT * FROM metadata where "Product"=$1 AND version=$2`;
-  const data = await pooladmin.query(getQuery, [product,version]);
+  const data = await poolpimd.query(getQuery, [product,version]);
   if (data.rows.length == 0) {
     return {
       error: true,
@@ -423,7 +551,7 @@ async function  getMetaDataByVersionPV(product,version) {
 async function getagencydb() {
   try {
     const getQuery = `SELECT * FROM agency `;
-    const data = await pooladmin.query(getQuery);
+    const data = await poolpimd.query(getQuery);
     if (data.rows.length == 0) {
       return {
         error: true,
@@ -443,7 +571,7 @@ async function getagencydb() {
 
 async function getagencyByIddb(category) {
   const getQuery = `SELECT * FROM agency where category=$1`;
-  const data = await pooladmin.query(getQuery, [category]);
+  const data = await poolpimd.query(getQuery, [category]);
 
   if (data.rows.length == 0) {
     return {
@@ -470,7 +598,7 @@ async function updateProductDomdb(
   category
 ) {
   try {
-    await pooladmin.query("BEGIN");
+    await poolpimd.query("BEGIN");
 
     // Update product details
     const productQuery = `UPDATE product SET 
@@ -481,7 +609,7 @@ async function updateProductDomdb(
           type = $5, 
           viz = $6 
           WHERE id = $7`;
-    await pooladmin.query(productQuery, [
+    await poolpimd.query(productQuery, [
       title,
       count,
       period,
@@ -493,7 +621,7 @@ async function updateProductDomdb(
 
     // Handle categories
     const categories = category.split(",").map((cat) => cat.trim());
-    const existingCategories = await pooladmin.query(
+    const existingCategories = await poolpimd.query(
       `SELECT category FROM productagency WHERE "productId" = $1`,
       [id]
     );
@@ -505,7 +633,7 @@ async function updateProductDomdb(
     for (const cat of categories) {
       if (!existingCategoryList.includes(cat)) {
         const categoryExistsQuery = `SELECT 1 FROM agency WHERE category = $1`;
-        const categoryExistsResult = await pooladmin.query(
+        const categoryExistsResult = await poolpimd.query(
           categoryExistsQuery,
           [cat]
         );
@@ -518,12 +646,12 @@ async function updateProductDomdb(
           };
         }
         const productagencyQuery = `INSERT INTO productagency("productId", category) VALUES($1, $2)`;
-        await pooladmin.query(productagencyQuery, [id, cat]);
+        await poolpimd.query(productagencyQuery, [id, cat]);
       }
     }
 
     const getQuery = `SELECT * FROM product WHERE id = $1`;
-    const productResult = await pooladmin.query(getQuery, [id]);
+    const productResult = await poolpimd.query(getQuery, [id]);
     if (productResult.rows.length === 0) {
       return {
         error: true,
@@ -533,15 +661,15 @@ async function updateProductDomdb(
     }
 
     const getQueryCategory = `SELECT category FROM productagency WHERE "productId" = $1`;
-    const categoriesResult = await pooladmin.query(getQueryCategory, [id]);
+    const categoriesResult = await poolpimd.query(getQueryCategory, [id]);
     const product = productResult.rows[0];
     const Allcategory = categoriesResult.rows.map((row) => row.category);
     product["category"] = Allcategory;
 
-    await pooladmin.query("COMMIT");
+    await poolpimd.query("COMMIT");
     return product;
   } catch (error) {
-    await pooladmin.query("ROLLBACK");
+    await poolpimd.query("ROLLBACK");
     return {
       error: true,
       errorCode: 402,
@@ -551,7 +679,7 @@ async function updateProductDomdb(
 }
 
 /**
- * --------------------Update Product admin ------------------
+ * --------------------Update Product pimd ------------------
  */
 
 async function updateProductDevdb(
@@ -569,7 +697,7 @@ async function updateProductDevdb(
   category
 ) {
   try {
-    await pooladmin.query("BEGIN");
+    await poolpimd.query("BEGIN");
 
     // Update product details
     const productQuery = `UPDATE product SET 
@@ -585,7 +713,7 @@ async function updateProductDevdb(
             viz = $10 
             WHERE id = $11`;
 
-    await pooladmin.query(productQuery, [
+    await poolpimd.query(productQuery, [
       title,
       count,
       icon,
@@ -601,7 +729,7 @@ async function updateProductDevdb(
 
     // Handle categories
     const categories = category.split(",").map((cat) => cat.trim());
-    const existingCategories = await pooladmin.query(
+    const existingCategories = await poolpimd.query(
       `SELECT category FROM productagency WHERE "productId" = $1`,
       [id]
     );
@@ -613,7 +741,7 @@ async function updateProductDevdb(
     for (const cat of categories) {
       if (!existingCategoryList.includes(cat)) {
         const categoryExistsQuery = `SELECT 1 FROM agency WHERE category = $1`;
-        const categoryExistsResult = await pooladmin.query(
+        const categoryExistsResult = await poolpimd.query(
           categoryExistsQuery,
           [cat]
         );
@@ -626,11 +754,11 @@ async function updateProductDevdb(
           };
         }
         const productagencyQuery = `INSERT INTO productagency("productId", category) VALUES($1, $2)`;
-        await pooladmin.query(productagencyQuery, [id, cat]);
+        await poolpimd.query(productagencyQuery, [id, cat]);
       }
     }
     const getQuery = `SELECT * FROM product WHERE id = $1`;
-    const productResult = await pooladmin.query(getQuery, [id]);
+    const productResult = await poolpimd.query(getQuery, [id]);
     if (productResult.rows.length === 0) {
       return {
         error: true,
@@ -640,15 +768,15 @@ async function updateProductDevdb(
     }
 
     const getQueryCategory = `SELECT category FROM productagency WHERE "productId" = $1`;
-    const categoriesResult = await pooladmin.query(getQueryCategory, [id]);
+    const categoriesResult = await poolpimd.query(getQueryCategory, [id]);
     const product = productResult.rows[0];
     const Allcategory = categoriesResult.rows.map((row) => row.category);
     product["category"] = Allcategory;
 
-    await pooladmin.query("COMMIT");
+    await poolpimd.query("COMMIT");
     return product;
   } catch (error) {
-    await pooladmin.query("ROLLBACK");
+    await poolpimd.query("ROLLBACK");
   }
 }
 
@@ -660,9 +788,9 @@ async function updateProductDevdb(
 
 async function updateagencydb(name, category) {
   const updateQuery = `UPDATE agency SET name=$1 where category=$2 `;
-  await pooladmin.query(updateQuery, [name, category]);
+  await poolpimd.query(updateQuery, [name, category]);
   const getQuery = `SELECT * FROM agency where category=$1`;
-  const data = await pooladmin.query(getQuery, [category]);
+  const data = await poolpimd.query(getQuery, [category]);
   if (data.rows.length == 0) {
     return {
       error: true,
@@ -686,9 +814,9 @@ async function updateMetadatadb(
 ) {
 
   try {
-    await pooladmin.query("BEGIN");
+    await poolpimd.query("BEGIN");
     const getQuery=`SELECT * FROM metadata where latest=true AND "Product"=$1`
-    const data=await pooladmin.query(getQuery,[Product])
+    const data=await poolpimd.query(getQuery,[Product])
     if(data.rowCount==0){
       return {
         error: true,
@@ -698,10 +826,10 @@ async function updateMetadatadb(
     }
     const {version}=data.rows[0];
     const newVersion=version+1;
-    await pooladmin.query(`Update metadata SET latest=$1 where "Product"=$2 ANd version=$3 `,[false,Product,version])
+    await poolpimd.query(`Update metadata SET latest=$1 where "Product"=$2 ANd version=$3 `,[false,Product,version])
     const metaQuery = `INSERT INTO metadata("Product",data,version,latest,user_id,"createdDate") VALUES($1,$2,$3,$4,$5,$6)`;
 
-    await pooladmin.query(metaQuery, [
+    await poolpimd.query(metaQuery, [
       Product,
       metadata,
       newVersion,
@@ -709,7 +837,7 @@ async function updateMetadatadb(
       user_id,
       new Date()
     ]);
-    const result = await pooladmin.query(
+    const result = await poolpimd.query(
       `SELECT * FROM metadata where "version"=$1 And "Product"=$2`,
       [newVersion,Product]
     );
@@ -720,10 +848,10 @@ async function updateMetadatadb(
         errorMessage: `Error in update metadata`,
       };
     }
-    await pooladmin.query("COMMIT");
+    await poolpimd.query("COMMIT");
     return result.rows[0];
   } catch (error) {
-    await pooladmin.query("ROLLBACK");
+    await poolpimd.query("ROLLBACK");
     return {
       error: true,
       errorCode: 500,
@@ -746,9 +874,9 @@ async function deleteProductdb(id) {
     const productQuery = `DELETE FROM product  WHERE id=$1;`;
     const metaDataQuery = `DELETE FROM metadata  WHERE "Product"=$1;`;
     const CategoryQuery = `DELETE FROM productagency  WHERE "productId"=$1;`;
-    await pooladmin.query(metaDataQuery, [id]);
-    await pooladmin.query(CategoryQuery, [id]);
-    await pooladmin.query(productQuery, [id]);
+    await poolpimd.query(metaDataQuery, [id]);
+    await poolpimd.query(CategoryQuery, [id]);
+    await poolpimd.query(productQuery, [id]);
   } catch (error) {
     return {
       error: true,
@@ -767,7 +895,7 @@ async function deleteProductdb(id) {
 async function deleteMetadatadb(Product) {
  try {
    const metaDataQuery = `DELETE FROM metadata  WHERE "Product"=$1;`;
-   await pooladmin.query(metaDataQuery, [Product]);
+   await poolpimd.query(metaDataQuery, [Product]);
  } catch (error) {
   return {
     error: true,
@@ -785,19 +913,19 @@ async function deleteMetadatadb(Product) {
 async function deleteagencydb(category) {
   try {
     // Start a transaction
-    await pooladmin.query("BEGIN");
+    await poolpimd.query("BEGIN");
 
     // Get associated products from the productagency table
     const getProductsQuery = `SELECT "productId" FROM productagency WHERE category = $1`;
-    const productsResult = await pooladmin.query(getProductsQuery, [category]);
+    const productsResult = await poolpimd.query(getProductsQuery, [category]);
     const productIds = productsResult.rows.map((row) => row.productId);
 
     // Remove associated entries from the productagency table
     const deleteProductagencyQuery = `DELETE FROM productagency WHERE category = $1`;
-    await pooladmin.query(deleteProductagencyQuery, [category]);
+    await poolpimd.query(deleteProductagencyQuery, [category]);
 
     if (productIds.length > 0) {
-      await pooladmin.query("ROLLBACK");
+      await poolpimd.query("ROLLBACK");
       return {
         error: true,
         errorCode: 500,
@@ -807,10 +935,10 @@ async function deleteagencydb(category) {
 
     // Finally, remove the agency itself
     const deleteagencyQuery = `DELETE FROM agency WHERE category = $1`;
-    await pooladmin.query(deleteagencyQuery, [category]);
+    await poolpimd.query(deleteagencyQuery, [category]);
 
     // Commit the transaction
-    await pooladmin.query("COMMIT");
+    await poolpimd.query("COMMIT");
 
     return {
       success: true,
@@ -818,7 +946,7 @@ async function deleteagencydb(category) {
     };
   } catch (error) {
     // Rollback transaction in case of an error
-    await pooladmin.query("ROLLBACK");
+    await poolpimd.query("ROLLBACK");
     return {
       error: true,
       errorCode: 500,
@@ -833,10 +961,12 @@ async function deleteagencydb(category) {
 
 
 module.exports = {
+  poolpimd,
   EmailValidation,
   deleteagencydb,
   deleteMetadatadb,
   deleteProductdb,
+  updateuserroles,
   // updateMetadataDevdb,
   // updateMetadataDomdb,
   updateMetadatadb,

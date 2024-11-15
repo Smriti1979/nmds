@@ -3,11 +3,11 @@
   "info": {
     "title": "Esankhyiki Api",
     "version": "1.0.0",
-    "description": "API for admin user authentication, product management including product creation."
+    "description": "API for pimd user authentication, product management including product creation."
   },
   "servers": [
     {
-      "url": "http://localhost:5003",
+      "url": "http://127.0.0.0.1:3000",
       "description": "Local development server"
     },
     {
@@ -18,8 +18,8 @@
   "paths": {
     "/api/signin": {
       "post": {
-        "summary": "Sign in admin user",
-        "tags": ["signin"],
+        "summary": "Sign in PIMD user",
+        "tags": ["Signin"],
         "parameters": [
           {
             "in": "header",
@@ -32,7 +32,7 @@
             }
           }
         ],
-        "description": "Authenticate an admin user by validating username and password and return an access token.",
+        "description": "Authenticate an pimd user by validating username and password and return an access token.",
         "requestBody": {
           "required": true,
           "content": {
@@ -42,7 +42,7 @@
                 "properties": {
                   "username": {
                     "type": "string",
-                    "example": "Admin"
+                    "example": "pimd"
                   },
                   "password": {
                     "type": "string",
@@ -67,7 +67,7 @@
                       "properties": {
                         "username": {
                           "type": "string",
-                          "example": "admin"
+                          "example": "pimd"
                         }
                       }
                     },
@@ -119,7 +119,7 @@
         }
       }
     },
-"/api/admin/user": {
+"/api/pimd/user": {
     "post": {
       "security": [
         {
@@ -136,12 +136,12 @@
             "schema": {
               "type": "object",
               "properties": {
-                "username": { "type": "string", "example": "Admin" },
+                "username": { "type": "string", "example": "pimd" },
                 "password": { "type": "string", "example": "123456" },
-                "title": { "type": "string", "example": "admin" },
-                "name": { "type": "string", "example": "admin" },
+                "title": { "type": "string", "example": "pimd" },
+                "name": { "type": "string", "example": "pimd" },
                 "email": { "type": "string", "example": "xyz@gmail.com" },
-                "phno": { "type": "string", "example": "admin" },
+                "phno": { "type": "string", "example": "pimd" },
                 "address": { "type": "string", "example": "abcd 14/6" }
               },
               "required": ["username", "password"]
@@ -160,11 +160,11 @@
                   "data": {
                     "type": "object",
                     "properties": {
-                      "username": { "type": "string", "example": "Admin" },
-                      "title": { "type": "string", "example": "admin" },
-                      "name": { "type": "string", "example": "admin" },
+                      "username": { "type": "string", "example": "pimd" },
+                      "title": { "type": "string", "example": "pimd" },
+                      "name": { "type": "string", "example": "pimd" },
                       "email": { "type": "string", "example": "xyz@gmail.com" },
-                      "phno": { "type": "string", "example": "admin" },
+                      "phno": { "type": "string", "example": "pimd" },
                       "address": { "type": "string", "example": "abcd 14/6" }
                     }
                   },
@@ -225,11 +225,11 @@
                     "items": {
                       "type": "object",
                       "properties": {
-                        "username": { "type": "string", "example": "Admin" },
-                        "title": { "type": "string", "example": "admin" },
-                        "name": { "type": "string", "example": "admin" },
+                        "username": { "type": "string", "example": "pimd" },
+                        "title": { "type": "string", "example": "pimd" },
+                        "name": { "type": "string", "example": "pimd" },
                         "email": { "type": "string", "example": "xyz@gmail.com" },
-                        "phno": { "type": "string", "example": "admin" },
+                        "phno": { "type": "string", "example": "pimd" },
                         "address": { "type": "string", "example": "abcd 14/6" }
                       }
                     }
@@ -270,7 +270,7 @@
       }
     }
   },
-"/api/admin/meta/search": {
+"/api/pimd/meta/search": {
     "get": {
       "summary": "Search metadata",
       "tags": ["Metadata"],
@@ -405,7 +405,7 @@
       }
     }
   },
-"/api/admin/user/{username}": {
+"/api/pimd/user/{username}": {
       "get": {
         "security": [
           {
@@ -414,7 +414,7 @@
         ],
         "tags": ["User Management"],
         "summary": "Get a user by username",
-        "description": "Retrieves the details of a user by username. Only users with the title 'CC_User' can access this endpoint.",
+        "description": "Retrieves the details of a user by username. Only users with the title 'PIMD_user' can access this endpoint.",
         "parameters": [
           {
             "name": "username",
@@ -437,11 +437,11 @@
                     "data": {
                       "type": "object",
                       "properties": {
-                        "username": { "type": "string", "example": "Admin" },
-                        "title": { "type": "string", "example": "admin" },
-                        "name": { "type": "string", "example": "admin" },
+                        "username": { "type": "string", "example": "pimd" },
+                        "title": { "type": "string", "example": "pimd" },
+                        "name": { "type": "string", "example": "pimd" },
                         "email": { "type": "string", "example": "xyz@gmail.com" },
-                        "phno": { "type": "string", "example": "admin" },
+                        "phno": { "type": "string", "example": "pimd" },
                         "address": { "type": "string", "example": "abcd 14/6" }
                       }
                     },
@@ -488,7 +488,7 @@
         ],
         "tags": ["User Management"],
         "summary": "Delete a user by username",
-        "description": "Deletes a user by username. Only users with the title 'CC_User' can delete users, except 'CC_User' itself.",
+        "description": "Deletes a user by username. Only users with the title 'PIMD_user' can delete users, except 'PIMD_user' itself.",
         "parameters": [
           {
             "name": "username",
@@ -551,7 +551,7 @@
         ],
         "tags": ["User Management"],
         "summary": "Update a user by username",
-        "description": "Updates a user's details. Only users with the title 'CC_User' can update other users.",
+        "description": "Updates a user's details. Only users with the title 'PIMD_user' can update other users.",
         "parameters": [
           {
             "name": "username",
@@ -570,8 +570,8 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "title": { "type": "string", "example": "admin" },
-                  "name": { "type": "string", "example": "admin" },
+                  "title": { "type": "string", "example": "pimd" },
+                  "name": { "type": "string", "example": "pimd" },
                   "email": { "type": "string", "example": "xyz@gmail.com" },
                   "phno": { "type": "string", "example": "1234567890" },
                   "address": { "type": "string", "example": "abcd 14/6" },
@@ -592,9 +592,9 @@
                     "data": {
                       "type": "object",
                       "properties": {
-                        "username": { "type": "string", "example": "Admin" },
-                        "title": { "type": "string", "example": "admin" },
-                        "name": { "type": "string", "example": "admin" },
+                        "username": { "type": "string", "example": "pimd" },
+                        "title": { "type": "string", "example": "pimd" },
+                        "name": { "type": "string", "example": "pimd" },
                         "email": { "type": "string", "example": "xyz@gmail.com" },
                         "phno": { "type": "string", "example": "1234567890" },
                         "address": { "type": "string", "example": "abcd 14/6" }
@@ -636,7 +636,7 @@
         }
       }
     },
-    "/api/admin/product": {
+    "/api/pimd/product": {
       "post": {
         "security": [
           {
@@ -780,7 +780,7 @@
             }
           },
           "405": {
-            "description": "Unauthorized user (only admin can create the product)",
+            "description": "Unauthorized user (only pimd can create the product)",
             "content": {
               "application/json": {
                 "schema": {
@@ -788,7 +788,7 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "example": "Only admin can create the product"
+                      "example": "Only pimd can create the product"
                     }
                   }
                 }
@@ -820,7 +820,7 @@
           }
         ],
         "summary": "Get All Products",
-        "description": "Retrieve all products. Only admin or domain users can access.",
+        "description": "Retrieve all products. Only pimd or domain users can access.",
         "tags": ["Products"],
         "responses": {
           "200": {
@@ -835,7 +835,7 @@
             }
           },
           "405": {
-            "description": "Only admin or domain users can access the product data"
+            "description": "Only pimd or domain users can access the product data"
           },
           "500": {
             "description": "Unable to fetch product data"
@@ -843,7 +843,7 @@
         }
       }
     },
-    "/api/admin/product/{productId}": {
+    "/api/pimd/product/{productId}": {
       "get": {
         "summary": "Get Product by ID",
         "description": "Retrieve a product by its ID",
@@ -878,7 +878,7 @@
             "description": "Product ID is required"
           },
           "405": {
-            "description": "Only admin or domain users can access the product data"
+            "description": "Only pimd or domain users can access the product data"
           },
           "500": {
             "description": "Unable to fetch product data"
@@ -886,7 +886,7 @@
         }
       }
     },
-    "/api/admin/product/{id}": {
+    "/api/pimd/product/{id}": {
       "put": {
         "summary": "Update product",
         "tags": ["Products"],
@@ -895,7 +895,7 @@
             "bearerAuth": []
           }
         ],
-        "description": "Update an existing product. Only admin and domain users can edit products.",
+        "description": "Update an existing product. Only pimd and domain users can edit products.",
         "parameters": [
           {
             "name": "id",
@@ -1035,7 +1035,7 @@
             }
           },
           "405": {
-            "description": "Unauthorized user (only admin and domain users can edit the product)",
+            "description": "Unauthorized user (only pimd and domain users can edit the product)",
             "content": {
               "application/json": {
                 "schema": {
@@ -1043,7 +1043,7 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "example": "Only admin and domain users can edit"
+                      "example": "Only pimd and domain users can edit"
                     }
                   }
                 }
@@ -1076,7 +1076,7 @@
             "bearerAuth": []
           }
         ],
-        "description": "Delete an existing product. Only admin users can delete products.",
+        "description": "Delete an existing product. Only pimd users can delete products.",
         "parameters": [
           {
             "name": "id",
@@ -1114,7 +1114,7 @@
             }
           },
           "405": {
-            "description": "Unauthorized user (only admin can delete the product)",
+            "description": "Unauthorized user (only pimd can delete the product)",
             "content": {
               "application/json": {
                 "schema": {
@@ -1122,7 +1122,7 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "example": "Only admin can delete the product"
+                      "example": "Only pimd can delete the product"
                     }
                   }
                 }
@@ -1148,11 +1148,11 @@
         }
       }
     },
-    "/api/admin/agency": {
+    "/api/pimd/agency": {
       "post": {
         "summary": "Create agency",
-        "tags": ["agencys"],
-        "description": "Create a new agency in the system. Only admin users can create agencys.",
+        "tags": ["Agencies"],
+        "description": "Create a new agency in the system. Only pimd users can create agencys.",
         "security": [
           {
             "bearerAuth": []
@@ -1224,7 +1224,7 @@
             }
           },
           "403": {
-            "description": "Only admin users can create agencys",
+            "description": "Only pimd users can create agencys",
             "content": {
               "application/json": {
                 "schema": {
@@ -1232,7 +1232,7 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "example": "Only admin can create the agency"
+                      "example": "Only pimd can create the agency"
                     }
                   }
                 }
@@ -1258,11 +1258,11 @@
         }
       }
     },
-    "/api/admin/agency ": {
+    "/api/pimd/agency ": {
       "get": {
         "summary": "Get All agencys",
-        "description": "Retrieve all agencys. Only admin, developers, or domain users can access.",
-        "tags": ["agencys"],
+        "description": "Retrieve all agencies. Only pimd, developers, or domain users can access.",
+        "tags": ["Agencies"],
         "security": [
           {
             "bearerAuth": []
@@ -1289,10 +1289,10 @@
         }
       }
     },
-    "/api/admin/agency/{category}": {
+    "/api/pimd/agency/{category}": {
       "get": {
         "summary": "Get agency by Category",
-        "tags": ["agencys"],
+        "tags": ["Agencies"],
         "description": "Retrieve a agency by its category",
         "security": [
           {
@@ -1382,8 +1382,8 @@
             "bearerAuth": []
           }
         ],
-        "tags": ["agencys"],
-        "description": "Update an existing agency. Only admin and domain users can edit agencys.",
+        "tags": ["Agencies"],
+        "description": "Update an existing agency. Only pimd and domain users can edit agencys.",
         "parameters": [
           {
             "name": "category",
@@ -1478,8 +1478,8 @@
       },
       "delete": {
       "summary": "Delete agency by Category",
-      "tags": ["agencys"],
-      "description": "Delete a agency by its category. Only admin users can delete agencys.",
+      "tags": ["Agencies"],
+      "description": "Delete a agency by its category. Only pimd users can delete agencys.",
       "security": [
         {
           "bearerAuth": []
@@ -1519,7 +1519,7 @@
           }
         },
         "403": {
-          "description": "Unauthorized user (only admin can delete agencys)",
+          "description": "Unauthorized user (only pimd can delete agencys)",
           "content": {
             "application/json": {
               "schema": {
@@ -1527,7 +1527,7 @@
                 "properties": {
                   "error": {
                     "type": "string",
-                    "example": "Only admin can delete the agency"
+                    "example": "Only pimd can delete the agency"
                   }
                 }
               }
@@ -1570,11 +1570,11 @@
     }
   
     },
-"/api/admin/metadata/{Product}": {
+"/api/pimd/metadata/{Product}": {
 
     "put": {
       "summary": "Update Metadata",
-      "description": "Update metadata for a product. Only admin users or the owner of the product can update metadata.",
+      "description": "Update metadata for a product. Only pimd users or the owner of the product can update metadata.",
       "tags": ["Metadata"],
       "security": [
         {
@@ -1653,7 +1653,7 @@
           }
         },
         "403": {
-          "description": "Invalid user. Only admin or authorized users can update metadata.",
+          "description": "Invalid user. Only pimd or authorized users can update metadata.",
           "content": {
             "application/json": {
               "schema": {
@@ -1661,7 +1661,7 @@
                 "properties": {
                   "error": {
                     "type": "string",
-                    "example": "Invalid user. Only admin or authorized users can update metadata."
+                    "example": "Invalid user. Only pimd or authorized users can update metadata."
                   }
                 }
               }
@@ -1774,7 +1774,7 @@
       }
     ],
     "summary": "Delete Metadata",
-    "description": "Delete metadata for a specific product. Only admin or the product owner can delete metadata.",
+    "description": "Delete metadata for a specific product. Only pimd or the product owner can delete metadata.",
     "tags": ["Metadata"],
     "parameters": [
       {
@@ -1814,7 +1814,7 @@
         }
       },
       "403": {
-        "description": "Unauthorized user (only admin or product owner can delete metadata)",
+        "description": "Unauthorized user (only pimd or product owner can delete metadata)",
         "content": {
           "application/json": {
             "schema": {
@@ -1822,7 +1822,7 @@
               "properties": {
                 "error": {
                   "type": "string",
-                  "example": "Only admin or product owner can delete the metadata"
+                  "example": "Only pimd or product owner can delete the metadata"
                 }
               }
             }
@@ -1848,7 +1848,7 @@
     }
   }
 },
-"/api/admin/metadata/version": {
+"/api/pimd/metadata/version": {
   "get": {
     "summary": "Get Metadata by Product and Version",
      "security": [
@@ -1936,7 +1936,7 @@
   }
 }
 ,
-"/api/admin/metadata": {
+"/api/pimd/metadata": {
   "post": {
      "security": [
           {
@@ -1944,7 +1944,7 @@
           }
         ],
     "summary": "Create Metadata",
-    "description": "Create metadata for a product. Only admin users can create metadata.",
+    "description": "Create metadata for a product. Only pimd users can create metadata.",
     "tags": ["Metadata"],
     "requestBody": {
       "required": true,
@@ -2010,7 +2010,7 @@
         }
       },
       "405": {
-        "description": "Only admin users can create metadata",
+        "description": "Only pimd users can create metadata",
         "content": {
           "application/json": {
             "schema": {
@@ -2018,7 +2018,7 @@
               "properties": {
                 "error": {
                   "type": "string",
-                  "example": "Only admin users can create metadata."
+                  "example": "Only pimd users can create metadata."
                 }
               }
             }
@@ -2048,11 +2048,6 @@
     "summary": "Get All Metadata",
     "description": "Fetch all metadata for products.",
     "tags": ["Metadata"],
-    "security": [
-      {
-        "bearerAuth": []
-      }
-    ],
     "responses": {
       "200": {
         "description": "Successfully retrieved all metadata",
@@ -2102,8 +2097,71 @@
     
   
   
-}
-
+},
+"/users/{userId}/role": {
+      "put": {
+        "summary": "Assign a role to a user",
+        "description": "Allows an authorized user with permission to grant roles to update another user's role.",
+        "tags": ["Users"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID of the user whose role is being updated"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "roleId": {
+                    "type": "string",
+                    "description": "ID of the role to assign to the user"
+                  }
+                },
+                "required": ["roleId"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "role updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "role updated successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "403": {
+            "description": "Forbidden - User does not have permission to assign roles"
+          }
+        }
+      }
+    }
   },
   "components": {
     "securitySchemes": {

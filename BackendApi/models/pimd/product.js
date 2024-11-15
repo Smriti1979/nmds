@@ -52,7 +52,7 @@ module.exports = (sequelize, DataTypes) => {
       authorId: {
         type: DataTypes.INTEGER,
         references: {
-          model: "adminusers",
+          model: "pimdusers",
           key: "id",
         },
       },

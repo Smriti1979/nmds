@@ -3,11 +3,10 @@
 //importing modules
 const express = require("express");
 
-
 const { verifyJWT } = require("../auth/user.auth.middleware.js");
-const adminController = require("../controllers/adminController.js");
+const pimdController = require("../controllers/pimdController.js");
 const {
-  signInAdmin,
+  signInpimd,
   createProduct,
   createagency,
   createMetadata,
@@ -29,43 +28,46 @@ const {
   getUser,
   getUserByUsername,
   deleteUser,
-  updateUser
-} = adminController;
+  updateUser,
+  updateroles
+} = pimdController;
 const router = express.Router();
 
 const app = express();
 
 app.use(express.json());
 
-router.route("/admin/meta/search").get(searchMetaData); 
+router.route("/pimd/meta/search").get(searchMetaData); 
 
 
-router.route("/signin").post(signInAdmin);
+router.route("/signin").post(signInpimd);
 
-router.route("/admin/user").post(verifyJWT,createUser);
-router.route("/admin/user").get(verifyJWT,getUser);
-router.route("/admin/user/:username").get(verifyJWT,getUserByUsername);
-router.route("/admin/user/:username").delete(verifyJWT,deleteUser);
-router.route("/admin/user/:username").put(verifyJWT,updateUser);
+router.route("/pimd/user").post(verifyJWT,createUser); //only PIMD or role 1 can do this
+router.route("/pimd/user").get(verifyJWT,getUser); //anyone with JWT can do this
+router.route("/pimd/user/:username").get(verifyJWT,getUserByUsername); // /pimd/user/test1 (write the actual username)
+router.route("/pimd/user/:username").delete(verifyJWT,deleteUser); //only PIMD or role 1 can do this
+router.route("/pimd/user/:username").put(verifyJWT,updateUser); //only PIMD or role 1 can do this
+router.route("/pimd/user/:username/roles").patch(verifyJWT, updateroles); //only PIMD or role 1 can do this
 
+router.route("/pimd/agency").post(verifyJWT, createagency); //only PIMD or role 1,2 can do this
+router.route("/pimd/agency/:category").get(verifyJWT, getagencyById); //anyone with JWT can do this
+router.route("/pimd/agency").get(verifyJWT, getagency); //anyone with JWT can do this
+router.route("/pimd/agency/:category").put(verifyJWT, updateagency); //we can only update name of a particular category //only PIMD or role 1,2 can do this
+router.route("/pimd/agency/:category").delete(verifyJWT, deleteagency); //only PIMD or role 1 can do this
 
-router.route("/admin/product").post(verifyJWT, createProduct);
-router.route("/admin/product/:productId").get(verifyJWT, getProductById);
-router.route("/admin/product").get(verifyJWT, getProduct);
-router.route("/admin/product/:id").put(verifyJWT, updateProduct);
-router.route("/admin/product/:id").delete(verifyJWT, deleteProduct);
+//you cannot create product without agency
+router.route("/pimd/product").post(verifyJWT, createProduct); //only PIMD or role 1,2 can do this
+router.route("/pimd/product/:productId").get(verifyJWT, getProductById); //anyone with JWT can do this
+router.route("/pimd/product").get(verifyJWT, getProduct); //anyone with JWT can do this
+router.route("/pimd/product/:id").put(verifyJWT, updateProduct); //only PIMD or role 1,2 can do this
+router.route("/pimd/product/:id").delete(verifyJWT, deleteProduct); //only PIMD or role 1 can do this
 
-router.route("/admin/agency").post(verifyJWT, createagency);
-router.route("/admin/agency/:category").get(verifyJWT, getagencyById);
-router.route("/admin/agency").get(verifyJWT, getagency);
-router.route("/admin/agency/:category").put(verifyJWT, updateagency);
-router.route("/admin/agency/:category").delete(verifyJWT, deleteagency);
+router.route("/pimd/metadata").post(verifyJWT, createMetadata); //only PIMD or role 1,2 can do this
+router.route("/pimd/metadata/version").get(verifyJWT, getMetaDataByVersion); //anyone with JWT can do this
+router.route("/pimd/metadata/:Product").get(getMetaDataById); //anyone can do this
+router.route("/pimd/metadata").get(getMetaData); //anyone can do this
+router.route("/pimd/metadata/:Product").put(verifyJWT, updatedMetadata); //only PIMD or role 1,2 can do this
+router.route("/pimd/metadata/:Product").delete(verifyJWT, deleteMetadata); //only PIMD or role 1 can do this
 
-router.route("/admin/metadata").post(verifyJWT, createMetadata);
-router.route("/admin/metadata/version").get(verifyJWT, getMetaDataByVersion);
-router.route("/admin/metadata/:Product").get(verifyJWT, getMetaDataById);
-router.route("/admin/metadata").get(verifyJWT, getMetaData);
-router.route("/admin/metadata/:Product").put(verifyJWT, updatedMetadata);
-router.route("/admin/metadata/:Product").delete(verifyJWT, deleteMetadata);
 
 module.exports = router;

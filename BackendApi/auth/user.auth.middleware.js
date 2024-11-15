@@ -13,19 +13,19 @@ const poolauth = new Pool({
 const verifyJWT = async (req, res, next) => {
   try {
     const token =
-      req.cookies?.adminAccessToken ||
+      req.cookies?.pimdAccessToken ||
       (req.headers.authorization || "").replace("Bearer ", "");
 
     if (!token) {
       return res.status(400).json({ error: "Unauthorized request" });
     }
     const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-    const usersql = "SELECT * FROM AdminUsers WHERE ID=$1";
+    const usersql = "SELECT * FROM pimdUsers WHERE ID=$1";
     const userDetail = await poolauth.query(usersql, [decodedToken._id]);
     const user = userDetail.rows[0];
 
     if (!user) {
-      return res.status(400).json({ error: "Invalid admin Access Token" });
+      return res.status(400).json({ error: "Invalid pimd Access Token" });
     }
     const User = {
       username: user.username,
