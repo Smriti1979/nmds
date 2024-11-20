@@ -1,8 +1,8 @@
 module.exports = (sequelize, DataTypes) => {
-  const pimdUsers = sequelize.define(
-    "pimdUsers",
+  const users = sequelize.define(
+    "users",
     {
-      Id: {
+      id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true,
@@ -21,8 +21,16 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
+      agencyid: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+      },
       name: {
         type: DataTypes.STRING,
+      },
+      newuser:{
+        type: DataTypes.BOOLEAN,
+        defaultValue: true,
       },
       email: {
         type: DataTypes.STRING,
@@ -39,19 +47,19 @@ module.exports = (sequelize, DataTypes) => {
       },
     },
     {
-      tableName: `pimdusers`,
+      tableName: "pimdUsers",
       timestamps: false,
       freezeTableName: true,
     }
   );
 
-  pimdUsers.associate = (models) => {
-    pimdUsers.belongsToMany(models.role, {
-      through: 'userroles', // Name of the junction table
-      foreignKey: 'userId',
-      as: 'roles', // Alias for the association
+  users.associate = (models) => {
+    users.belongsToMany(models.role, {
+      through: "userroles",
+      foreignKey: "userId",
+      as: "roles",
     });
   };
   
-  return pimdUsers;
+  return users;
 };

@@ -7,20 +7,20 @@ const { poolpimd } = require('../DbQuery/dbOperationpimd');
 // var AES = require("crypto-js/aes");
 const {
   EmailValidation,
-  createProductdb,
+  // createProductdb,
   createagencydb,
-  getProductByIddb,
-  getProductdb,
+  // getProductByIddb,
+  // getProductdb,
   getMetaDataByIddb,
   getagencyByIddb,
   getMetaDataByVersionP,
   getMetaDataByVersionPV,
-  updateProductDevdb,
-  updateProductDomdb,
+  // updateProductDevdb,
+  // updateProductDomdb,
   updateagencydb,
   deleteagencydb,
   updateMetadatadb,
-  deleteProductdb,
+  // deleteProductdb,
   deleteMetadatadb,
   getagencydb,
   createMetadatadb,
@@ -31,14 +31,14 @@ const {
   getUserByUsernameDb,
   deleteUserDb,
   updateUserDb,
-  updateuserroles
+  updateuserroles,
+  getMetadataByAgencydb
 } = pimddb;
-
 
 
 const getUserRoles = async (userId) => {
   try {
-    const query = `SELECT roleId FROM userroles WHERE userId = $1`;
+    const query = `SELECT role_id FROM userroles WHERE user_id = $1`;
     const result = await poolpimd.query(query, [userId]);
 
     
@@ -58,7 +58,7 @@ const getUserRoles = async (userId) => {
 //USER
 
 const createUser = async (req, res) => {
-  const { username, password, title, name, email, phno, address, roleIds } = req.body;
+  const { username, password, title, name, email, phone, address, roleIds } = req.body;
   const user = req.user;
 
   // Check required fields
@@ -78,7 +78,7 @@ const createUser = async (req, res) => {
 
   try {
     // Call the database function to create the user and assign roles
-    const newUser = await createUserdb(username, password, title, name, email, phno, address, roleIds);
+    const newUser = await createUserdb(username, password, title, name, email, phone, address, roleIds);
 
     // Check for errors from createUserdb
     if (newUser.error) {
@@ -289,250 +289,248 @@ const signInpimd = async (req, res) => {
 
 //PRODUCT
 
-const createProduct = async (req, res) => {
-  const {
-    id,
-    title,
-    count,
-    icon,
-    period,
-    tooltip,
-    type,
-    url,
-    table,
-    swagger,
-    viz,
-    category,
-  } = req.body;
+// const createProduct = async (req, res) => {
+//   const {
+//     id,
+//     title,
+//     count,
+//     icon,
+//     period,
+//     tooltip,
+//     type,
+//     url,
+//     table,
+//     swagger,
+//     viz,
+//     agency_name,
+//   } = req.body;
   
-  try {
-    const productID = id.toLowerCase();
-    const user = req.user;
+//   try {
+//     const productID = id.toLowerCase();
+//     const user = req.user;
 
 
-    // Check if the user has roleId 1 or 2 or is a "PIMD User"
-    const userRoles = await getUserRoles(user.id);  // Fetch user roles from your database
+//     // Check if the user has roleId 1 or 2 or is a "PIMD User"
+//     const userRoles = await getUserRoles(user.id);  // Fetch user roles from your database
 
-    const hasRole1or2 = userRoles.includes(1) || userRoles.includes(2);
-    if (user.title !== "PIMD User" && !hasRole1or2) {
-      return res
-        .status(405)
-        .json({ error: `Only PIMD User or users with roleId 1 or 2 can create the product` });
-    }
+//     const hasRole1or2 = userRoles.includes(1) || userRoles.includes(2);
+//     if (user.title !== "PIMD User" && !hasRole1or2) {
+//       return res
+//         .status(405)
+//         .json({ error: `Only PIMD User or users with roleId 1 or 2 can create the product` });
+//     }
 
-    const authorId = req.user.id;
+//     const authorId = req.user.id;
 
-    // Proceed to create the product in the database
-    const categories = await createProductdb(
-      productID,
-      title,
-      count,
-      icon,
-      period,
-      tooltip,
-      type,
-      url,
-      table,
-      swagger,
-      viz,
-      category,
-      authorId,
-      userRoles  // Pass userRoles to the database function
-    );
+//     // Proceed to create the product in the database
+//     const categories = await createProductdb(
+//       productID,
+//       title,
+//       count,
+//       icon,
+//       period,
+//       tooltip,
+//       type,
+//       url,
+//       table,
+//       swagger,
+//       viz,
+//       agency_name,
+//       authorId,
+//       userRoles  // Pass userRoles to the database function
+//     );
 
-    if (categories?.error === true) {
-      throw categories?.errorMessage;
-    }
+//     if (categories?.error === true) {
+//       throw categories?.errorMessage;
+//     }
 
-    return res.status(201).send({
-      data: {
-        id,
-        title,
-        count,
-        icon,
-        period,
-        tooltip,
-        type,
-        url,
-        table,
-        swagger,
-        viz,
-        category: categories,
-      },
-      msg: "Product created successfully",
-      statusCode: true,
-    });
+//     return res.status(201).send({
+//       data: {
+//         id,
+//         title,
+//         count,
+//         icon,
+//         period,
+//         tooltip,
+//         type,
+//         url,
+//         table,
+//         swagger,
+//         viz,
+//         agency_name: categories,
+//       },
+//       msg: "Product created successfully",
+//       statusCode: true,
+//     });
     
-  } catch (error) {
-    console.error(error);
-    return res
-      .status(error?.errorCode || 500)
-      .json({ error: `Error in Creating product: ${error}` });
-  }
-};
-const getProductById = async (req, res) => {
-  let { productId } = req.params;
-  productId=productId.toLowerCase()
-  const user = req.user;
-    const userRoles = await getUserRoles(user.id);
+//   } catch (error) {
+//     console.error(error);
+//     return res
+//       .status(error?.errorCode || 500)
+//       .json({ error: `Error in Creating product: ${error}` });
+//   }
+// };
+
+// const getProductById = async (req, res) => {
+//   let { productId } = req.params;
+//   productId=productId.toLowerCase()
+//   const user = req.user;
+//     const userRoles = await getUserRoles(user.id);
     
-    const hasRole1or2 = userRoles.includes(1) || userRoles.includes(2) || userRoles.includes(3);
-    if (user.title !== "PIMD User" && !hasRole1or2) {
-      return res
-        .status(405)
-        .json({ error: `Only PIMD User or users with roleId 1 or 2 or 3 can view the product` });
-    }
-  if (!productId) {
-    return res.status(400).json({ error: `productID is required` });
-  }
-  try {
-    const product = await getProductByIddb(productId);
+//     const hasRole1or2 = userRoles.includes(1) || userRoles.includes(2) || userRoles.includes(3);
+//     if (user.title !== "PIMD User" && !hasRole1or2) {
+//       return res
+//         .status(405)
+//         .json({ error: `Only PIMD User or users with roleId 1 or 2 or 3 can view the product` });
+//     }
+//   if (!productId) {
+//     return res.status(400).json({ error: `productID is required` });
+//   }
+//   try {
+//     const product = await getProductByIddb(productId);
 
-    if (product?.error == true) {
-      throw product?.errorMessage;
-    }
-    return res.status(200).send({
-      data: product,
-      msg: "product data",
-      statusCode: true,
-    });
-  } catch (error) {
-    console.error(error);
-    return res
-      .status(500)
-      .json({ error: `Unable to fetch data Error=${error}` });
-  }
-};
-const getProduct = async (req, res) => {
+//     if (product?.error == true) {
+//       throw product?.errorMessage;
+//     }
+//     return res.status(200).send({
+//       data: product,
+//       msg: "product data",
+//       statusCode: true,
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     return res
+//       .status(500)
+//       .json({ error: `Unable to fetch data Error=${error}` });
+//   }
+// };
+// const getProduct = async (req, res) => {
 
-  try {
-    const user = req.user;
-    const userRoles = await getUserRoles(user.id);
+//   try {
+//     const user = req.user;
+//     const userRoles = await getUserRoles(user.id);
     
-    const hasRole1or2 = userRoles.includes(1) || userRoles.includes(2) || userRoles.includes(3);
-    if (user.title !== "PIMD User" && !hasRole1or2) {
-      return res
-        .status(405)
-        .json({ error: `Only PIMD User or users with roleId 1 or 2 or 3 can view the product` });
-    }
-    const product = await getProductdb();
-    if (product?.error == true) {
-      throw product?.errorMessage;
-    }
-    return res.status(200).send({
-      data: product,
-      msg: "product data",
-      statusCode: true,
-    });
-  } catch (error) {
-    console.error(error);
-    return res
-      .status(500)
-      .json({ error: `Unable to fetch data Error=${error}` });
-  }
-};
-const updateProduct = async (req, res) => {
-  let { id } = req.params;
-  id = id.toLowerCase();
-  const user = req.user;
-    const userRoles = await getUserRoles(user.id);
+//     const hasRole1or2 = userRoles.includes(1) || userRoles.includes(2) || userRoles.includes(3);
+//     if (user.title !== "PIMD User" && !hasRole1or2) {
+//       return res
+//         .status(405)
+//         .json({ error: `Only PIMD User or users with roleId 1 or 2 or 3 can view the product` });
+//     }
+//     const product = await getProductdb();
+//     if (product?.error == true) {
+//       throw product?.errorMessage;
+//     }
+//     return res.status(200).send({
+//       data: product,
+//       msg: "product data",
+//       statusCode: true,
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     return res
+//       .status(500)
+//       .json({ error: `Unable to fetch data Error=${error}` });
+//   }
+// };
+// const updateProduct = async (req, res) => {
+//   let { id } = req.params;
+//   id = id.toLowerCase();
+//   const user = req.user;
+//     const userRoles = await getUserRoles(user.id);
     
-    const hasRole1or2 = userRoles.includes(1) || userRoles.includes(2);
-    if (user.title !== "PIMD User" && !hasRole1or2) {
-      return res
-        .status(405)
-        .json({ error: `Only PIMD User or users with roleId 1 or 2 can update the product` });
-    }
+//     const hasRole1or2 = userRoles.includes(1) || userRoles.includes(2);
+//     if (user.title !== "PIMD User" && !hasRole1or2) {
+//       return res
+//         .status(405)
+//         .json({ error: `Only PIMD User or users with roleId 1 or 2 can update the product` });
+//     }
 
-  const {
-    title,
-    count,
-    icon,
-    period,
-    tooltip,
-    type,
-    url,
-    table,
-    swagger,
-    viz,
-    category,
-  } = req.body;
+//   const {
+//     title,
+//     count,
+//     icon,
+//     period,
+//     tooltip,
+//     type,
+//     url,
+//     table,
+//     swagger,
+//     viz,
+//     agency_name,
+//   } = req.body;
 
-  try {
-    // Proceed with the update operation for "pimd" users only
-    const product = await updateProductDevdb(
-      id,
-      title,
-      count,
-      icon,
-      period,
-      tooltip,
-      type,
-      url,
-      table,
-      swagger,
-      viz,
-      category
-    );
+//   try {
+//     // Proceed with the update operation for "pimd" users only
+//     const product = await updateProductDevdb(
+//       id,
+//       title,
+//       count,
+//       icon,
+//       period,
+//       tooltip,
+//       type,
+//       url,
+//       table,
+//       swagger,
+//       viz,
+//       agency_name
+//     );
 
-    if (product?.error == true) {
-      throw product?.errorMessage;
-    }
+//     if (product?.error == true) {
+//       throw product?.errorMessage;
+//     }
 
-    return res.status(200).send({
-      data: product,
-      msg: "Product updated successfully",
-      statusCode: true,
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: `Error in updating product: ${error}` });
-  }
-};
-const deleteProduct = async (req, res) => {
-  const user = req.user;
-    const userRoles = await getUserRoles(user.id);
+//     return res.status(200).send({
+//       data: product,
+//       msg: "Product updated successfully",
+//       statusCode: true,
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: `Error in updating product: ${error}` });
+//   }
+// };
+// const deleteProduct = async (req, res) => {
+//   const user = req.user;
+//     const userRoles = await getUserRoles(user.id);
     
-    const hasRole1 = userRoles.includes(1);
-    if (user.title !== "PIMD User" && !hasRole1) {
-      return res
-        .status(405)
-        .json({ error: `Only PIMD User or users with roleId 1 can delete the product` });
-    }
-  let { id } = req.params;
-  id=id.toLowerCase()
-  if (id == null || id == undefined || id == "") {
-    return res.status(405).json({ error: `id in invalid` });
-  }
+//     const hasRole1 = userRoles.includes(1);
+//     if (user.title !== "PIMD User" && !hasRole1) {
+//       return res
+//         .status(405)
+//         .json({ error: `Only PIMD User or users with roleId 1 can delete the product` });
+//     }
+//   let { id } = req.params;
+//   id=id.toLowerCase()
+//   if (id == null || id == undefined || id == "") {
+//     return res.status(405).json({ error: `id in invalid` });
+//   }
 
-  try {
-    const result = await deleteProductdb(id);
-    if (result?.error == true) {
-      throw result?.errorMessage;
-    }
-    return res.status(200).send({
-      data: [],
-      msg: "product deleted successfully",
-      statusCode: true,
-    });
-  } catch (error) {
-    console.log(error);
-    return res
-      .status(503)
-      .json({ error: `unable to delete the product ${error}` });
-  }
-};
+//   try {
+//     const result = await deleteProductdb(id);
+//     if (result?.error == true) {
+//       throw result?.errorMessage;
+//     }
+//     return res.status(200).send({
+//       data: [],
+//       msg: "product deleted successfully",
+//       statusCode: true,
+//     });
+//   } catch (error) {
+//     console.log(error);
+//     return res
+//       .status(503)
+//       .json({ error: `unable to delete the product ${error}` });
+//   }
+// };
 
 //AGENCY
 
 const createagency = async (req, res) => {
-  const { category, name } = req.body;
+  const { agency_name} = req.body;
   try {
     const user = req.user;
-
-
-    // Check if the user has roleId 1 or 2 or is a "PIMD User"
-    const userRoles = await getUserRoles(user.id);  // Fetch user roles from your database
+    const userRoles = await getUserRoles(user.id);  
 
     const hasRole1or2 = userRoles.includes(1) || userRoles.includes(2);
     if (user.title !== "PIMD User" && !hasRole1or2) {
@@ -540,8 +538,9 @@ const createagency = async (req, res) => {
         .status(405)
         .json({ error: `Only PIMD User or users with roleId 1 or 2 can create agency` });
     }
+   
+    const result = await createagencydb(agency_name);
 
-    const result = await createagencydb(category, name);
     if (result?.error == true) {
       throw result?.errorMessage;
     }
@@ -595,12 +594,12 @@ const getagencyById = async (req, res) => {
       .status(403) 
       .json({ error: "Only PIMD User users can access the agency." });
   }
-  const { category } = req.params;
-  if (category == undefined) {
-    return res.status(400).json({ error: `category is required` });
+  const { agency_name } = req.params;
+  if (agency_name == undefined) {
+    return res.status(400).json({ error: `agency_name is required` });
   }
   try {
-    const agency = await getagencyByIddb(category);
+    const agency = await getagencyByIddb(agency_name);
 
     if (agency?.error == true) {
       throw agency?.errorMessage;
@@ -616,8 +615,9 @@ const getagencyById = async (req, res) => {
     return res.status(500).json({ error: `Unable to get agency ${error}` });
   }
 };
+
 const updateagency = async (req, res) => {
-  const { category } = req.params;
+  const { agency_name } = req.params;
   const { name } = req.body;
   const user = req.user;
 
@@ -633,13 +633,13 @@ const updateagency = async (req, res) => {
   }
 
   if (name == "" || name == null || name == undefined) {
-    return res.status(405).json({ error: `category,name are required` });
+    return res.status(405).json({ error: `agency_name,name are required` });
   }
-  if (category == null || category == undefined || category == "") {
-    return res.status(405).json({ error: `Category is undefined` });
+  if (agency_name == null || agency_name == undefined || agency_name == "") {
+    return res.status(405).json({ error: `agency_name is undefined` });
   }
   try {
-    const agency = await updateagencydb(name, category);
+    const agency = await updateagencydb(name, agency_name);
     if (agency?.error == true) {
       throw agency?.errorMessage;
     }
@@ -658,7 +658,7 @@ const updateagency = async (req, res) => {
   }
 };
 const deleteagency = async (req, res) => {
-  const { category } = req.params;
+  const { agency_name } = req.params;
   const user = req.user;
  
   const userRoles = await getUserRoles(user.id);
@@ -670,12 +670,12 @@ const deleteagency = async (req, res) => {
       .status(405)
       .json({ error: `Only PIMD User or User with role 1 can delete Agency` });
   }
-  if (!category) {
-    return res.status(405).json({ error: `Category is invalid` });
+  if (!agency_name) {
+    return res.status(405).json({ error: `Agency name does not exist` });
   }
 
   try {
-    const result = await deleteagencydb(category);
+    const result = await deleteagencydb(agency_name);
     if (result?.error == true) {
       throw result?.errorMessage;
     }
@@ -693,13 +693,10 @@ const deleteagency = async (req, res) => {
 //METADATA
 const createMetadata = async (req, res) => {
   try {
-
     const user = req.user;
 
-
-    // Check if the user has roleId 1 or 2 or is a "PIMD User"
-    const userRoles = await getUserRoles(user.id);  // Fetch user roles from your database
-
+    // Check user roles for permission
+    const userRoles = await getUserRoles(user.id);  
     const hasRole1or2 = userRoles.includes(1) || userRoles.includes(2);
     if (user.title !== "PIMD User" && !hasRole1or2) {
       return res
@@ -707,33 +704,37 @@ const createMetadata = async (req, res) => {
         .json({ error: `Only PIMD User or users with roleId 1 or 2 can create the Metadata` });
     }
 
-  
-
     // Exclude predefined fields and store the rest in the `data` column as JSON
-    const {Product, ...dynamicData } = req.body; // Capture all other dynamic fields into `dynamicData`
-    const productID = Product.toLowerCase();
+    const { agency_id, product_id, product_name, status, created_by, ...dynamicData } = req.body; // Capture dynamic fields into `dynamicData`
+
+    // Call the database function to create the metadata
     const result = await createMetadatadb({
-      Product: productID,
+      agency_id, 
+      product_id, 
+      product_name, 
       data: dynamicData,  // Store the remaining dynamic fields as JSON
-      user_id: user.id,
-      version: 1,
-      latest: true,
+      user_created_id: user.id,  // user who created this metadata
+      status, 
+      created_by, 
     });
 
+    // Handle error in case no result is returned
     if (result?.error) {
-      throw result?.errorMessage;
+      throw new Error(result?.errorMessage);
     }
 
+    // Return successful response
     return res.status(201).send({
       data: result,
       msg: "Metadata created successfully",
-      statusCode: true,
+      statusCode: 201,
     });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ error: `Error in creating metadata: ${error}` });
+    res.status(500).json({ error: `Error in creating metadata: ${error.message}` });
   }
 };
+
 const getMetaData = async (req, res) => {
 
   try {
@@ -755,93 +756,97 @@ const getMetaData = async (req, res) => {
       .json({ error: `Unable to fetch data Error=${error}` });
   }
 };
-const getMetaDataById = async (req, res) => {
-  const { Product } = req.params;
+
+// const getMetaDataById = async (req, res) => {
+//   const { Product } = req.params;
   
-  if (Product == undefined) {
-    return res.status(400).json({ error: `productID is required` });
-  }
-  try {
-    const metadata = await getMetaDataByIddb(Product);
-    if (metadata?.error == true) {
-      throw metadata?.errorMessage;
-    }
-    return res.status(200).send({
-      data: metadata,
-      msg: "metadata",
-      statusCode: true,
-    });
-  } catch (error) {
-    console.log(error);
+//   if (Product == undefined) {
+//     return res.status(400).json({ error: `productID is required` });
+//   }
+//   try {
+//     const metadata = await getMetaDataByIddb(Product);
+//     if (metadata?.error == true) {
+//       throw metadata?.errorMessage;
+//     }
+//     return res.status(200).send({
+//       data: metadata,
+//       msg: "metadata",
+//       statusCode: true,
+//     });
+//   } catch (error) {
+//     console.log(error);
 
-    return res
-      .status(500)
-      .json({ error: `Unable to fetch data Error=${error}` });
-  }
-};
-const getMetaDataByVersion=async(req,res)=>{
-  const { product, version } = req.query;
-  try {
-    if(version==null && product!==null){
-      const metadata=await getMetaDataByVersionP(product)
-      if (metadata?.error == true) {
-        throw metadata?.errorMessage;
-      }
-      return res.status(200).send({
-        data: metadata,
-        msg: "meta data",
-        statusCode: true,
-      });
-    }
-    else if(product!=null && version!=null){
-      const metadata=await getMetaDataByVersionPV(product,version)
-      if (metadata?.error == true) {
-        throw metadata?.errorMessage;
-      }
-      return res.status(200).send({
-        data: metadata,
-        msg: "meta data",
-        statusCode: true,
-      });
-    }
-    else{
-      return res.status(200).send({
-        msg: "product is required",
-        statusCode: true,})
-    }
-  } catch (error) {
-    console.log(error);
+//     return res
+//       .status(500)
+//       .json({ error: `Unable to fetch data Error=${error}` });
+//   }
+// };
 
-    return res
-      .status(500)
-      .json({ error: `Unable to fetch data Error=${error}` });
-  }
-}
-const searchMetaData=async(req,res)=>{
-  const searchParams = req.query;
+// const getMetaDataByVersion=async(req,res)=>{
+//   const { product, version } = req.query;
+//   try {
+//     if(version==null && product!==null){
+//       const metadata=await getMetaDataByVersionP(product)
+//       if (metadata?.error == true) {
+//         throw metadata?.errorMessage;
+//       }
+//       return res.status(200).send({
+//         data: metadata,
+//         msg: "meta data",
+//         statusCode: true,
+//       });
+//     }
+//     else if(product!=null && version!=null){
+//       const metadata=await getMetaDataByVersionPV(product,version)
+//       if (metadata?.error == true) {
+//         throw metadata?.errorMessage;
+//       }
+//       return res.status(200).send({
+//         data: metadata,
+//         msg: "meta data",
+//         statusCode: true,
+//       });
+//     }
+//     else{
+//       return res.status(200).send({
+//         msg: "product is required",
+//         statusCode: true,})
+//     }
+//   } catch (error) {
+//     console.log(error);
+
+//     return res
+//       .status(500)
+//       .json({ error: `Unable to fetch data Error=${error}` });
+//   }
+// }
+
+// const searchMetaData=async(req,res)=>{
+//   const searchParams = req.query;
  
-  try {
+//   try {
    
-    const metadata=await searchMetaDatadb(searchParams);
-    if(metadata?.error){
-      return res.status(400).send({
-        data: [],
-        msg: "data not found",
-        statusCode: false,
-      });
-    }
-    return res.status(200).send({
-      data: metadata,
-      msg: "meta data",
-      statusCode: true,
-    });
+//     const metadata=await searchMetaDatadb(searchParams);
+//     if(metadata?.error){
+//       return res.status(400).send({
+//         data: [],
+//         msg: "data not found",
+//         statusCode: false,
+//       });
+//     }
+//     return res.status(200).send({
+//       data: metadata,
+//       msg: "meta data",
+//       statusCode: true,
+//     });
   
-  } catch (error) {
-    return res
-    .status(500)
-    .json({ error: `Unable to fetch data Error=${error}` });
-  }
-}
+//   } catch (error) {
+//     return res
+//     .status(500)
+//     .json({ error: `Unable to fetch data Error=${error}` });
+//   }
+// }
+
 const updatedMetadata = async (req, res) => {
   let { Product } = req.params;
   Product=Product.toLowerCase()
@@ -882,6 +887,7 @@ const updatedMetadata = async (req, res) => {
       .json({ error: `Error in updating metadata: ${error}` });
   }
 };
+
 const deleteMetadata = async (req, res) => {
   let { Product } = req.params;
   Product=Product.toLowerCase()
@@ -919,6 +925,32 @@ const deleteMetadata = async (req, res) => {
   }
 };
 
+const getMetaDataByAgency = async (req, res) => {
+  try {
+    const user = req.user;
+    const { agency_name } = req.params;
+
+    if (!user || !agency_name) {
+      return res.status(400).json({ error: "Agency name is missing in the user object." });
+    }
+
+    const agencyData = await getMetadataByAgencydb(agency_name);
+
+    return res.status(200).json({
+      success: true,
+      message: "metadata data fetched successfully.",
+      data: agencyData,
+    });
+  } catch (error) {
+    console.error("Error in getMetaDataByAgency controller:", error.message);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch agency data.",
+      error: error.message,
+    });
+  }
+};
 
 
 exports.login = async (req, res) => {
@@ -936,28 +968,29 @@ exports.login = async (req, res) => {
 };
 
 module.exports = {
-  getMetaDataById,
+  // getMetaDataById,
   getagencyById,
-  updateProduct,
+  // updateProduct,
   updateagency,
   updatedMetadata,
-  deleteProduct,
+  // deleteProduct,
   deleteMetadata,
   deleteagency,
-  getProductById,
+  // getProductById,
   createMetadata,
   createagency,
-  createProduct,
+  // createProduct,
   signInpimd,
   getagency,
-  getProduct,
+  // getProduct,
   getMetaData,
-  getMetaDataByVersion,
-  searchMetaData,
+  // getMetaDataByVersion,
+  // searchMetaData,
   createUser,
   getUser,
   getUserByUsername,
   deleteUser,
   updateUser,
-  updateroles
+  updateroles,
+  getMetaDataByAgency
 };

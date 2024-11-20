@@ -2,7 +2,7 @@
   {
     "Product": "cpi",
     "title": "Consumer Price Index (CPI)",
-    "Category": "Price Statistics",
+    "agency_name": "Price Statistics",
     "Geography": "All India, Rural, Urban, States",
     "Frequency": "Monthly",
     "TimePeriod": "2012 onwards",
@@ -19,7 +19,7 @@
   {
     "Product": "IIP",
     "title": "Index Of Industrial Production (IIP)",
-    "Category": "Industrial Statistics",
+    "agency_name": "Industrial Statistics",
     "Geography": "All India, Rural, Urban, States",
     "Frequency": "Monthly",
     "TimePeriod": "2012 onwards",
@@ -35,7 +35,7 @@
   {
     "Product": "NAS",
     "title": "National Accounts Statistics (NAS)",
-    "Category": "National Accounts Statistics",
+    "agency_name": "National Accounts Statistics",
     "Geography": "All India, States",
     "Frequency": "Annual",
     "TimePeriod": "2011-12 onwards",
@@ -51,7 +51,7 @@
   {
     "Product": "ASI",
     "title": "Annual Survey of Industries (ASI)",
-    "Category": "Industrial Statistics",
+    "agency_name": "Industrial Statistics",
     "Geography": "All India",
     "Frequency": "Annual",
     "TimePeriod": "2004-05 to 2021-22",

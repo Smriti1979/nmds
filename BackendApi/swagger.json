@@ -659,7 +659,7 @@
                   "title": {
                     "type": "string"
                   },
-                  "category": {
+                  "agency_name": {
                     "type": "string"
                   },
                   "count": {
@@ -696,7 +696,7 @@
                     "type": "string"
                   }
                 },
-                "required": ["id", "title", "category", "count", "type"]
+                "required": ["id", "title", "agency_name", "count", "type"]
               }
             }
           }
@@ -720,7 +720,7 @@
                           "type": "string",
                           "example": "Consumer Price Index"
                         },
-                        "category": {
+                        "agency_name": {
                           "type": "string",
                           "example": "Economy"
                         },
@@ -954,12 +954,12 @@
                     "type": "string",
                     "example": "https://esankhyiki.mospi.gov.in/viz/cpi"
                   },
-                  "category": {
+                  "agency_name": {
                     "type": "string",
                     "example": "Economy"
                   }
                 },
-                "required": ["title", "count", "type", "category"]
+                "required": ["title", "count", "type", "agency_name"]
               }
             }
           }
@@ -1015,7 +1015,7 @@
                           "type": "string",
                           "example": "https://esankhyiki.mospi.gov.in/viz/cpi"
                         },
-                        "category": {
+                        "agency_name": {
                           "type": "string",
                           "example": "Economy"
                         }
@@ -1165,7 +1165,7 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "category": {
+                  "agency_name": {
                     "type": "string",
                     "example": "NSS"
                   },
@@ -1174,7 +1174,7 @@
                     "example": "NSS"
                   }
                 },
-                "required": ["category", "name"]
+                "required": ["agency_name", "name"]
               }
             }
           }
@@ -1190,7 +1190,7 @@
                     "data": {
                       "type": "object",
                       "example": {
-                        "category": "NSS",
+                        "agency_name": "NSS",
                         "name": "NSS"
                       }
                     },
@@ -1289,11 +1289,11 @@
         }
       }
     },
-    "/api/pimd/agency/{category}": {
+    "/api/pimd/agency/{agency_name}": {
       "get": {
-        "summary": "Get agency by Category",
+        "summary": "Get agency by agency_name",
         "tags": ["Agencies"],
-        "description": "Retrieve a agency by its category",
+        "description": "Retrieve a agency by its agency_name",
         "security": [
           {
             "bearerAuth": []
@@ -1301,10 +1301,10 @@
         ],
         "parameters": [
           {
-            "name": "category",
+            "name": "agency_name",
             "in": "path",
             "required": true,
-            "description": "Category of the agency",
+            "description": "agency_name of the agency",
             "schema": {
               "type": "string"
             }
@@ -1321,7 +1321,7 @@
                     "data": {
                       "type": "object",
                       "example": {
-                        "category": "NSS",
+                        "agency_name": "NSS",
                         "name": "NSS"
                       }
                     },
@@ -1339,7 +1339,7 @@
             }
           },
           "400": {
-            "description": "Category is required",
+            "description": "agency_name is required",
             "content": {
               "application/json": {
                 "schema": {
@@ -1347,7 +1347,7 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "example": "Category is required"
+                      "example": "agency_name is required"
                     }
                   }
                 }
@@ -1386,12 +1386,12 @@
         "description": "Update an existing agency. Only pimd and domain users can edit agencys.",
         "parameters": [
           {
-            "name": "category",
+            "name": "agency_name",
             "in": "path",
             "required": true,
             "schema": {
               "type": "string",
-              "example": "category_001"
+              "example": "agency_name_001"
             }
           }
         ],
@@ -1451,7 +1451,7 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "example": "Category and name are required"
+                      "example": "agency_name and name are required"
                     }
                   }
                 }
@@ -1477,9 +1477,9 @@
         }
       },
       "delete": {
-      "summary": "Delete agency by Category",
+      "summary": "Delete agency by agency_name",
       "tags": ["Agencies"],
-      "description": "Delete a agency by its category. Only pimd users can delete agencys.",
+      "description": "Delete a agency by its agency_name. Only pimd users can delete agencys.",
       "security": [
         {
           "bearerAuth": []
@@ -1487,13 +1487,13 @@
       ],
       "parameters": [
         {
-          "name": "category",
+          "name": "agency_name",
           "in": "path",
           "required": true,
-          "description": "Category of the agency to be deleted",
+          "description": "agency_name of the agency to be deleted",
           "schema": {
             "type": "string",
-            "example": "category_001"
+            "example": "agency_name_001"
           }
         }
       ],
@@ -1535,7 +1535,7 @@
           }
         },
         "400": {
-          "description": "Invalid category or missing parameter",
+          "description": "Invalid agency_name or missing parameter",
           "content": {
             "application/json": {
               "schema": {
@@ -1543,7 +1543,7 @@
                 "properties": {
                   "error": {
                     "type": "string",
-                    "example": "Category is invalid"
+                    "example": "agency_name is invalid"
                   }
                 }
               }
@@ -1609,7 +1609,7 @@
               },
               "example": {
                 "title": "",
-                "Category": "",
+                "agency_name": "",
                 "Geography": "",
                 "Frequency": "",
                 "TimePeriod": "",
@@ -1965,7 +1965,7 @@
             "example": {
               "Product": "",
               "title": "",
-              "Category": "",
+              "agency_name": "",
               "Geography": "",
               "Frequency": "",
               "TimePeriod": "",

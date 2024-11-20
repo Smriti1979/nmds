@@ -29,9 +29,9 @@ module.exports = (sequelize, DataTypes) => {
   
     role.associate = (models) => {
       role.belongsToMany(models.pimdUsers, {
-        through: 'userroles', // Name of the junction table
+        through: 'userroles', 
         foreignKey: 'roleId',
-        as: 'users', // Alias for the association
+        as: 'users', 
       });
     };
   

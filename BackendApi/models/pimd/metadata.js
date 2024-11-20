@@ -1,19 +1,26 @@
-/** @format */
-
 module.exports = (sequelize, DataTypes) => {
-  const product = sequelize.define(
-    "product",
+  const metadata = sequelize.define(
+    "metadata",
     {
+      version: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+      },
       id: {
         type: DataTypes.TEXT,
         allowNull: false,
         primaryKey: true,
       },
-      title: {
+      productid: {
         type: DataTypes.TEXT,
         allowNull: false,
       },
-      count: {
+      productname: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+      },
+      agencyid: {
         type: DataTypes.TEXT,
         allowNull: false,
       },
@@ -21,23 +28,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.TEXT,
         allowNull: false,
       },
-      period: {
-        type: DataTypes.TEXT,
-        allowNull: false,
-      },
-      tooltip: {
-        type: DataTypes.TEXT,
-        allowNull: false,
-      },
-      type: {
-        type: DataTypes.TEXT,
-        allowNull: false,
-      },
-      url: {
-        type: DataTypes.TEXT,
-        allowNull: false,
-      },
-      table: {
+      description: {
         type: DataTypes.TEXT,
         allowNull: false,
       },
@@ -45,29 +36,33 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.BOOLEAN,
         allowNull: false,
       },
-      viz: {
-        type: DataTypes.TEXT,
-        allowNull: false,
-      },
       authorId: {
         type: DataTypes.INTEGER,
         references: {
-          model: "pimdusers",
+          model: "users",
           key: "id",
         },
       },
       createdDate: {
         type: DataTypes.DATE,
         allowNull: false,
-        defaultValue: DataTypes.NOW
+        defaultValue: DataTypes.NOW,
       },
     },
     {
-      tableName: "product",
-      timestamps: false, 
+      tableName: "metadata",
+      timestamps: false,
       freezeTableName: true,
     }
   );
 
-  return product;
+  metadata.associate = (models) => {
+    metadata.belongsTo(models.agency, {
+      foreignKey: "agencyid",
+      targetKey: "agencyid",
+      constraints: true,
+    });
+  };
+
+  return metadata;
 };

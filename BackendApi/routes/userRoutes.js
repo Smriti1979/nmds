@@ -7,29 +7,30 @@ const { verifyJWT } = require("../auth/user.auth.middleware.js");
 const pimdController = require("../controllers/pimdController.js");
 const {
   signInpimd,
-  createProduct,
+  // createProduct,
   createagency,
   createMetadata,
-  getProductById,
-  getMetaDataById,
+  // getProductById,
+  // getMetaDataById,
   getagencyById,
-  updateProduct,
+  // updateProduct,
   updateagency,
   updatedMetadata,
-  deleteProduct,
+  // deleteProduct,
   deleteMetadata,
   deleteagency,
   getagency,
-  searchMetaData,
+  // searchMetaData,
   getMetaData,
-  getProduct,
-  getMetaDataByVersion,
+  // getProduct,
+  // getMetaDataByVersion,
   createUser,
   getUser,
   getUserByUsername,
   deleteUser,
   updateUser,
-  updateroles
+  updateroles,
+  getMetaDataByAgency
 } = pimdController;
 const router = express.Router();
 
@@ -37,37 +38,46 @@ const app = express();
 
 app.use(express.json());
 
-router.route("/pimd/meta/search").get(searchMetaData); 
+// router.route("/pimd/meta/search").get(searchMetaData); 
 
 
 router.route("/signin").post(signInpimd);
 
-router.route("/pimd/user").post(verifyJWT,createUser); //only PIMD or role 1 can do this
-router.route("/pimd/user").get(verifyJWT,getUser); //anyone with JWT can do this
-router.route("/pimd/user/:username").get(verifyJWT,getUserByUsername); // /pimd/user/test1 (write the actual username)
-router.route("/pimd/user/:username").delete(verifyJWT,deleteUser); //only PIMD or role 1 can do this
-router.route("/pimd/user/:username").put(verifyJWT,updateUser); //only PIMD or role 1 can do this
-router.route("/pimd/user/:username/roles").patch(verifyJWT, updateroles); //only PIMD or role 1 can do this
+router.route("/pimd/user").post(verifyJWT,createUser); 
+router.route("/pimd/user").get(verifyJWT,getUser); 
 
-router.route("/pimd/agency").post(verifyJWT, createagency); //only PIMD or role 1,2 can do this
-router.route("/pimd/agency/:category").get(verifyJWT, getagencyById); //anyone with JWT can do this
-router.route("/pimd/agency").get(verifyJWT, getagency); //anyone with JWT can do this
-router.route("/pimd/agency/:category").put(verifyJWT, updateagency); //we can only update name of a particular category //only PIMD or role 1,2 can do this
-router.route("/pimd/agency/:category").delete(verifyJWT, deleteagency); //only PIMD or role 1 can do this
+router.route("/pimd/user/:username").get(verifyJWT,getUserByUsername); 
+router.route("/pimd/user/:username").delete(verifyJWT,deleteUser); 
 
-//you cannot create product without agency
-router.route("/pimd/product").post(verifyJWT, createProduct); //only PIMD or role 1,2 can do this
-router.route("/pimd/product/:productId").get(verifyJWT, getProductById); //anyone with JWT can do this
-router.route("/pimd/product").get(verifyJWT, getProduct); //anyone with JWT can do this
-router.route("/pimd/product/:id").put(verifyJWT, updateProduct); //only PIMD or role 1,2 can do this
-router.route("/pimd/product/:id").delete(verifyJWT, deleteProduct); //only PIMD or role 1 can do this
+router.route("/pimd/user/:username").put(verifyJWT,updateUser); 
+router.route("/pimd/user/:username/roles").patch(verifyJWT, updateroles); 
 
-router.route("/pimd/metadata").post(verifyJWT, createMetadata); //only PIMD or role 1,2 can do this
-router.route("/pimd/metadata/version").get(verifyJWT, getMetaDataByVersion); //anyone with JWT can do this
-router.route("/pimd/metadata/:Product").get(getMetaDataById); //anyone can do this
-router.route("/pimd/metadata").get(getMetaData); //anyone can do this
-router.route("/pimd/metadata/:Product").put(verifyJWT, updatedMetadata); //only PIMD or role 1,2 can do this
-router.route("/pimd/metadata/:Product").delete(verifyJWT, deleteMetadata); //only PIMD or role 1 can do this
+router.route("/pimd/agency").post(verifyJWT, createagency);
+router.route("/pimd/agency/:agency_name").delete(verifyJWT, deleteagency); 
+
+router.route("/pimd/agency/:agency_name").get(verifyJWT, getagencyById); 
+router.route("/pimd/agency").get(verifyJWT, getagency); 
+router.route("/pimd/agency/:agency_name").put(verifyJWT, updateagency); 
+
+
+
+// router.route("/pimd/product").post(verifyJWT, createProduct); 
+// router.route("/pimd/product/:productId").get(verifyJWT, getProductById); 
+// router.route("/pimd/product").get(verifyJWT, getProduct); 
+// router.route("/pimd/product/:id").put(verifyJWT, updateProduct); 
+// router.route("/pimd/product/:id").delete(verifyJWT, deleteProduct); 
+
+
+// router.route("/pimd/metadata/version").get(verifyJWT, getMetaDataByVersion); 
+// router.route("/pimd/metadata/:Product").get(getMetaDataById);
+
+// router.route("/pimd/metadata/:product_id").put(verifyJWT, updatedMetadata); 
+// router.route("/pimd/metadata/:product_id").delete(verifyJWT, deleteMetadata); 
+
+router.route("/pimd/metadata").post(verifyJWT, createMetadata); 
+router.route("/pimd/metadata").get(getMetaData);
+router.route("/pimd/metadata/:agency_name").get(verifyJWT, getMetaDataByAgency); 
+
 
 
 module.exports = router;
